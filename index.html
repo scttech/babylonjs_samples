@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Babylon.js Samples</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #16171a;
+      color: #f2f2f2;
+      font: 16px/1.5 system-ui, sans-serif;
+    }
+    header {
+      padding: 48px 24px 24px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+    header p {
+      margin: 0;
+      color: #a0a0a8;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .card {
+      display: block;
+      background: #1f2024;
+      border: 1px solid #2c2d33;
+      border-radius: 10px;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .card:hover {
+      border-color: #4a90e2;
+      transform: translateY(-2px);
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+    }
+    .card p {
+      margin: 0;
+      color: #a0a0a8;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Babylon.js Samples</h1>
+    <p>A collection of small Babylon.js demos. Click one to view it live.</p>
+  </header>
+  <main class="grid" id="grid"></main>
+
+  <script>
+    // Add an entry here whenever a new sample is added under /samples/<slug>/
+    const samples = [
+      {
+        title: "Bouncing Circle",
+        path: "samples/bouncing_circle/index.html",
+        description: "A circle bounces around the screen.",
+      },
+      {
+        title: "Bouncing Ball with Sparks",
+        path: "samples/bouncing_ball_sparks/index.html",
+        description: "A ball bounces around the screen, throwing off sparks on every wall hit.",
+      },
+    ];
+
+    const grid = document.getElementById("grid");
+    for (const sample of samples) {
+      const card = document.createElement("a");
+      card.className = "card";
+      card.href = sample.path;
+      card.innerHTML = `<h2>${sample.title}</h2><p>${sample.description}</p>`;
+      grid.appendChild(card);
+    }
+  </script>
+</body>
+</html>
