@@ -27,3 +27,33 @@ html, body {
 .back-button:hover {
   background: rgba(0, 0, 0, 0.75);
 }
+.hint {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font: 14px/1 system-ui, sans-serif;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+.screenshot-flash::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: #fff;
+  pointer-events: none;
+  animation: screenshot-flash-fade 0.15s ease-out forwards;
+}
+@keyframes screenshot-flash-fade {
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 0;
+  }
+}

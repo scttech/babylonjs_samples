@@ -41,13 +41,17 @@
       border: 1px solid #2c2d33;
       border-radius: 10px;
       padding: 20px;
-      text-decoration: none;
       color: inherit;
       transition: border-color 0.15s ease, transform 0.15s ease;
     }
     .card:hover {
       border-color: #4a90e2;
       transform: translateY(-2px);
+    }
+    .card-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
     }
     .card h2 {
       margin: 0 0 8px;
@@ -57,6 +61,20 @@
       margin: 0;
       color: #a0a0a8;
       font-size: 0.9rem;
+    }
+    .card-footer {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #2c2d33;
+    }
+    .readme-link {
+      color: #a0a0a8;
+      font-size: 0.85rem;
+      text-decoration: none;
+    }
+    .readme-link:hover {
+      color: #4a90e2;
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -73,26 +91,36 @@
       {
         title: "Bouncing Circle",
         path: "samples/bouncing_circle/index.html",
+        readme: "samples/bouncing_circle/README.md",
         description: "A circle bounces around the screen.",
       },
       {
         title: "Bouncing Ball with Sparks",
         path: "samples/bouncing_ball_sparks/index.html",
+        readme: "samples/bouncing_ball_sparks/README.md",
         description: "A ball bounces around the screen, throwing off sparks on every wall hit.",
       },
       {
         title: "Bouncing Ball with Sparks and Sound",
         path: "samples/bouncing_ball_sparks_sound/index.html",
+        readme: "samples/bouncing_ball_sparks_sound/README.md",
         description: "A ball bounces around the screen, throwing off sparks and a synthesized thump on every wall hit.",
       },
     ];
 
     const grid = document.getElementById("grid");
     for (const sample of samples) {
-      const card = document.createElement("a");
+      const card = document.createElement("div");
       card.className = "card";
-      card.href = sample.path;
-      card.innerHTML = `<h2>${sample.title}</h2><p>${sample.description}</p>`;
+      card.innerHTML = `
+        <a class="card-link" href="${sample.path}">
+          <h2>${sample.title}</h2>
+          <p>${sample.description}</p>
+        </a>
+        <div class="card-footer">
+          <a class="readme-link" href="${sample.readme}">README</a>
+        </div>
+      `;
       grid.appendChild(card);
     }
   </script>
