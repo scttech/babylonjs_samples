@@ -36,7 +36,9 @@
       box-sizing: border-box;
     }
     .card {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
       background: #1f2024;
       border: 1px solid #2c2d33;
       border-radius: 10px;
@@ -63,7 +65,7 @@
       font-size: 0.9rem;
     }
     .card-footer {
-      margin-top: 14px;
+      margin-top: auto;
       padding-top: 12px;
       border-top: 1px solid #2c2d33;
     }
@@ -123,6 +125,12 @@
         path: "samples/bouncing_ball_hud/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_hud/README.md",
         description: "A TextBlock counts wall bounces, and a Button resets the ball to the center at rest.",
+      },
+      {
+        title: "Bouncing Ball Orthographic",
+        path: "samples/bouncing_ball_orthographic/index.html",
+        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_orthographic/README.md",
+        description: "The ball becomes a real lit mesh viewed through an orthographic camera, bridging from 2D GUI to a 3D world.",
       },
     ];
 
