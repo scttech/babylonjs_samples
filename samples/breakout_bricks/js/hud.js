@@ -1,8 +1,11 @@
-// On-screen score + bounce counter + reset button, following the same
-// ui-optional split as Ball/SparkSystem/BrickGrid: `BABYLON` is only touched
-// when a `ui` is supplied, so the counting logic can be tested directly and
-// the controls can be tested by stubbing `BABYLON.GUI`. See
-// ../tests/hud.tests.js.
+// On-screen score + reset button, following the same ui-optional split as
+// Ball/SparkSystem/BrickGrid: `BABYLON` is only touched when a `ui` is
+// supplied, so the counting logic can be tested directly and the controls
+// can be tested by stubbing `BABYLON.GUI`. See ../tests/hud.tests.js.
+//
+// The bounce counter earlier samples in this series had is gone -- now that
+// bricks give the player an actual score to chase, a running wall/paddle
+// bounce tally next to it was just noise.
 //
 // Unlike Ball/SparkSystem, the HUD lives in screen space pinned to the top
 // of the canvas (via horizontalAlignment/verticalAlignment), not the
@@ -10,22 +13,20 @@
 class Hud {
   constructor({ ui = null, onReset = () => {} } = {}) {
     this.score = 0;
-    this.bounces = 0;
     this.onReset = onReset;
 
     this.ui = null;
     this.panel = null;
     this.scoreLabel = null;
-    this.countLabel = null;
     this.resetButton = null;
     if (ui) {
       this.attachTo(ui);
     }
   }
 
-  // Creates the HUD's controls (a vertical stack holding the score label,
-  // count label, and reset button) and adds them to `ui`. Only needed if
-  // `ui` wasn't already passed to the constructor.
+  // Creates the HUD's controls (a vertical stack holding the score label and
+  // reset button) and adds them to `ui`. Only needed if `ui` wasn't already
+  // passed to the constructor.
   attachTo(ui) {
     this.ui = ui;
 
@@ -49,14 +50,6 @@ class Hud {
     this.scoreLabel.outlineColor = "#202020";
     this.panel.addControl(this.scoreLabel);
 
-    this.countLabel = new BABYLON.GUI.TextBlock();
-    this.countLabel.height = "24px";
-    this.countLabel.color = "white";
-    this.countLabel.fontSize = 16;
-    this.countLabel.outlineWidth = 4;
-    this.countLabel.outlineColor = "#202020";
-    this.panel.addControl(this.countLabel);
-
     this.resetButton = BABYLON.GUI.Button.CreateSimpleButton("resetButton", "Reset");
     this.resetButton.height = "36px";
     this.resetButton.color = "white";
@@ -66,7 +59,7 @@ class Hud {
     this.resetButton.onPointerUpObservable.add(() => this.onReset());
     this.panel.addControl(this.resetButton);
 
-    this._syncLabels();
+    this._syncLabel();
     return this;
   }
 
@@ -78,35 +71,23 @@ class Hud {
     this.ui = null;
     this.panel = null;
     this.scoreLabel = null;
-    this.countLabel = null;
     this.resetButton = null;
   }
 
   // Adds points to the score and refreshes the label.
   recordScore(points) {
     this.score += points;
-    this._syncLabels();
+    this._syncLabel();
   }
 
   resetScore() {
     this.score = 0;
-    this._syncLabels();
+    this._syncLabel();
   }
 
-  // Increments the bounce count and refreshes the label.
-  recordBounce() {
-    this.bounces += 1;
-    this._syncLabels();
-  }
-
-  resetBounceCount() {
-    this.bounces = 0;
-    this._syncLabels();
-  }
-
-  _syncLabels() {
-    if (this.scoreLabel) this.scoreLabel.text = `Score: ${this.score}`;
-    if (this.countLabel) this.countLabel.text = `Bounces: ${this.bounces}`;
+  _syncLabel() {
+    if (!this.scoreLabel) return;
+    this.scoreLabel.text = `Score: ${this.score}`;
   }
 }
 

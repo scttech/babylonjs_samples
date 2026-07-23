@@ -134,7 +134,6 @@ const createScene = () => {
       paddle.reset();
       const relaunch = randomLaunchVelocity();
       ball.reset(0, 0, relaunch.vx, relaunch.vy);
-      hud.resetBounceCount();
       hud.resetScore();
       brickGrid.reset();
     },
@@ -181,7 +180,6 @@ const createScene = () => {
     if (!bounce) return;
     sparkSystem.spawn(bounce.x, -bounce.y, bounce.normalX, -bounce.normalY);
     playBounceSound(bounce.speed * worldToScreenScale);
-    hud.recordBounce();
   };
 
   scene.onBeforeRenderObservable.add(() => {

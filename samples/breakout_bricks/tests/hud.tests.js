@@ -1,29 +1,8 @@
 QUnit.module("Hud counting", () => {
-  QUnit.test("starts at zero bounces and zero score", (assert) => {
+  QUnit.test("starts at zero score", (assert) => {
     const hud = new Hud();
 
-    assert.strictEqual(hud.bounces, 0);
     assert.strictEqual(hud.score, 0);
-  });
-
-  QUnit.test("recordBounce() increments the count", (assert) => {
-    const hud = new Hud();
-
-    hud.recordBounce();
-    hud.recordBounce();
-    hud.recordBounce();
-
-    assert.strictEqual(hud.bounces, 3);
-  });
-
-  QUnit.test("resetBounceCount() zeroes the count", (assert) => {
-    const hud = new Hud();
-    hud.recordBounce();
-    hud.recordBounce();
-
-    hud.resetBounceCount();
-
-    assert.strictEqual(hud.bounces, 0);
   });
 
   QUnit.test("recordScore() adds points to the score", (assert) => {
@@ -49,7 +28,6 @@ QUnit.module("Hud counting", () => {
 
     assert.strictEqual(hud.panel, null);
     assert.strictEqual(hud.scoreLabel, null);
-    assert.strictEqual(hud.countLabel, null);
     assert.strictEqual(hud.resetButton, null);
   });
 });
@@ -123,41 +101,17 @@ QUnit.module("Hud rendering", (hooks) => {
     delete globalScope.BABYLON;
   });
 
-  QUnit.test("constructor attaches a panel with labels and a button when ui is provided", (assert) => {
+  QUnit.test("constructor attaches a panel with a score label and a button when ui is provided", (assert) => {
     const ui = new FakeUi();
     const hud = new Hud({ ui });
 
     assert.ok(hud.panel instanceof FakeControl, "panel is created");
     assert.true(ui.controls.includes(hud.panel), "panel is added to the ui");
     assert.ok(hud.scoreLabel instanceof FakeTextBlock, "score label is created");
-    assert.ok(hud.countLabel instanceof FakeTextBlock, "count label is created");
     assert.ok(hud.resetButton instanceof FakeButton, "reset button is created");
     assert.true(hud.panel.children.includes(hud.scoreLabel), "score label is inside the panel");
-    assert.true(hud.panel.children.includes(hud.countLabel), "count label is inside the panel");
     assert.true(hud.panel.children.includes(hud.resetButton), "button is inside the panel");
     assert.strictEqual(hud.scoreLabel.text, "Score: 0", "score label starts synced to the score");
-    assert.strictEqual(hud.countLabel.text, "Bounces: 0", "count label starts synced to the count");
-  });
-
-  QUnit.test("recordBounce() updates the count label text", (assert) => {
-    const ui = new FakeUi();
-    const hud = new Hud({ ui });
-
-    hud.recordBounce();
-    hud.recordBounce();
-
-    assert.strictEqual(hud.countLabel.text, "Bounces: 2");
-  });
-
-  QUnit.test("resetBounceCount() updates the count label text", (assert) => {
-    const ui = new FakeUi();
-    const hud = new Hud({ ui });
-    hud.recordBounce();
-    hud.recordBounce();
-
-    hud.resetBounceCount();
-
-    assert.strictEqual(hud.countLabel.text, "Bounces: 0");
   });
 
   QUnit.test("recordScore() updates the score label text", (assert) => {
