@@ -1,5 +1,7 @@
 # Bouncing Ball HUD
 
+![Bouncing Ball HUD](../../img/bouncing_ball_hud/bouncing_ball_hud.png)
+
 Builds on [Bouncing Ball Slingshot](../bouncing_ball_slingshot/README.md): a `BABYLON.GUI.TextBlock` pinned to the top of the screen now tracks how many times the ball has bounced off a wall, and a `BABYLON.GUI.Button` below it resets everything back to the start — the ball snaps back to the center at zero velocity (canceling any in-progress drag and clearing the launch indicator) and the bounce count returns to zero.
 
 The new `Hud` class follows the same ui-optional, testable split as `Ball`/`SparkSystem`/`SlingshotIndicator`: `BABYLON` is only touched in `attachTo()`, so `recordBounce()`'s counting logic is tested directly, and the label/button wiring is tested by stubbing `BABYLON.GUI.StackPanel` / `TextBlock` / `Button.CreateSimpleButton`. `Ball` gains a matching `reset(x, y)` method (defaults to the origin), tested alongside its other physics. See [hud.tests.js](tests/hud.tests.js) and [ball.tests.js](tests/ball.tests.js).

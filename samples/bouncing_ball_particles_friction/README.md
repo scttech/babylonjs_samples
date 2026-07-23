@@ -1,5 +1,7 @@
 # Bouncing Ball Particles & Friction
 
+![Bouncing Ball Particles & Friction](../../img/bouncing_ball_particles_friction/bouncing_ball_particles_friction.png)
+
 Builds on [Bouncing Ball Orthographic](../bouncing_ball_orthographic/README.md): the ball now loses energy on every wall bounce instead of reflecting perfectly forever, and the bounce sparks are real `BABYLON.ParticleSystem` bursts instead of hand-animated `BABYLON.GUI` rectangles.
 
 **Restitution and rest.** `Ball` takes a `restitution` option (default `0.82`) and scales the reflected velocity by it on every wall hit (`this.vx = -this.vx * this.restitution`), so each bounce is a little weaker than the last. Once the post-bounce speed drops below `restThreshold` (default `0.05`), the ball snaps fully to `0` velocity instead of bouncing on forever at an imperceptible speed — a launch eventually settles at rest near the middle of the box. `ball.tests.js` pins `restitution: 1` in the existing reflection tests (so they keep testing pure reflection in isolation) and adds a dedicated `"Ball restitution / rest threshold"` module for the energy-loss/rest-snap behavior.

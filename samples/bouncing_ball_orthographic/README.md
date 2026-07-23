@@ -1,5 +1,7 @@
 # Bouncing Ball Orthographic
 
+![Bouncing Ball Orthographic](../../img/bouncing_ball_orthographic/bouncing_ball_orthographic.png)
+
 Builds on [Bouncing Ball HUD](../bouncing_ball_hud/README.md): the ball is now a real lit `BABYLON.MeshBuilder.CreateSphere` mesh with a `StandardMaterial`, instead of a flat `BABYLON.GUI.Ellipse`, viewed through an orthographic camera instead of the unused default `FreeCamera` earlier samples never actually pointed anywhere. An orthographic camera has no perspective distortion, so the ball still reads as flat "2D" gameplay — but it now has real shading from a `HemisphericLight`, which a flat GUI circle never could.
 
 The bridge this sample is really about: `Ball`'s physics (`update`, `beginDrag`, `dragTo`, `release`, `reset`) never cared what unit `x`/`y` were in, so swapping screen pixels for world units — and swapping the GUI-control sync for a mesh-position sync — required zero changes to that logic, only to `attachTo()`/`dispose()`/the sync step (renamed `_syncMesh()`). `SparkSystem` and `Hud` don't change at all: they're still `BABYLON.GUI` screen-space overlays, exactly as before, since mixing a 3D world with a 2D GUI overlay is the normal way Babylon apps work. The only new code in `main.js` is a small world-unit ↔ screen-pixel conversion so the GUI overlay (sparks, the slingshot indicator) lines up with what the orthographic camera is actually showing.
