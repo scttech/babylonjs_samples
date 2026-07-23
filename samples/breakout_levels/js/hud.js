@@ -174,6 +174,12 @@ class Hud {
     label.outlineWidth = 6;
     label.outlineColor = "#202020";
     label.isVisible = false;
+    // A TextBlock with no explicit width/height defaults to 100% of its
+    // parent -- here, the full screen. Without this, the moment a label
+    // becomes visible it silently intercepts every pointer event on top of
+    // it, including clicks on the Reset button, even though only its
+    // centered text is actually drawn.
+    label.isHitTestVisible = false;
     this.ui.addControl(label);
     return label;
   }

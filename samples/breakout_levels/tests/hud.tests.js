@@ -117,6 +117,7 @@ QUnit.module("Hud rendering", (hooks) => {
     children = [];
     disposed = false;
     isVisible = true;
+    isHitTestVisible = true;
 
     addControl(child) {
       this.children.push(child);
@@ -196,6 +197,13 @@ QUnit.module("Hud rendering", (hooks) => {
     assert.false(hud.panel.children.includes(hud.winLabel), "not inside the top-pinned panel");
     assert.false(hud.gameOverLabel.isVisible, "hidden until showGameOver() is called");
     assert.false(hud.winLabel.isVisible, "hidden until showWin() is called");
+    assert.false(
+      hud.gameOverLabel.isHitTestVisible,
+      "never intercepts pointer events -- a TextBlock with no explicit width/height defaults to " +
+        "100% of the screen, which would otherwise swallow clicks on the Reset button underneath " +
+        "it the moment it becomes visible"
+    );
+    assert.false(hud.winLabel.isHitTestVisible, "same reasoning as gameOverLabel");
   });
 
   QUnit.test("recordScore() updates the score label text", (assert) => {

@@ -79,6 +79,12 @@ class Hud {
     this.gameOverLabel.outlineWidth = 6;
     this.gameOverLabel.outlineColor = "#202020";
     this.gameOverLabel.isVisible = false;
+    // A TextBlock with no explicit width/height defaults to 100% of its
+    // parent -- here, the full screen. Without this, the moment the label
+    // becomes visible it silently intercepts every pointer event on top of
+    // it, including clicks on the Reset button, even though only its
+    // centered text is actually drawn.
+    this.gameOverLabel.isHitTestVisible = false;
     this.ui.addControl(this.gameOverLabel);
 
     this._syncLabels();
