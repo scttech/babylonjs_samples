@@ -24,3 +24,4 @@ Same incremental approach, now building an actual game on top of the bouncing-ba
 1. [Breakout Paddle](samples/breakout_paddle/README.md) — a player-controlled paddle deflects the ball, steering it based on where it lands.
 2. [Breakout Bricks](samples/breakout_bricks/README.md) — a destructible grid of bricks and a score turn the toy into an actual game.
 3. [Breakout Lives](samples/breakout_lives/README.md) — missing the ball costs a life; running out freezes the game with a Game Over overlay until Reset.
+4. [Breakout Levels](samples/breakout_levels/README.md) — three brick layouts with tougher multi-hit bricks, cleared one after another for an actual win condition.
