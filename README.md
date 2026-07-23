@@ -22,3 +22,4 @@ Each sample builds on the one before it, so they're best read in order:
 Same incremental approach, now building an actual game on top of the bouncing-ball toy above. Also best read in order:
 
 1. [Breakout Paddle](samples/breakout_paddle/README.md) — a player-controlled paddle deflects the ball, steering it based on where it lands.
+2. [Breakout Bricks](samples/breakout_bricks/README.md) — a destructible grid of bricks and a score turn the toy into an actual game.
