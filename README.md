@@ -16,3 +16,9 @@ Each sample builds on the one before it, so they're best read in order:
 6. [Bouncing Ball HUD](samples/bouncing_ball_hud/README.md) — a HUD tracks the bounce count, with a button to reset the scene.
 7. [Bouncing Ball Orthographic](samples/bouncing_ball_orthographic/README.md) — the ball becomes a real lit 3D mesh, viewed through an orthographic camera.
 8. [Bouncing Ball Particles & Friction](samples/bouncing_ball_particles_friction/README.md) — the ball loses energy on each bounce, and the sparks become real particle system bursts.
+
+## Breakout
+
+Same incremental approach, now building an actual game on top of the bouncing-ball toy above. Also best read in order:
+
+1. [Breakout Paddle](samples/breakout_paddle/README.md) — a player-controlled paddle deflects the ball, steering it based on where it lands.
