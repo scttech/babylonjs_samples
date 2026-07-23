@@ -26,13 +26,28 @@
       margin: 0;
       color: #a0a0a8;
     }
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px 24px;
+      box-sizing: border-box;
+    }
+    .group {
+      margin-top: 32px;
+    }
+    .group h2 {
+      margin: 0 0 4px;
+      font-size: 1.4rem;
+    }
+    .group .group-description {
+      margin: 0 0 16px;
+      color: #a0a0a8;
+      font-size: 0.9rem;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 20px;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 24px;
       box-sizing: border-box;
     }
     .card {
@@ -55,7 +70,7 @@
       text-decoration: none;
       color: inherit;
     }
-    .card h2 {
+    .card h3 {
       margin: 0 0 8px;
       font-size: 1.15rem;
     }
@@ -85,105 +100,141 @@
     <h1>Babylon.js Samples</h1>
     <p>A collection of small Babylon.js demos. Click one to view it live.</p>
   </header>
-  <main class="grid" id="grid"></main>
+  <main id="main"></main>
 
   <script>
+    // Add a group here whenever a new category of samples is started.
+    const groups = [
+      {
+        title: "Introduction",
+        description: "Fundamentals of Babylon.js, built up one feature at a time around a bouncing ball.",
+      },
+      {
+        title: "Breakout",
+        description: "The bouncing-ball toy evolves into a full Breakout game.",
+      },
+    ];
+
     // Add an entry here whenever a new sample is added under /samples/<slug>/
     const samples = [
       {
         title: "Bouncing Circle",
+        group: "Introduction",
         path: "samples/bouncing_circle/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_circle/README.md",
         description: "A circle bounces around the screen.",
       },
       {
         title: "Bouncing Ball with Sparks",
+        group: "Introduction",
         path: "samples/bouncing_ball_sparks/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_sparks/README.md",
         description: "A ball bounces around the screen, throwing off sparks on every wall hit.",
       },
       {
         title: "Bouncing Ball with Sparks and Sound",
+        group: "Introduction",
         path: "samples/bouncing_ball_sparks_sound/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_sparks_sound/README.md",
         description: "A ball bounces around the screen, throwing off sparks and a synthesized thump on every wall hit.",
       },
       {
         title: "Bouncing Ball with Unit Tests",
+        group: "Introduction",
         path: "samples/bouncing_ball_tests/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_tests/README.md",
         description: "Refactor code (for Ball and Sparks) into its own classes and verify with QUnit tests.",
       },
       {
         title: "Bouncing Ball Slingshot",
+        group: "Introduction",
         path: "samples/bouncing_ball_slingshot/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_slingshot/README.md",
         description: "Drag the ball back and release to launch it, with a growing color-coded indicator previewing the shot.",
       },
       {
         title: "Bouncing Ball HUD",
+        group: "Introduction",
         path: "samples/bouncing_ball_hud/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_hud/README.md",
         description: "A TextBlock counts wall bounces, and a Button resets the ball to the center at rest.",
       },
       {
         title: "Bouncing Ball Orthographic",
+        group: "Introduction",
         path: "samples/bouncing_ball_orthographic/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_orthographic/README.md",
         description: "The ball becomes a real lit mesh viewed through an orthographic camera, bridging from 2D GUI to a 3D world.",
       },
       {
         title: "Bouncing Ball Particles & Friction",
+        group: "Introduction",
         path: "samples/bouncing_ball_particles_friction/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_particles_friction/README.md",
         description: "Sparks are real BABYLON.ParticleSystem bursts now, and the ball loses energy on every bounce until it settles at rest.",
       },
       {
         title: "Breakout Paddle",
+        group: "Breakout",
         path: "samples/breakout_paddle/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_paddle/README.md",
         description: "The bouncing-ball toy becomes a game: a player-controlled paddle deflects the ball, steering it based on where it lands.",
       },
       {
         title: "Breakout Bricks",
+        group: "Breakout",
         path: "samples/breakout_bricks/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_bricks/README.md",
         description: "A destructible grid of bricks and a score turn the toy into an actual game.",
       },
       {
         title: "Breakout Lives",
+        group: "Breakout",
         path: "samples/breakout_lives/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_lives/README.md",
         description: "Missing the ball costs a life; running out freezes the game with a Game Over overlay until Reset.",
       },
       {
         title: "Breakout Levels",
+        group: "Breakout",
         path: "samples/breakout_levels/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_levels/README.md",
         description: "Three brick layouts with tougher multi-hit bricks, cleared one after another for an actual win condition.",
       },
       {
         title: "Breakout Polish",
+        group: "Breakout",
         path: "samples/breakout_polish/index.html",
         readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_polish/README.md",
         description: "A start screen, pause, and wide-paddle/extra-life/multi-ball power-ups. The final sample in the series.",
       },
     ];
 
-    const grid = document.getElementById("grid");
-    for (const sample of samples) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <a class="card-link" href="${sample.path}">
-          <h2>${sample.title}</h2>
-          <p>${sample.description}</p>
-        </a>
-        <div class="card-footer">
-          <a class="readme-link" href="${sample.readme}">README</a>
-        </div>
+    const main = document.getElementById("main");
+    for (const group of groups) {
+      const section = document.createElement("section");
+      section.className = "group";
+      section.innerHTML = `
+        <h2>${group.title}</h2>
+        <p class="group-description">${group.description}</p>
+        <div class="grid"></div>
       `;
-      grid.appendChild(card);
+      const grid = section.querySelector(".grid");
+      for (const sample of samples.filter((s) => s.group === group.title)) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <a class="card-link" href="${sample.path}">
+            <h3>${sample.title}</h3>
+            <p>${sample.description}</p>
+          </a>
+          <div class="card-footer">
+            <a class="readme-link" href="${sample.readme}">README</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      }
+      main.appendChild(section);
     }
   </script>
 </body>
