@@ -25,4 +25,5 @@ Same incremental approach, now building an actual game on top of the bouncing-ba
 2. [Breakout Bricks](samples/breakout_bricks/README.md) — a destructible grid of bricks and a score turn the toy into an actual game.
 3. [Breakout Lives](samples/breakout_lives/README.md) — missing the ball costs a life; running out freezes the game with a Game Over overlay until Reset.
 4. [Breakout Levels](samples/breakout_levels/README.md) — three brick layouts with tougher multi-hit bricks, cleared one after another for an actual win condition.
-5. [Breakout Polish](samples/breakout_polish/README.md) — a proper start screen and pause, plus wide-paddle, extra-life, and multi-ball power-ups. The final sample in the series.
+5. [Breakout Polish](samples/breakout_polish/README.md) — a proper start screen and pause, plus wide-paddle, extra-life, and multi-ball power-ups.
+6. [Breakout Next Steps](samples/breakout_next_steps/README.md) — bricks become deeper, beveled 3D blocks with lit highlight/shadow banding, and the ball now bounces off a fixed-size walled box instead of the browser window's edges.

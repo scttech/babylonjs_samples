@@ -2,7 +2,7 @@
 
 ![Breakout Polish](../../img/breakout_polish/breakout_polish.png)
 
-Step 5 — the final sample in the Breakout series. Builds on [Breakout Levels](../breakout_levels/README.md), reusing its ball/paddle/brick/level physics, particle sparks, procedural bounce sound, and score/lives/win tracking wholesale. What's new is everything that turns it from "a working game" into something that feels like a real one: a proper start screen, a pause you can resume from, and three catchable power-ups.
+Step 5 in the Breakout series. Builds on [Breakout Levels](../breakout_levels/README.md), reusing its ball/paddle/brick/level physics, particle sparks, procedural bounce sound, and score/lives/win tracking wholesale. What's new is everything that turns it from "a working game" into something that feels like a real one: a proper start screen, a pause you can resume from, and three catchable power-ups.
 
 **The game no longer auto-launches.** Every earlier sample spawned a moving ball the instant the scene loaded. Here, `main.js` tracks a `started` flag and doesn't create any ball until the player's first click or tap (`beginGame()`, wired to `POINTERDOWN`); until then, `Hud`'s new `startLabel` ("Click or tap to start") is the only overlay visible, shown by default instead of hidden like the others.
 
