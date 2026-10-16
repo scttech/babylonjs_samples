@@ -6,6 +6,76 @@ Builds on [Bouncing Ball with Sparks and Sound](../bouncing_ball_sparks_sound/RE
 
 Both classes stay testable without a real Babylon engine: `BABYLON` is only touched when a GUI texture (`ui`) is actually supplied, so the physics can be tested directly and the rendering can be tested by stubbing `BABYLON.GUI.Ellipse` / `BABYLON.GUI.Rectangle`. `SparkSystem` additionally takes an injectable `random` function (defaults to `Math.random`) so its randomized spawn behavior — particle count, spread, speed, lifetime, color — can be pinned down exactly in tests instead of only checking loose ranges. Verified here with QUnit: [ball.tests.js](tests/ball.tests.js), [sparks.tests.js](tests/sparks.tests.js).
 
+## Key code
+
+**A class that owns its GUI control, but only if you give it one.** `BABYLON` is only touched inside `attachTo()`, which runs only when a `ui` is passed. Without one, `Ball` is pure math.
+
+```js
+constructor({ ui = null, x = 0, y = 0, vx = 0, vy = 0, radius = 40, color = "white" } = {}) {
+  // ...state...
+  this.ui = null;
+  this.control = null;
+  if (ui) {
+    this.attachTo(ui, color);
+  }
+}
+
+attachTo(ui, color = "white") {
+  this.ui = ui;
+  this.control = new BABYLON.GUI.Ellipse();
+  this.control.width = this.radius * 2 + "px";
+  this.control.height = this.radius * 2 + "px";
+  this.control.thickness = 0;
+  this.control.background = color;
+  this.ui.addControl(this.control);
+  this._syncControl();
+  return this;
+}
+```
+
+**Bounces are returned as events instead of handled inline.** `update()` reports what happened and leaves the reaction to the caller. The ball no longer knows about sparks or sound, which is what lets `main.js` shrink to wiring.
+
+```js
+const bounces = ball.update(dt, bounds);
+for (const bounce of bounces) {
+  sparkSystem.spawn(bounce.x, bounce.y, bounce.normalX, bounce.normalY);
+  playBounceSound(bounce.speed);
+}
+sparkSystem.update(dt);
+```
+
+**Injectable randomness.** `SparkSystem` takes a `random` function (defaulting to `Math.random`), and every random choice goes through it. A test can then supply a scripted sequence and assert exact results.
+
+```js
+// sparks.js
+const count = 14 + Math.floor(this._random() * 8);
+
+// sparks.tests.js -- replays a fixed sequence, cycling once exhausted
+function fakeRandom(sequence) {
+  let i = 0;
+  return () => sequence[i++ % sequence.length];
+}
+
+const low = new SparkSystem({ random: fakeRandom([0]) });
+low.spawn(0, 0, 0, -1);
+assert.strictEqual(low.sparks.length, 14, "14 + floor(0 * 8)");
+```
+
+**Testing rendering without an engine.** The rendering tests stub just the `BABYLON.GUI` pieces the class touches, then check what the class did to them.
+
+```js
+class FakeEllipse {
+  width = null;
+  background = null;
+  disposed = false;
+  dispose() { this.disposed = true; }
+}
+
+hooks.beforeEach(() => {
+  globalScope.BABYLON = { GUI: { Ellipse: FakeEllipse } };
+});
+```
+
 ## Babylon.js features demonstrated
 
 - Everything from Bouncing Ball with Sparks and Sound

@@ -12,6 +12,101 @@ Step 4 of the Breakout series. Builds on [Breakout Lives](../breakout_lives/READ
 
 **`Hud` gained a level label and a second overlay.** `Level: N` sits alongside `Score`/`Lives` in the top panel; `showWin()`/`hideWin()` and a `winLabel` mirror `showGameOver()`/`hideGameOver()`/`gameOverLabel` exactly, factored through a shared `_createOverlayLabel()` helper so both overlays (added straight to `ui`, not the top-pinned panel, so they keep `BABYLON.GUI`'s default center/center alignment) stay in sync.
 
+## Key code
+
+**Levels as text.** A level is an array of strings: `.` is an empty cell and a digit is a brick that survives that many hits. `parseLevel()` turns it into the number grid `BrickGrid` expects, so adding a level is just adding strings.
+
+```js
+const LEVELS = [
+  ["11111111", "11111111", "11111111", "11111111", "11111111"],
+  ["22222222", "11111111", "22222222", "11111111", "22222222"],
+  ["..1111..", ".122221.", "12333321", ".122221.", "..1111.."], // a diamond
+];
+
+const parseLevel = (rows) => rows.map((row) => row.split("").map((ch) => (ch === "." ? 0 : Number(ch))));
+```
+
+**Laying out any shape.** `_build()` skips cells whose durability is 0, so a pattern doesn't have to be a rectangle. The grid is centered using its widest row.
+
+```js
+const cols = this.pattern.reduce((max, row) => Math.max(max, row.length), 0);
+// ...
+for (let row = 0; row < this.pattern.length; row++) {
+  for (let col = 0; col < this.pattern[row].length; col++) {
+    const durability = this.pattern[row][col];
+    if (durability <= 0) continue; // no brick here
+    // ...create a brick with hits: durability
+  }
+}
+```
+
+**Multi-hit bricks.** A hit decrements the brick's `hits`. At zero it's destroyed; otherwise its material is recolored in place. Color is looked up by *remaining* hits, so a damaged tough brick looks the same as a fresh weak one with the same hits left.
+
+```js
+const DEFAULT_COLORS_BY_HITS = {
+  1: "#2ecc71", // green: one more hit destroys it
+  2: "#f1c40f", // yellow
+  3: "#e67e22", // orange
+  4: "#e74c3c", // red
+};
+
+brick.hits -= 1;
+if (brick.hits <= 0) {
+  brick.alive = false;
+  this._disposeBrickMesh(brick);
+} else if (brick.mesh) {
+  brick.mesh.material.diffuseColor = BABYLON.Color3.FromHexString(this._colorFor(brick.hits));
+}
+```
+
+**Advancing levels and winning.** After every brick hit, `main.js` checks for a cleared board. Past the last level it sets a `won` flag instead, which freezes the game exactly like `gameOver` does. `load()` replaces the old `reset()`: it disposes the current bricks and builds the next pattern.
+
+```js
+const advanceLevel = () => {
+  levelIndex += 1;
+  if (levelIndex >= LEVELS.length) {
+    won = true;
+    hud.showWin();
+    return;
+  }
+  brickGrid.load(parseLevel(LEVELS[levelIndex]));
+  hud.setLevel(levelIndex + 1);
+  paddle.reset();
+  const relaunch = randomLaunchVelocity();
+  ball.reset(0, 0, relaunch.vx, relaunch.vy);
+};
+
+const brickHit = brickGrid.checkCollision(ball);
+if (brickHit) {
+  handleBounce(brickHit.event);
+  hud.recordScore(brickHit.points);
+  if (brickGrid.isCleared()) {
+    advanceLevel();
+    if (won) return; // frozen now
+  }
+}
+```
+
+**Two overlays from one helper.** "Game Over" and "You Win!" share the same construction, including the `isHitTestVisible = false` trick from Breakout Lives that keeps a full-screen label from blocking the Reset button.
+
+```js
+this.gameOverLabel = this._createOverlayLabel("Game Over", "white");
+this.winLabel = this._createOverlayLabel("You Win!", "#ffd54f");
+
+_createOverlayLabel(text, color) {
+  const label = new BABYLON.GUI.TextBlock();
+  label.text = text;
+  label.color = color;
+  label.fontSize = 48;
+  label.outlineWidth = 6;
+  label.outlineColor = "#202020";
+  label.isVisible = false;
+  label.isHitTestVisible = false;
+  this.ui.addControl(label);
+  return label;
+}
+```
+
 ## Babylon.js features demonstrated
 
 - Everything from Breakout Lives (orthographic camera, lit meshes, particle bursts, synthesized bounce sound, mouse + keyboard paddle control, scoring, lives, open-bottom miss detection)

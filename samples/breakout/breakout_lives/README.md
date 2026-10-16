@@ -12,6 +12,81 @@ Step 3 of the Breakout series. Builds on [Breakout Bricks](../breakout_bricks/RE
 
 **Reset is now a full restart.** Alongside the ball/paddle/score/brick reset carried over from Breakout Bricks, the Reset button now also calls `hud.resetLives()` (which clears the Game Over overlay) and clears the local `gameOver` flag, so Reset is the only way back into a frozen game.
 
+## Key code
+
+**An open bottom edge.** The bottom bounce is skipped when `openBottom` is set, so the ball falls straight through. The caller then checks whether it has fully cleared the edge, *after* the paddle and brick checks have had their chance, so a last-moment catch still counts.
+
+```js
+update(dt, bounds) {
+  const { halfWidth, halfHeight, openBottom = false } = bounds;
+  // ...
+  if (this.y + this.radius > halfHeight && !openBottom) {
+    this.y = halfHeight - this.radius;
+    this.vy = -this.vy * this.restitution;
+    events.push(this._bounceEvent(this.x, this.y + this.radius, 0, -1));
+  }
+  // ...
+}
+```
+
+```js
+const bounces = ball.update(dt, { halfWidth, halfHeight, openBottom: true });
+// ...brick and paddle collisions...
+
+if (ball.y - ball.radius > halfHeight) {
+  loseLife();
+}
+```
+
+**Losing a life, or the game.** Lives remaining means a fresh ball and a re-centered paddle, with score and bricks untouched. Zero lives sets a flag that the render loop checks.
+
+```js
+let gameOver = false;
+
+const loseLife = () => {
+  const remaining = hud.loseLife();
+  if (remaining > 0) {
+    paddle.reset();
+    const relaunch = randomLaunchVelocity();
+    ball.reset(0, 0, relaunch.vx, relaunch.vy);
+  } else {
+    gameOver = true;
+  }
+};
+```
+
+**Freezing the game, but not the sparks.** Everything past the early return is gameplay. `sparkSystem.update()` runs before it, so any burst still in flight finishes fading instead of stopping mid-animation.
+
+```js
+scene.onBeforeRenderObservable.add(() => {
+  const dt = engine.getDeltaTime() / 1000;
+  sparkSystem.update(dt);
+  if (gameOver) return;
+  // ...paddle input, ball physics, collisions...
+});
+```
+
+**A centered overlay.** Added to `ui` directly rather than to the top-pinned panel, so it keeps the GUI's default center alignment. `isHitTestVisible = false` is the subtle part: a `TextBlock` with no explicit size fills its whole parent, so without it the invisible full-screen label would swallow clicks meant for the Reset button as soon as it appears.
+
+```js
+this.gameOverLabel = new BABYLON.GUI.TextBlock();
+this.gameOverLabel.text = "Game Over";
+this.gameOverLabel.color = "white";
+this.gameOverLabel.fontSize = 48;
+this.gameOverLabel.outlineWidth = 6;
+this.gameOverLabel.outlineColor = "#202020";
+this.gameOverLabel.isVisible = false;
+this.gameOverLabel.isHitTestVisible = false;
+this.ui.addControl(this.gameOverLabel);
+
+loseLife() {
+  this.lives = Math.max(0, this.lives - 1);
+  this._syncLabels();
+  if (this.lives === 0) this.showGameOver();
+  return this.lives;
+}
+```
+
 ## Babylon.js features demonstrated
 
 - Everything from Breakout Bricks (orthographic camera, lit meshes, particle bursts, synthesized bounce sound, mouse + keyboard paddle control, scoring)

@@ -10,6 +10,91 @@ Nothing about brick *layout* or *collision* changed -- `halfWidth`/`halfHeight` 
 
 **A fixed box replaces the browser window as the play field.** Every earlier sample -- Breakout Polish included -- sized the ball/paddle bounds directly off the camera's viewport, which is derived from the browser window's aspect ratio (`updateViewport()`'s `halfWidth = halfHeight * aspect`). On a wide monitor that meant a lot of empty canvas on either side of the fixed-width brick grid, with the ball and paddle free to roam all the way out into it. `main.js` now defines `PLAY_HALF_WIDTH`, a horizontal half-extent computed straight from the brick grid's own layout math (`BRICK_COLUMNS`/`BRICK_HALF_WIDTH`/`BRICK_GAP`) plus a fixed margin, and three static wall meshes (left, right, top -- no bottom, matching the ball's existing `openBottom` bounce bound) are built right at its edges so the boundary is actually visible. `Ball.update()`, `Paddle.moveTo()`, and the pointer/keyboard paddle-control code all read this fixed box instead of the camera's width now. `updateViewport()` also switched from always pinning the camera's height to the box's own aspect ratio, `PLAY_HALF_WIDTH / WORLD_HALF_HEIGHT`) instead: on a wide-enough window the extra width still just shows as background outside the walls (the common case, and the whole point), but on a window narrower than the box, the camera instead pins to the box's *width* and shows extra background above/below -- so the walls are never clipped off-screen, whichever way the window is stretched.
 
+## Key code
+
+**Why depth alone doesn't help.** An orthographic camera aimed straight down Z sees only a box's front face, so a deep brick looks exactly like a flat one. The sample gives `BrickGrid` a `depth` option as groundwork, then adds the visible part: two thin plates parented to the brick.
+
+```js
+const halfDepth = this.depth / 2;
+const bandZ = -halfDepth - 0.02; // just in front of the camera-facing side
+const bandWidth = brick.halfWidth * 1.8; // narrower than the brick, leaving a frame of base color
+```
+
+**A highlight plate.** A thin white box with `alpha` 0.22, sitting high on the face. Setting `parent` makes it follow the brick's mesh, and `position` is then relative to the brick, so no per-frame syncing is needed. `specularColor` of black stops the plate from adding its own shine.
+
+```js
+const highlight = BABYLON.MeshBuilder.CreateBox(
+  "brickHighlight",
+  { width: bandWidth, height: brick.halfHeight * 0.9, depth: 0.02 },
+  this.scene
+);
+const highlightMaterial = new BABYLON.StandardMaterial("brickHighlightMaterial", this.scene);
+highlightMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
+highlightMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+highlightMaterial.alpha = 0.22;
+highlight.material = highlightMaterial;
+highlight.parent = brick.mesh;
+highlight.position.y = brick.halfHeight * 0.45; // high on the face
+highlight.position.z = bandZ;
+```
+
+**A shadow plate.** The same construction in black, lower on the face. Together they read as a raised, beveled block.
+
+```js
+shadowMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+shadowMaterial.alpha = 0.25;
+shadow.parent = brick.mesh;
+shadow.position.y = -brick.halfHeight * 0.65; // low on the face
+shadow.position.z = bandZ;
+```
+
+**Cleanup for free.** `dispose()` recurses into child meshes by default, so disposing the brick takes both plates with it. The brick's recolor-on-hit logic still only touches `brick.mesh.material`, so the bands are unaffected.
+
+```js
+brick.mesh.dispose(false, true); // also disposes the highlight and shadow children
+```
+
+**Visible walls.** Three static box meshes sit just outside the play box's edges, with no bottom wall since the ball falls out there. Each is extended by one wall thickness so adjoining corners meet flush.
+
+```js
+const buildWall = (width, height) => {
+  const wall = BABYLON.MeshBuilder.CreateBox("wall", { width, height, depth: WALL_DEPTH }, scene);
+  const material = new BABYLON.StandardMaterial("wallMaterial", scene);
+  material.diffuseColor = BABYLON.Color3.FromHexString(WALL_COLOR);
+  wall.material = material;
+  return wall;
+};
+
+const leftWall = buildWall(WALL_THICKNESS, WORLD_HALF_HEIGHT * 2 + WALL_THICKNESS);
+leftWall.position.x = -PLAY_HALF_WIDTH - WALL_THICKNESS / 2;
+const rightWall = buildWall(WALL_THICKNESS, WORLD_HALF_HEIGHT * 2 + WALL_THICKNESS);
+rightWall.position.x = PLAY_HALF_WIDTH + WALL_THICKNESS / 2;
+const topWall = buildWall(PLAY_HALF_WIDTH * 2 + WALL_THICKNESS, WALL_THICKNESS);
+topWall.position.y = WORLD_HALF_HEIGHT + WALL_THICKNESS / 2;
+```
+
+**A fixed play field, a flexible camera.** The ball and paddle bounce off a box whose width comes from the brick grid's layout, not the window. The camera is fitted around it ("contain"): on a wide window the extra width shows as background, and on a narrow one the camera pins to the box's width so the walls are never clipped.
+
+```js
+const bounces = ball.update(dt, { halfWidth: PLAY_HALF_WIDTH, halfHeight: WORLD_HALF_HEIGHT, openBottom: true });
+
+const updateViewport = () => {
+  const aspect = engine.getRenderWidth() / engine.getRenderHeight();
+  if (aspect >= frameAspect) {
+    halfHeight = FRAME_HALF_HEIGHT;     // wide window: pin height
+    halfWidth = halfHeight * aspect;
+  } else {
+    halfWidth = FRAME_HALF_WIDTH;       // narrow window: pin width
+    halfHeight = halfWidth / aspect;
+  }
+  camera.orthoLeft = -halfWidth;
+  camera.orthoRight = halfWidth;
+  camera.orthoTop = halfHeight;
+  camera.orthoBottom = -halfHeight;
+  worldToScreenScale = engine.getRenderWidth() / (2 * halfWidth);
+};
+```
+
 ## Babylon.js features demonstrated
 
 - Everything from Breakout Polish (orthographic camera, lit meshes, particle bursts, synthesized bounce sound, mouse + keyboard paddle control, scoring, lives, levels, win state, start/pause, power-ups)

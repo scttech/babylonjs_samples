@@ -12,6 +12,107 @@ The first step in a new series: building Asteroids. Unlike the Breakout series, 
 
 **Vector-style art.** The hull and exhaust flame are `BABYLON.MeshBuilder.CreateLines` meshes — an unlit outline, true to the original arcade look. The flame is parented to the hull, so it inherits position and rotation for free, and is simply shown or hidden each frame depending on whether the ship thrust.
 
+## Key code
+
+**Heading to velocity.** With angle 0 pointing up and positive turning counter-clockwise, the forward vector is `(-sin(angle), cos(angle))`. Thrust adds that, scaled by acceleration and `dt`, to the *velocity*. The ship's position only ever changes through velocity, which is what gives it inertia.
+
+```js
+rotate(direction, dt) {
+  this.angle += direction * this.turnSpeed * dt;
+}
+
+thrust(dt) {
+  this.thrusting = true;
+  this.vx += -Math.sin(this.angle) * this.thrustAccel * dt;
+  this.vy += Math.cos(this.angle) * this.thrustAccel * dt;
+  this._clampSpeed();
+}
+```
+
+**Integrating, with optional drag.**
+
+```js
+if (this.drag > 0) {
+  const keep = Math.max(0, 1 - this.drag * dt);
+  this.vx *= keep;
+  this.vy *= keep;
+}
+this.x += this.vx * dt;
+this.y += this.vy * dt;
+```
+
+**Screen wrap.** The ship teleports only once it is fully past an edge (by its radius), so it slides out of view before reappearing on the opposite side.
+
+```js
+const limitX = halfWidth + this.radius;
+if (this.x > limitX) {
+  this.x = -limitX;
+  wrappedX = true;
+} else if (this.x < -limitX) {
+  this.x = limitX;
+  wrappedX = true;
+}
+// ...same for y with halfHeight...
+```
+
+**A line-art ship with a parented flame.** `CreateLines` draws an unlit polyline, which gives the vector-arcade look. Repeating the first point closes the shape. The flame is a second line mesh whose `parent` is the hull, so it inherits the hull's position and rotation without any extra code.
+
+```js
+this.mesh = BABYLON.MeshBuilder.CreateLines(
+  "ship",
+  {
+    points: [
+      new BABYLON.Vector3(0, r, 0), // nose
+      new BABYLON.Vector3(-0.7 * r, -0.8 * r, 0),
+      new BABYLON.Vector3(0, -0.4 * r, 0), // rear notch
+      new BABYLON.Vector3(0.7 * r, -0.8 * r, 0),
+      new BABYLON.Vector3(0, r, 0), // back to the nose
+    ],
+  },
+  scene
+);
+this.mesh.color = BABYLON.Color3.FromHexString(color);
+
+this.flame = BABYLON.MeshBuilder.CreateLines("shipFlame", { points: [/* ... */] }, scene);
+this.flame.color = BABYLON.Color3.FromHexString("#ffb347");
+this.flame.parent = this.mesh;
+this.flame.isVisible = false;
+```
+
+**Syncing the mesh.** No y flip here. Rotating about Z turns the mesh, and the flame is shown only on frames where `thrust()` was called, since `update()` clears the flag.
+
+```js
+_syncMesh() {
+  if (!this.mesh) return;
+  this.mesh.position.x = this.x;
+  this.mesh.position.y = this.y;
+  this.mesh.rotation.z = this.angle;
+  this.flame.isVisible = this.thrusting;
+}
+```
+
+**Held-key input, once per frame.** Keys go in a `Set` and are applied in the render loop with a clamped `dt`, so behavior is the same at any frame rate and a long pause can't launch the ship. Clearing on `blur` prevents stuck keys after alt-tabbing.
+
+```js
+window.addEventListener("keydown", (event) => {
+  if (!isControlKey(event.code)) return;
+  event.preventDefault(); // arrow keys otherwise scroll the page
+  heldKeys.add(event.code);
+});
+window.addEventListener("keyup", (event) => heldKeys.delete(event.code));
+window.addEventListener("blur", () => heldKeys.clear());
+
+scene.onBeforeRenderObservable.add(() => {
+  const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
+
+  const turn = (anyHeld(LEFT_KEYS) ? 1 : 0) - (anyHeld(RIGHT_KEYS) ? 1 : 0);
+  if (turn !== 0) ship.rotate(turn, dt);
+  if (anyHeld(THRUST_KEYS)) ship.thrust(dt);
+
+  ship.update(dt, { halfWidth, halfHeight });
+});
+```
+
 ## Babylon.js features demonstrated
 
 - `BABYLON.MeshBuilder.CreateLines` for unlit, wireframe-style line art, with a parented child mesh that inherits its parent's transform
