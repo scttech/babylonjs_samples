@@ -1,6 +1,6 @@
 # Bouncing Ball with Sparks and Sound
 
-![Bouncing Ball with Sparks and Sound](../../img/bouncing_ball_sparks_sound/bouncing_ball_sparks_sound.png)
+![Bouncing Ball with Sparks and Sound](../../../img/bouncing_ball_sparks_sound/bouncing_ball_sparks_sound.png)
 
 Builds on [Bouncing Ball with Sparks](../bouncing_ball_sparks/README.md): every wall hit now also plays a procedurally synthesized "thump" sound.
 

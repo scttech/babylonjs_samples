@@ -1,6 +1,6 @@
 # Bouncing Ball HUD
 
-![Bouncing Ball HUD](../../img/bouncing_ball_hud/bouncing_ball_hud.png)
+![Bouncing Ball HUD](../../../img/bouncing_ball_hud/bouncing_ball_hud.png)
 
 Builds on [Bouncing Ball Slingshot](../bouncing_ball_slingshot/README.md): a `BABYLON.GUI.TextBlock` pinned to the top of the screen now tracks how many times the ball has bounced off a wall, and a `BABYLON.GUI.Button` below it resets everything back to the start — the ball snaps back to the center at zero velocity (canceling any in-progress drag and clearing the launch indicator) and the bounce count returns to zero.
 

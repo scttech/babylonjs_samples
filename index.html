@@ -1,19 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Babylon.js Samples</title>
   <style>
     :root {
       color-scheme: dark;
+      --bg: #16171a;
+      --card: #1f2024;
+      --border: #2c2d33;
+      --text: #f2f2f2;
+      --muted: #a0a0a8;
+      --accent: #4a90e2;
     }
     html, body {
       margin: 0;
       padding: 0;
-      background: #16171a;
-      color: #f2f2f2;
+      background: var(--bg);
+      color: var(--text);
       font: 16px/1.5 system-ui, sans-serif;
     }
+    a { color: inherit; }
     header {
       padding: 48px 24px 24px;
       text-align: center;
@@ -24,225 +32,329 @@
     }
     header p {
       margin: 0;
-      color: #a0a0a8;
+      color: var(--muted);
     }
     main {
       max-width: 1000px;
       margin: 0 auto;
-      padding: 0 24px 24px;
+      padding: 0 24px 48px;
       box-sizing: border-box;
     }
-    .group {
-      margin-top: 32px;
+
+    /* --- Roadmap (home view) --- */
+    .roadmap {
+      position: relative;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
     }
-    .group h2 {
+    /* The vertical line connecting the stops. */
+    .roadmap::before {
+      content: "";
+      position: absolute;
+      left: 19px;
+      top: 20px;
+      bottom: 20px;
+      width: 2px;
+      background: var(--border);
+    }
+    .stop {
+      position: relative;
+      padding-left: 56px;
+      margin-bottom: 24px;
+    }
+    .stop-marker {
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 40px;
+      height: 40px;
+      box-sizing: border-box;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .stop.soon .stop-marker {
+      border-color: var(--border);
+      color: var(--muted);
+    }
+    .series-card {
+      display: block;
+      box-sizing: border-box;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      text-decoration: none;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .series-card:hover, .series-card:focus-visible {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .series-card h2 {
       margin: 0 0 4px;
       font-size: 1.4rem;
     }
-    .group .group-description {
-      margin: 0 0 16px;
-      color: #a0a0a8;
-      font-size: 0.9rem;
+    .series-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
-      box-sizing: border-box;
-    }
-    .card {
+    .series-meta {
       display: flex;
-      flex-direction: column;
-      box-sizing: border-box;
-      background: #1f2024;
-      border: 1px solid #2c2d33;
-      border-radius: 10px;
-      padding: 20px;
-      color: inherit;
-      transition: border-color 0.15s ease, transform 0.15s ease;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--muted);
     }
-    .card:hover {
-      border-color: #4a90e2;
-      transform: translateY(-2px);
+    .pill {
+      padding: 2px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
     }
-    .card-link {
-      display: block;
-      text-decoration: none;
-      color: inherit;
+    .pill.accent {
+      color: var(--accent);
+      border-color: var(--accent);
     }
-    .card h3 {
-      margin: 0 0 8px;
-      font-size: 1.15rem;
+    .teaches {
+      margin: 12px 0 0;
+      font-size: 0.85rem;
+      color: var(--muted);
     }
-    .card p {
-      margin: 0;
-      color: #a0a0a8;
+    .teaches strong { color: var(--text); font-weight: 600; }
+
+    /* --- Series (detail) view --- */
+    .crumbs {
+      margin: 8px 0 16px;
       font-size: 0.9rem;
     }
-    .card-footer {
-      margin-top: auto;
-      padding-top: 12px;
-      border-top: 1px solid #2c2d33;
-    }
-    .readme-link {
-      color: #a0a0a8;
-      font-size: 0.85rem;
+    .crumbs a {
+      color: var(--muted);
       text-decoration: none;
     }
-    .readme-link:hover {
-      color: #4a90e2;
-      text-decoration: underline;
+    .crumbs a:hover { color: var(--accent); text-decoration: underline; }
+    .series-header h2 {
+      margin: 0 0 4px;
+      font-size: 1.8rem;
+    }
+    .series-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .steps {
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 16px;
+    }
+    .step {
+      display: flex;
+      gap: 16px;
+      box-sizing: border-box;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+    .step-number {
+      flex: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+    .step.soon { opacity: 0.6; }
+    .step.soon .step-number { background: var(--border); color: var(--muted); }
+    .step-body { flex: 1; min-width: 0; }
+    .step h3 {
+      margin: 0 0 4px;
+      font-size: 1.1rem;
+    }
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .step-links {
+      margin-top: 10px;
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+    }
+    .step-links a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .step-links a:hover { text-decoration: underline; }
+    .step-links a.secondary { color: var(--muted); }
+    .step-links a.secondary:hover { color: var(--accent); }
+    .badge {
+      font-size: 0.75rem;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 1px 8px;
+      margin-left: 8px;
+      font-weight: 400;
+      vertical-align: middle;
     }
   </style>
 </head>
 <body>
   <header>
     <h1>Babylon.js Samples</h1>
-    <p>A collection of small Babylon.js demos. Click one to view it live.</p>
+    <p>Learn Babylon.js by building games, one small step at a time.</p>
   </header>
   <main id="main"></main>
 
   <script>
-    // Add a group here whenever a new category of samples is started.
-    const groups = [
+    const REPO = "https://github.com/scttech/babylonjs_samples/blob/main";
+
+    // Add a series here whenever a new game/topic is started. Series are shown
+    // in this order on the roadmap, so each one should build on the last.
+    // Each step lives at samples/<series.id>/<step.slug>/. A step with no
+    // `slug` is shown as "coming soon" (planned, not yet built).
+    const series = [
       {
+        id: "introduction",
         title: "Introduction",
         description: "Fundamentals of Babylon.js, built up one feature at a time around a bouncing ball.",
+        teaches: "Scenes, animation, sound, unit tests, input, GUI, lighting, particles",
+        steps: [
+          { slug: "bouncing_circle", title: "Bouncing Circle", description: "A circle bounces around the screen." },
+          { slug: "bouncing_ball_sparks", title: "Bouncing Ball with Sparks", description: "A ball bounces around the screen, throwing off sparks on every wall hit." },
+          { slug: "bouncing_ball_sparks_sound", title: "Bouncing Ball with Sparks and Sound", description: "A ball bounces around the screen, throwing off sparks and a synthesized thump on every wall hit." },
+          { slug: "bouncing_ball_tests", title: "Bouncing Ball with Unit Tests", description: "Refactor code (for Ball and Sparks) into its own classes and verify with QUnit tests." },
+          { slug: "bouncing_ball_slingshot", title: "Bouncing Ball Slingshot", description: "Drag the ball back and release to launch it, with a growing color-coded indicator previewing the shot." },
+          { slug: "bouncing_ball_hud", title: "Bouncing Ball HUD", description: "A TextBlock counts wall bounces, and a Button resets the ball to the center at rest." },
+          { slug: "bouncing_ball_orthographic", title: "Bouncing Ball Orthographic", description: "The ball becomes a real lit mesh viewed through an orthographic camera, bridging from 2D GUI to a 3D world." },
+          { slug: "bouncing_ball_particles_friction", title: "Bouncing Ball Particles & Friction", description: "Sparks are real BABYLON.ParticleSystem bursts now, and the ball loses energy on every bounce until it settles at rest." },
+        ],
       },
       {
+        id: "breakout",
         title: "Breakout",
         description: "The bouncing-ball toy evolves into a full Breakout game.",
-      },
-    ];
-
-    // Add an entry here whenever a new sample is added under /samples/<slug>/
-    const samples = [
-      {
-        title: "Bouncing Circle",
-        group: "Introduction",
-        path: "samples/bouncing_circle/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_circle/README.md",
-        description: "A circle bounces around the screen.",
+        teaches: "Collision response, game state, levels, power-ups, start/pause flow, lit 3D meshes",
+        steps: [
+          { slug: "breakout_paddle", title: "Breakout Paddle", description: "The bouncing-ball toy becomes a game: a player-controlled paddle deflects the ball, steering it based on where it lands." },
+          { slug: "breakout_bricks", title: "Breakout Bricks", description: "A destructible grid of bricks and a score turn the toy into an actual game." },
+          { slug: "breakout_lives", title: "Breakout Lives", description: "Missing the ball costs a life; running out freezes the game with a Game Over overlay until Reset." },
+          { slug: "breakout_levels", title: "Breakout Levels", description: "Three brick layouts with tougher multi-hit bricks, cleared one after another for an actual win condition." },
+          { slug: "breakout_polish", title: "Breakout Polish", description: "A start screen, pause, and wide-paddle/extra-life/multi-ball power-ups." },
+          { slug: "breakout_next_steps", title: "Breakout Next Steps", description: "Bricks get real dimension (lit highlight/shadow bevel bands), and the ball now bounces off a fixed-size box with visible walls instead of the browser window's edges." },
+        ],
       },
       {
-        title: "Bouncing Ball with Sparks",
-        group: "Introduction",
-        path: "samples/bouncing_ball_sparks/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_sparks/README.md",
-        description: "A ball bounces around the screen, throwing off sparks on every wall hit.",
-      },
-      {
-        title: "Bouncing Ball with Sparks and Sound",
-        group: "Introduction",
-        path: "samples/bouncing_ball_sparks_sound/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_sparks_sound/README.md",
-        description: "A ball bounces around the screen, throwing off sparks and a synthesized thump on every wall hit.",
-      },
-      {
-        title: "Bouncing Ball with Unit Tests",
-        group: "Introduction",
-        path: "samples/bouncing_ball_tests/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_tests/README.md",
-        description: "Refactor code (for Ball and Sparks) into its own classes and verify with QUnit tests.",
-      },
-      {
-        title: "Bouncing Ball Slingshot",
-        group: "Introduction",
-        path: "samples/bouncing_ball_slingshot/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_slingshot/README.md",
-        description: "Drag the ball back and release to launch it, with a growing color-coded indicator previewing the shot.",
-      },
-      {
-        title: "Bouncing Ball HUD",
-        group: "Introduction",
-        path: "samples/bouncing_ball_hud/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_hud/README.md",
-        description: "A TextBlock counts wall bounces, and a Button resets the ball to the center at rest.",
-      },
-      {
-        title: "Bouncing Ball Orthographic",
-        group: "Introduction",
-        path: "samples/bouncing_ball_orthographic/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_orthographic/README.md",
-        description: "The ball becomes a real lit mesh viewed through an orthographic camera, bridging from 2D GUI to a 3D world.",
-      },
-      {
-        title: "Bouncing Ball Particles & Friction",
-        group: "Introduction",
-        path: "samples/bouncing_ball_particles_friction/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/bouncing_ball_particles_friction/README.md",
-        description: "Sparks are real BABYLON.ParticleSystem bursts now, and the ball loses energy on every bounce until it settles at rest.",
-      },
-      {
-        title: "Breakout Paddle",
-        group: "Breakout",
-        path: "samples/breakout_paddle/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_paddle/README.md",
-        description: "The bouncing-ball toy becomes a game: a player-controlled paddle deflects the ball, steering it based on where it lands.",
-      },
-      {
-        title: "Breakout Bricks",
-        group: "Breakout",
-        path: "samples/breakout_bricks/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_bricks/README.md",
-        description: "A destructible grid of bricks and a score turn the toy into an actual game.",
-      },
-      {
-        title: "Breakout Lives",
-        group: "Breakout",
-        path: "samples/breakout_lives/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_lives/README.md",
-        description: "Missing the ball costs a life; running out freezes the game with a Game Over overlay until Reset.",
-      },
-      {
-        title: "Breakout Levels",
-        group: "Breakout",
-        path: "samples/breakout_levels/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_levels/README.md",
-        description: "Three brick layouts with tougher multi-hit bricks, cleared one after another for an actual win condition.",
-      },
-      {
-        title: "Breakout Polish",
-        group: "Breakout",
-        path: "samples/breakout_polish/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_polish/README.md",
-        description: "A start screen, pause, and wide-paddle/extra-life/multi-ball power-ups.",
-      },
-      {
-        title: "Breakout Next Steps",
-        group: "Breakout",
-        path: "samples/breakout_next_steps/index.html",
-        readme: "https://github.com/scttech/babylonjs_samples/blob/main/samples/breakout_next_steps/README.md",
-        description: "Bricks get real dimension (lit highlight/shadow bevel bands), and the ball now bounces off a fixed-size box with visible walls instead of the browser window's edges.",
+        id: "asteroids",
+        title: "Asteroids",
+        description: "A classic Asteroids clone, built up from a single thrusting ship.",
+        teaches: "Rotation and inertia, screen wrap, projectiles, enemy AI, procedural shapes",
+        steps: [
+          { slug: "asteroids_ship", title: "Asteroids Ship", description: "A vector-style ship you rotate and thrust, with inertia and screen wrap." },
+          { title: "Asteroids Bullets", description: "Firing along the ship's heading, with cooldown and lifetime." },
+          { title: "Asteroids Rocks", description: "Drifting rocks, circle collisions, splitting into smaller rocks, and score." },
+          { title: "Asteroids Lives", description: "Ship-vs-rock collision, respawn with brief invulnerability, game over, and a HUD." },
+          { title: "Asteroids Waves", description: "Wave progression, safe spawn distance, difficulty scaling, and procedurally shaped rocks." },
+          { title: "Asteroids UFO", description: "An enemy saucer that aims and fires back." },
+          { title: "Asteroids Polish", description: "Start screen and pause, particle explosions, synthesized sounds, and hyperspace." },
+          { title: "Asteroids Next Steps", description: "Lit 3D rocks and ship, with an optional chase camera." },
+        ],
       },
     ];
 
     const main = document.getElementById("main");
-    for (const group of groups) {
-      const section = document.createElement("section");
-      section.className = "group";
-      section.innerHTML = `
-        <h2>${group.title}</h2>
-        <p class="group-description">${group.description}</p>
-        <div class="grid"></div>
-      `;
-      const grid = section.querySelector(".grid");
-      for (const sample of samples.filter((s) => s.group === group.title)) {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <a class="card-link" href="${sample.path}">
-            <h3>${sample.title}</h3>
-            <p>${sample.description}</p>
+
+    const builtCount = (s) => s.steps.filter((step) => step.slug).length;
+
+    // Home view: the series laid out as a roadmap, in the order they should be learned.
+    const renderRoadmap = () => {
+      document.title = "Babylon.js Samples";
+      const list = document.createElement("ol");
+      list.className = "roadmap";
+      series.forEach((s, i) => {
+        const built = builtCount(s);
+        const total = s.steps.length;
+        const complete = built === total;
+        const item = document.createElement("li");
+        item.className = "stop";
+        item.innerHTML = `
+          <div class="stop-marker" aria-hidden="true">${i + 1}</div>
+          <a class="series-card" href="#${s.id}">
+            <h2>${s.title}</h2>
+            <p>${s.description}</p>
+            <div class="series-meta">
+              <span class="pill ${complete ? "accent" : ""}">${built} of ${total} tutorials${complete ? "" : " ready"}</span>
+              ${i === 0 ? '<span class="pill">Start here</span>' : ""}
+            </div>
+            <p class="teaches"><strong>You'll learn:</strong> ${s.teaches}</p>
           </a>
-          <div class="card-footer">
-            <a class="readme-link" href="${sample.readme}">README</a>
+        `;
+        list.appendChild(item);
+      });
+      main.replaceChildren(list);
+    };
+
+    // Series view: that game's tutorials, in order.
+    const renderSeries = (s) => {
+      document.title = `${s.title} - Babylon.js Samples`;
+      const view = document.createElement("div");
+      view.innerHTML = `
+        <nav class="crumbs"><a href="#">&larr; All samples</a></nav>
+        <div class="series-header">
+          <h2>${s.title}</h2>
+          <p>${s.description} Best followed in order &mdash; each tutorial builds on the one before it.</p>
+        </div>
+      `;
+      const steps = document.createElement("ol");
+      steps.className = "steps";
+      s.steps.forEach((step, i) => {
+        const item = document.createElement("li");
+        item.className = "step" + (step.slug ? "" : " soon");
+        const base = `samples/${s.id}/${step.slug}`;
+        item.innerHTML = `
+          <div class="step-number">${i + 1}</div>
+          <div class="step-body">
+            <h3>${step.title}${step.slug ? "" : '<span class="badge">Coming soon</span>'}</h3>
+            <p>${step.description}</p>
+            ${step.slug ? `
+              <div class="step-links">
+                <a href="${base}/index.html">Run the sample</a>
+                <a class="secondary" href="${REPO}/${base}/README.md">README</a>
+              </div>` : ""}
           </div>
         `;
-        grid.appendChild(card);
-      }
-      main.appendChild(section);
-    }
+        steps.appendChild(item);
+      });
+      view.appendChild(steps);
+      main.replaceChildren(view);
+    };
+
+    // Tiny hash router: "#" is the roadmap, "#<series id>" is that series.
+    const render = () => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      const current = series.find((s) => s.id === id);
+      if (current) renderSeries(current);
+      else renderRoadmap();
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener("hashchange", render);
+    render();
   </script>
 </body>
 </html>

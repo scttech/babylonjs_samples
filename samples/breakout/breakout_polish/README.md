@@ -1,6 +1,6 @@
 # Breakout Polish
 
-![Breakout Polish](../../img/breakout_polish/breakout_polish.png)
+![Breakout Polish](../../../img/breakout_polish/breakout_polish.png)
 
 Step 5 in the Breakout series. Builds on [Breakout Levels](../breakout_levels/README.md), reusing its ball/paddle/brick/level physics, particle sparks, procedural bounce sound, and score/lives/win tracking wholesale. What's new is everything that turns it from "a working game" into something that feels like a real one: a proper start screen, a pause you can resume from, and three catchable power-ups.
 

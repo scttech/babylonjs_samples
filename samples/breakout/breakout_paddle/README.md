@@ -1,8 +1,8 @@
 # Breakout Paddle
 
-![Breakout Paddle](../../img/breakout_paddle/breakout_paddle.png)
+![Breakout Paddle](../../../img/breakout_paddle/breakout_paddle.png)
 
-The first step in a new series: turning the bouncing-ball toy into an actual game. Builds on [Bouncing Ball Particles & Friction](../bouncing_ball_particles_friction/README.md), reusing its ball physics, particle sparks, procedural bounce sound, orthographic camera, and HUD wholesale. What's new is a player-controlled paddle the ball can bounce off, with its own collision response — everything else about that gameplay loop (steps 2-5: bricks, lives, levels, polish) will build on top of this.
+The first step in a new series: turning the bouncing-ball toy into an actual game. Builds on [Bouncing Ball Particles & Friction](../../introduction/bouncing_ball_particles_friction/README.md), reusing its ball physics, particle sparks, procedural bounce sound, orthographic camera, and HUD wholesale. What's new is a player-controlled paddle the ball can bounce off, with its own collision response — everything else about that gameplay loop (steps 2-5: bricks, lives, levels, polish) will build on top of this.
 
 **Paddle input replaces slingshot input.** The drag-to-launch mechanic from the slingshot samples is gone: with a paddle now claiming pointer control, the ball instead auto-launches on scene start (and on reset) at a randomized downward diagonal. Two input methods drive the paddle: moving the pointer anywhere over the canvas, and Left/Right (or A/D) held down for constant-speed movement — both ultimately call `Paddle.moveTo()`, clamped so the paddle never leaves the play area. `Paddle` mirrors `Ball`'s scene-optional split — its collision math and clamping are plain arithmetic, testable without a real Babylon engine, and `attachTo()` is the only place `BABYLON` gets touched.
 

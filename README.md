@@ -8,22 +8,28 @@ A collection of Babylon.js demos and samples
 
 Each sample builds on the one before it, so they're best read in order:
 
-1. [Bouncing Circle](samples/bouncing_circle/README.md) — a minimal Babylon.js sample: a circle bounces around inside the browser window, reversing direction off each edge.
-2. [Bouncing Ball with Sparks](samples/bouncing_ball_sparks/README.md) — the ball throws off a shower of sparks and spins like a rolling wheel every time it hits a wall.
-3. [Bouncing Ball with Sparks and Sound](samples/bouncing_ball_sparks_sound/README.md) — every wall hit now also plays a procedurally synthesized "thump" sound.
-4. [Bouncing Ball with Unit Tests](samples/bouncing_ball_tests/README.md) — the ball and spark logic are pulled out into standalone, unit-tested classes.
-5. [Bouncing Ball Slingshot](samples/bouncing_ball_slingshot/README.md) — the ball starts at rest; click and drag to pull it back and launch it, slingshot-style.
-6. [Bouncing Ball HUD](samples/bouncing_ball_hud/README.md) — a HUD tracks the bounce count, with a button to reset the scene.
-7. [Bouncing Ball Orthographic](samples/bouncing_ball_orthographic/README.md) — the ball becomes a real lit 3D mesh, viewed through an orthographic camera.
-8. [Bouncing Ball Particles & Friction](samples/bouncing_ball_particles_friction/README.md) — the ball loses energy on each bounce, and the sparks become real particle system bursts.
+1. [Bouncing Circle](samples/introduction/bouncing_circle/README.md) — a minimal Babylon.js sample: a circle bounces around inside the browser window, reversing direction off each edge.
+2. [Bouncing Ball with Sparks](samples/introduction/bouncing_ball_sparks/README.md) — the ball throws off a shower of sparks and spins like a rolling wheel every time it hits a wall.
+3. [Bouncing Ball with Sparks and Sound](samples/introduction/bouncing_ball_sparks_sound/README.md) — every wall hit now also plays a procedurally synthesized "thump" sound.
+4. [Bouncing Ball with Unit Tests](samples/introduction/bouncing_ball_tests/README.md) — the ball and spark logic are pulled out into standalone, unit-tested classes.
+5. [Bouncing Ball Slingshot](samples/introduction/bouncing_ball_slingshot/README.md) — the ball starts at rest; click and drag to pull it back and launch it, slingshot-style.
+6. [Bouncing Ball HUD](samples/introduction/bouncing_ball_hud/README.md) — a HUD tracks the bounce count, with a button to reset the scene.
+7. [Bouncing Ball Orthographic](samples/introduction/bouncing_ball_orthographic/README.md) — the ball becomes a real lit 3D mesh, viewed through an orthographic camera.
+8. [Bouncing Ball Particles & Friction](samples/introduction/bouncing_ball_particles_friction/README.md) — the ball loses energy on each bounce, and the sparks become real particle system bursts.
 
 ## Breakout
 
 Same incremental approach, now building an actual game on top of the bouncing-ball toy above. Also best read in order:
 
-1. [Breakout Paddle](samples/breakout_paddle/README.md) — a player-controlled paddle deflects the ball, steering it based on where it lands.
-2. [Breakout Bricks](samples/breakout_bricks/README.md) — a destructible grid of bricks and a score turn the toy into an actual game.
-3. [Breakout Lives](samples/breakout_lives/README.md) — missing the ball costs a life; running out freezes the game with a Game Over overlay until Reset.
-4. [Breakout Levels](samples/breakout_levels/README.md) — three brick layouts with tougher multi-hit bricks, cleared one after another for an actual win condition.
-5. [Breakout Polish](samples/breakout_polish/README.md) — a proper start screen and pause, plus wide-paddle, extra-life, and multi-ball power-ups.
-6. [Breakout Next Steps](samples/breakout_next_steps/README.md) — bricks become deeper, beveled 3D blocks with lit highlight/shadow banding, and the ball now bounces off a fixed-size walled box instead of the browser window's edges.
+1. [Breakout Paddle](samples/breakout/breakout_paddle/README.md) — a player-controlled paddle deflects the ball, steering it based on where it lands.
+2. [Breakout Bricks](samples/breakout/breakout_bricks/README.md) — a destructible grid of bricks and a score turn the toy into an actual game.
+3. [Breakout Lives](samples/breakout/breakout_lives/README.md) — missing the ball costs a life; running out freezes the game with a Game Over overlay until Reset.
+4. [Breakout Levels](samples/breakout/breakout_levels/README.md) — three brick layouts with tougher multi-hit bricks, cleared one after another for an actual win condition.
+5. [Breakout Polish](samples/breakout/breakout_polish/README.md) — a proper start screen and pause, plus wide-paddle, extra-life, and multi-ball power-ups.
+6. [Breakout Next Steps](samples/breakout/breakout_next_steps/README.md) — bricks become deeper, beveled 3D blocks with lit highlight/shadow banding, and the ball now bounces off a fixed-size walled box instead of the browser window's edges.
+
+## Asteroids
+
+A third series, building Asteroids from a single thrusting ship. See the [series roadmap](samples/asteroids/README.md). Also best read in order:
+
+1. [Asteroids Ship](samples/asteroids/asteroids_ship/README.md) — a vector-style ship you rotate and thrust, with inertia and screen wrap.

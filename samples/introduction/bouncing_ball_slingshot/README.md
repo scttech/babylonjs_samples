@@ -1,6 +1,6 @@
 # Bouncing Ball Slingshot
 
-![Bouncing Ball Slingshot](../../img/bouncing_ball_slingshot/bouncing_ball_slingshot.png)
+![Bouncing Ball Slingshot](../../../img/bouncing_ball_slingshot/bouncing_ball_slingshot.png)
 
 Builds on [Bouncing Ball with Unit Tests](../bouncing_ball_tests/README.md): instead of always being in motion, the ball starts at rest and waits to be launched. Click or tap the ball and drag to pull it back like a slingshot — a trail of dots grows longer and shifts from green to yellow to red as the pull nears its maximum, previewing both the launch direction and speed. Release to fire the ball off opposite the pull. The ball can be grabbed again mid-flight at any time, freezing it in place to reset its trajectory.
 

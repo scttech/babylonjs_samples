@@ -1,6 +1,6 @@
 # Bouncing Circle
 
-![Bouncing Circle](../../img/bouncing_circle/bouncing_circle.png)
+![Bouncing Circle](../../../img/bouncing_circle/bouncing_circle.png)
 
 A minimal Babylon.js sample: a circle bounces around inside the browser window, reversing direction off each edge.
 

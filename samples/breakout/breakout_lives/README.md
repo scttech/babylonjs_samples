@@ -1,6 +1,6 @@
 # Breakout Lives
 
-![Breakout Lives](../../img/breakout_lives/breakout_lives.png)
+![Breakout Lives](../../../img/breakout_lives/breakout_lives.png)
 
 Step 3 of the Breakout series. Builds on [Breakout Bricks](../breakout_bricks/README.md), reusing its ball/paddle/brick physics, particle sparks, procedural bounce sound, and score tracking wholesale. What's new is an actual lose condition: missing the ball costs a life, and running out ends the game.
 

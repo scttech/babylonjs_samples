@@ -1,6 +1,6 @@
 # Bouncing Ball with Sparks
 
-![Bouncing Ball with Sparks](../../img/bouncing_ball_sparks/bouncing_ball_sparks.png)
+![Bouncing Ball with Sparks](../../../img/bouncing_ball_sparks/bouncing_ball_sparks.png)
 
 Builds on [Bouncing Circle](../bouncing_circle/README.md): the ball now throws off a shower of sparks and spins like a rolling wheel every time it hits a wall.
 

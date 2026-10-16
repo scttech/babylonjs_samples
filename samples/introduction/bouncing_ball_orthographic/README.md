@@ -1,6 +1,6 @@
 # Bouncing Ball Orthographic
 
-![Bouncing Ball Orthographic](../../img/bouncing_ball_orthographic/bouncing_ball_orthographic.png)
+![Bouncing Ball Orthographic](../../../img/bouncing_ball_orthographic/bouncing_ball_orthographic.png)
 
 Builds on [Bouncing Ball HUD](../bouncing_ball_hud/README.md): the ball is now a real lit `BABYLON.MeshBuilder.CreateSphere` mesh with a `StandardMaterial`, instead of a flat `BABYLON.GUI.Ellipse`, viewed through an orthographic camera instead of the unused default `FreeCamera` earlier samples never actually pointed anywhere. An orthographic camera has no perspective distortion, so the ball still reads as flat "2D" gameplay — but it now has real shading from a `HemisphericLight`, which a flat GUI circle never could.
 

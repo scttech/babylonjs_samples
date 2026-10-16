@@ -1,6 +1,6 @@
 # Bouncing Ball with Unit Tests
 
-![Bouncing Ball with Unit Tests](../../img/bouncing_ball_tests/bouncing_ball_tests.png)
+![Bouncing Ball with Unit Tests](../../../img/bouncing_ball_tests/bouncing_ball_tests.png)
 
 Builds on [Bouncing Ball with Sparks and Sound](../bouncing_ball_sparks_sound/README.md): the ball's state/physics/rendering are pulled out of `main.js` into a standalone [`Ball`](js/ball.js) class, and the spark particle effect is likewise pulled out into a [`SparkSystem`](js/sparks.js) class. `main.js` is now just wiring: create a `Ball` and a `SparkSystem`, feed the ball's bounce events into the spark system and the bounce sound, and let each class manage its own `BABYLON.GUI` controls. That keeps things manageable as more balls (or spark bursts) are added.
 

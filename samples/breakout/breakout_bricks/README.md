@@ -1,6 +1,6 @@
 # Breakout Bricks
 
-![Breakout Bricks](../../img/breakout_bricks/breakout_bricks.png)
+![Breakout Bricks](../../../img/breakout_bricks/breakout_bricks.png)
 
 Step 2 of the Breakout series. Builds on [Breakout Paddle](../breakout_paddle/README.md), reusing its ball/paddle physics, particle sparks, procedural bounce sound, orthographic camera, and mouse/keyboard paddle control wholesale. What's new is a destructible grid of bricks and a score — the goal is finally to *do* something, not just keep a ball in the air.
 

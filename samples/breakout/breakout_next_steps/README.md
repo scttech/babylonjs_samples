@@ -1,6 +1,6 @@
 # Breakout Next Steps
 
-![Breakout Next Steps](../../img/breakout_next_steps/breakout_next_steps.png)
+![Breakout Next Steps](../../../img/breakout_next_steps/breakout_next_steps.png)
 
 Builds on [Breakout Polish](../breakout_polish/README.md), reusing its ball/paddle/brick/level physics, start screen, pause, power-ups, particle sparks, procedural bounce sound, and score/lives/win tracking wholesale. This sample is the start of a further round of visual/gameplay enhancements on top of that base.
 

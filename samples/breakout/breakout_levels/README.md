@@ -1,6 +1,6 @@
 # Breakout Levels
 
-![Breakout Levels](../../img/breakout_levels/breakout_levels.png)
+![Breakout Levels](../../../img/breakout_levels/breakout_levels.png)
 
 Step 4 of the Breakout series. Builds on [Breakout Lives](../breakout_lives/README.md), reusing its ball/paddle physics (including the open-bottom miss detection), particle sparks, procedural bounce sound, and score/lives tracking wholesale. What's new is an actual finish line: three brick layouts to clear in sequence, tougher multi-hit bricks along the way, and a win state once the last one falls.
 

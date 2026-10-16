@@ -1,6 +1,6 @@
 # Bouncing Ball Particles & Friction
 
-![Bouncing Ball Particles & Friction](../../img/bouncing_ball_particles_friction/bouncing_ball_particles_friction.png)
+![Bouncing Ball Particles & Friction](../../../img/bouncing_ball_particles_friction/bouncing_ball_particles_friction.png)
 
 Builds on [Bouncing Ball Orthographic](../bouncing_ball_orthographic/README.md): the ball now loses energy on every wall bounce instead of reflecting perfectly forever, and the bounce sparks are real `BABYLON.ParticleSystem` bursts instead of hand-animated `BABYLON.GUI` rectangles.
 
