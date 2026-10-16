@@ -7,7 +7,7 @@ An Asteroids clone built up one step at a time, in the same incremental style as
 | # | Sample | Topic |
 |---|--------|-------|
 | 1 | [Asteroids Ship](asteroids_ship/README.md) | Rotation, thrust, inertia, and screen wrap |
-| 2 | Asteroids Bullets | Spawning projectiles along the ship's heading, cooldown, lifetime, object pooling/cleanup |
+| 2 | [Asteroids Bullets](asteroids_bullets/README.md) ([tutorial](asteroids_bullets/TUTORIAL.md)) | Spawning projectiles along the ship's heading, cooldown, lifetime, bullet cap, and mesh cleanup |
 | 3 | Asteroids Rocks | Drifting rocks, circle-vs-circle collision, splitting large rocks into smaller ones, score |
 | 4 | Asteroids Lives | Ship-vs-rock collision, respawn with temporary invulnerability, game over, HUD |
 | 5 | Asteroids Waves | Wave progression, safe spawn distance from the ship, difficulty scaling, procedurally shaped rocks |

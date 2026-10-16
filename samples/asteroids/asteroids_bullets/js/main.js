@@ -1,6 +1,50 @@
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true);
 
+// --- Procedural fire sound ---
+// A short downward "pew": a sine wave whose pitch swoops from high to low
+// while its volume fades out. Synthesized on the fly, so there's no audio
+// file to fetch or license.
+let audioEngine = null;
+let fireBuffer = null;
+
+const initAudio = async () => {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  audioEngine = await BABYLON.CreateAudioEngineAsync({ audioContext });
+  await audioEngine.unlockAsync();
+
+  const duration = 0.15;
+  const sampleRate = audioContext.sampleRate;
+  const length = Math.floor(sampleRate * duration);
+  const buffer = audioContext.createBuffer(1, length, sampleRate);
+  const data = buffer.getChannelData(0);
+
+  // Accumulate phase instead of computing sin(2 * PI * f * t) directly.
+  // When the frequency changes over time, the direct formula produces
+  // glitches, because the phase jumps every time f changes. Adding up the
+  // small phase step for each sample keeps the wave continuous.
+  let phase = 0;
+  for (let i = 0; i < length; i++) {
+    const t = i / sampleRate;
+    const frequency = 1000 * Math.exp(-t * 12); // swoops from 1000 Hz down to ~165 Hz
+    phase += (2 * Math.PI * frequency) / sampleRate;
+    data[i] = Math.sin(phase) * Math.exp(-t * 18) * 0.5;
+  }
+
+  fireBuffer = buffer;
+};
+
+const playFireSound = async () => {
+  if (!audioEngine || !fireBuffer) return;
+
+  const sound = await audioEngine.createSoundAsync("fire", fireBuffer, {
+    volume: 0.4,
+    playbackRate: 0.95 + Math.random() * 0.1, // slight pitch variation so shots don't sound identical
+  });
+  sound.onEndedObservable.add(() => sound.dispose());
+  sound.play();
+};
+
 // --- World-space / orthographic-camera tuning ---
 // The viewport's vertical half-extent always maps to this many world units,
 // no matter the window size -- halfWidth is derived from it every resize so
@@ -76,7 +120,8 @@ const createScene = () => {
     // Fire after the ship has moved this frame, so bullets spawn at the
     // nose's current position. Holding Space auto-fires; the system's own
     // cooldown and bullet cap set the pace.
-    if (anyHeld(FIRE_KEYS)) bullets.fire(ship);
+    if (anyHeld(FIRE_KEYS) && bullets.fire(ship)) playFireSound();
+
     bullets.update(dt, bounds);
   });
 
@@ -84,6 +129,7 @@ const createScene = () => {
 };
 
 const { scene, updateViewport } = createScene();
+initAudio();
 
 engine.runRenderLoop(() => {
   scene.render();

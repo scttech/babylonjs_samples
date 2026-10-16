@@ -228,7 +228,8 @@
     // Add a series here whenever a new game/topic is started. Series are shown
     // in this order on the roadmap, so each one should build on the last.
     // Each step lives at samples/<series.id>/<step.slug>/. A step with no
-    // `slug` is shown as "coming soon" (planned, not yet built).
+    // `slug` is shown as "coming soon" (planned, not yet built). Set
+    // `tutorial: true` on a step that ships a TUTORIAL.md to link it too.
     const series = [
       {
         id: "introduction",
@@ -267,7 +268,7 @@
         teaches: "Rotation and inertia, screen wrap, projectiles, enemy AI, procedural shapes",
         steps: [
           { slug: "asteroids_ship", title: "Asteroids Ship", description: "A vector-style ship you rotate and thrust, with inertia and screen wrap." },
-          { title: "Asteroids Bullets", description: "Firing along the ship's heading, with cooldown and lifetime." },
+          { slug: "asteroids_bullets", tutorial: true, title: "Asteroids Bullets", description: "Hold Space to fire bullets that inherit the ship's momentum, with a cooldown, a four-bullet cap, and screen wrap." },
           { title: "Asteroids Rocks", description: "Drifting rocks, circle collisions, splitting into smaller rocks, and score." },
           { title: "Asteroids Lives", description: "Ship-vs-rock collision, respawn with brief invulnerability, game over, and a HUD." },
           { title: "Asteroids Waves", description: "Wave progression, safe spawn distance, difficulty scaling, and procedurally shaped rocks." },
@@ -336,6 +337,7 @@
               <div class="step-links">
                 <a href="${base}/index.html">Run the sample</a>
                 <a class="secondary" href="${REPO}/${base}/README.md">README</a>
+                ${step.tutorial ? `<a class="secondary" href="${REPO}/${base}/TUTORIAL.md">Tutorial</a>` : ""}
               </div>` : ""}
           </div>
         `;

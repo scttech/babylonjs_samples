@@ -133,4 +133,4 @@ Open [tests.html](tests.html) in a browser (or click "Run tests" from the runnin
 
 ## Next up
 
-[Asteroids](../README.md) continues with bullets.
+[Asteroids Bullets](../asteroids_bullets/README.md) adds firing.
