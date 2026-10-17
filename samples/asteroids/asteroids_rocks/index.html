@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Asteroids Rocks - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <style>
+    /* .hint has pointer-events: none so the canvas stays interactive; opt the
+       "Run tests" link back in so it can be clicked. */
+    .hint a {
+      pointer-events: auto;
+      color: #8ab4ff;
+    }
+  </style>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+  <script>
+    // Asteroids will use Space to fire later on, so move the shared
+    // screenshot shortcut to C for this series.
+    window.SCREENSHOT_KEY = "KeyC";
+  </script>
+</head>
+
+<body>
+  <a class="back-button" href="../../../index.html#asteroids">&larr; Samples</a>
+  <div class="hint">&larr;/&rarr; (A/D) to turn &middot; &uarr; (W) to thrust &middot; Space to fire &middot; R to reset
+    &middot; C for a screenshot &middot; <a href="tests.html">Run tests</a></div>
+  <canvas id="renderCanvas"></canvas>
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/wrap.js"></script>
+  <script src="js/collision.js"></script>
+  <script src="js/ship.js"></script>
+  <script src="js/bullets.js"></script>
+  <script src="js/rocks.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

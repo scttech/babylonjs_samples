@@ -105,28 +105,28 @@ class BulletSystem {
         }
     }
 
-      // One material is shared by every bullet. It's emissive with lighting
-  // disabled, so bullets glow at full brightness without needing a light.
-  _createMaterial(scene, color) {
-    const material = new BABYLON.StandardMaterial("bulletMaterial", scene);
-    material.emissiveColor = BABYLON.Color3.FromHexString(color);
-    material.disableLighting = true;
-    return material;
-  }
+    // One material is shared by every bullet. It's emissive with lighting
+    // disabled, so bullets glow at full brightness without needing a light.
+    _createMaterial(scene, color) {
+        const material = new BABYLON.StandardMaterial("bulletMaterial", scene);
+        material.emissiveColor = BABYLON.Color3.FromHexString(color);
+        material.disableLighting = true;
+        return material;
+    }
 
-  _attach(bullet) {
-    bullet.mesh = BABYLON.MeshBuilder.CreateSphere("bullet", { diameter: this.radius * 2, segments: 8 }, this.scene);
-    bullet.mesh.material = this._material;
-    bullet.mesh.position.x = bullet.x;
-    bullet.mesh.position.y = bullet.y;
-  }
+    _attach(bullet) {
+        bullet.mesh = BABYLON.MeshBuilder.CreateSphere("bullet", { diameter: this.radius * 2, segments: 8 }, this.scene);
+        bullet.mesh.material = this._material;
+        bullet.mesh.position.x = bullet.x;
+        bullet.mesh.position.y = bullet.y;
+    }
 
-  _disposeBullet(bullet) {
-    if (!bullet.mesh) return;
-    // The second argument is false so the shared material survives.
-    bullet.mesh.dispose(false, false);
-    bullet.mesh = null;
-  }
+    _disposeBullet(bullet) {
+        if (!bullet.mesh) return;
+        // The second argument is false so the shared material survives.
+        bullet.mesh.dispose(false, false);
+        bullet.mesh = null;
+    }
 
 }
 
@@ -134,8 +134,8 @@ class BulletSystem {
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = BulletSystem;
+    module.exports = BulletSystem;
 } else {
-  window.BulletSystem = BulletSystem;
+    window.BulletSystem = BulletSystem;
 }
 

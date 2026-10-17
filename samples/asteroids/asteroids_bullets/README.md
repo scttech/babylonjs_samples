@@ -150,4 +150,4 @@ Browsers block audio until a user gesture. Pressing a key counts, and Babylon sh
 
 ## Next up
 
-[Asteroids](../README.md) continues with rocks for the bullets to hit.
+[Asteroids Rocks](../asteroids_rocks/README.md) adds rocks for the bullets to hit.

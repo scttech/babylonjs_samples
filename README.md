@@ -34,3 +34,4 @@ A third series, building Asteroids from a single thrusting ship. See the [series
 
 1. [Asteroids Ship](samples/asteroids/asteroids_ship/README.md) — a vector-style ship you rotate and thrust, with inertia and screen wrap.
 2. [Asteroids Bullets](samples/asteroids/asteroids_bullets/README.md) — hold Space to fire bullets from the ship's nose, with a cooldown, a four-bullet cap, and inherited momentum. Also available as a [step-by-step tutorial](samples/asteroids/asteroids_bullets/TUTORIAL.md).
+3. [Asteroids Rocks](samples/asteroids/asteroids_rocks/README.md) — shoot drifting rocks that split into smaller, faster, higher-scoring ones, with circle-vs-circle collisions and a score. Also available as a [step-by-step tutorial](samples/asteroids/asteroids_rocks/TUTORIAL.md).
