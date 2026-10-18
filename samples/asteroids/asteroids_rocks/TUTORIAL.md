@@ -50,8 +50,6 @@ It asks for confirmation, then replaces `index.html`, `tests.html`, `js/` and `t
 
 Open `index.html` in a browser now to confirm the ship still flies and fires. Open `tests.html` too and note how many tests pass; you'll watch that number grow. Keep the developer console open (F12) as you work.
 
-> **A note on whitespace.** Some of the existing files use 2-space indentation and some 4. When a step says "replace this block", match the *code*, and keep whatever indentation the surrounding file uses.
-
 ---
 
 ## Step 1: Share the wrap-around rule

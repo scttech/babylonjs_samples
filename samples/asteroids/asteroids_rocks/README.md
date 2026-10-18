@@ -192,4 +192,4 @@ Browsers block audio until a user gesture. Pressing a key counts, and Babylon sh
 
 ## Next up
 
-[Asteroids](../README.md) continues with lives, which makes the rocks dangerous to the ship.
+[Asteroids Lives](../asteroids_lives/README.md) makes the rocks dangerous to the ship.

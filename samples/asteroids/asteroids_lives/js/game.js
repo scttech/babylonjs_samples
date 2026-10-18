@@ -1,0 +1,41 @@
+// The rules of the game that aren't about any one object: how many lives the
+// player has left, and whether the game is over. Keeping this in its own tiny
+// class (instead of a couple of loose variables in main.js) means it can be
+// unit tested, and later steps can grow it with waves and extra lives.
+//
+// It deliberately knows nothing about ships, rocks, or the screen. main.js
+// decides what happens when a life is lost; this only keeps the count. See
+// ../tests/game.tests.js.
+class Game {
+  constructor({ startingLives = 3 } = {}) {
+    this.startingLives = startingLives;
+    this.lives = startingLives;
+  }
+
+  // True once every life has been used up.
+  get over() {
+    return this.lives <= 0;
+  }
+
+  // Takes one life and returns how many remain. Does nothing once the game is
+  // already over, so a stray extra call can't push the count below zero.
+  loseLife() {
+    if (this.over) return this.lives;
+    this.lives -= 1;
+    return this.lives;
+  }
+
+  // Starts a fresh game.
+  reset() {
+    this.lives = this.startingLives;
+  }
+}
+
+// Plain <script> include (no bundler in this project), so export via both
+// CommonJS (for the QUnit/Node test runner) and the global scope (for
+// index.html) depending on which environment loads this file.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = Game;
+} else {
+  window.Game = Game;
+}
