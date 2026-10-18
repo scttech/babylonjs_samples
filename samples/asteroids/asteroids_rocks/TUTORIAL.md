@@ -298,9 +298,9 @@ Reload `tests.html`: **7 more** tests, all green. (You'll add the helper to `ind
 
 `RockField` is the heart of this step. It follows the same pattern as `BulletSystem`: rocks are plain records, one class owns the list, and `BABYLON` is touched only when a `scene` is given.
 
-Open `js/rocks.js` and build it up in pieces.
+Open `js/rocks.js`. You'll first write the file's **skeleton**: the whole class, complete and closed, with just a constructor, plus the export footer at the bottom. Every later piece goes **inside the class**, below the previous one and above its closing `}`, so the file is valid JavaScript after every step and you can reload the page or the tests at any point.
 
-### 3a. The size table and constructor
+### 3a. The skeleton: size table, constructor and export
 
 ```js
 // Every rock on screen: spawning, drifting, spinning, wrapping, splitting when
@@ -338,16 +338,32 @@ class RockField {
     this._random = random;
   }
 }
+
+// The size table, for callers (and tests) that need to read it without
+// duplicating the numbers this class already owns.
+RockField.SIZES = ROCK_SIZES;
+
+// Plain <script> include (no bundler in this project), so export via both
+// CommonJS (for the QUnit/Node test runner) and the global scope (for
+// index.html) depending on which environment loads this file.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = RockField;
+} else {
+  window.RockField = RockField;
+}
 ```
 
 Things to notice:
 
 - **The whole game's rock behavior is in one table.** To rebalance the game (bigger rocks, different scores, a fourth size), you change `ROCK_SIZES`, not the code. `splitsInto` is how a size knows what comes next; `null` ends the chain.
 - **`random` is injected.** Every dice roll in this class goes through `this._random`. In the game it's `Math.random`; in tests you'll hand in a scripted sequence so a "random" result is exactly predictable. You saw this in `SparkSystem` in the Breakout series.
+- `RockField.SIZES` attaches the table to the class itself (the Breakout series' `PowerUpManager.TYPES` does the same), so tests can read it as `RockField.SIZES`.
+
+The next pieces all go **inside the class**, below the constructor and above its closing `}`, in this order.
 
 ### 3b. Spawning
 
-Add inside the class:
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // Creates one rock of the given size ("large", "medium", or "small") at
@@ -391,6 +407,8 @@ Things to notice:
 
 ### 3c. Scattering the starting rocks
 
+Add this inside the class, below the previous piece and above its closing `}`:
+
 ```js
   // Scatters `count` large rocks across the screen, keeping each at least
   // `safeDistance` away from `avoid` (normally the ship) so the player isn't
@@ -415,6 +433,8 @@ Things to notice:
 
 ### 3d. Moving, spinning, wrapping
 
+Add this inside the class, below the previous piece and above its closing `}`:
+
 ```js
   // Advances every rock by dt seconds: drift, wrap around the screen, spin.
   update(dt, bounds) {
@@ -431,6 +451,8 @@ Things to notice:
 This is where Step 1 pays off: the shared helper in two lines, instead of a third copy of the wrap logic. Notice each rock wraps by *its own* radius, so a big rock slides fully off-screen before reappearing.
 
 ### 3e. Splitting
+
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // Removes `rock` and, unless it was the smallest size, replaces it with two
@@ -473,6 +495,8 @@ Things to notice:
 
 ### 3f. Bullets meet rocks
 
+Add this inside the class, below the previous piece and above its closing `}`:
+
 ```js
   // Checks every bullet against every rock. A bullet that overlaps a rock is
   // removed and the rock is destroyed (splitting if it can). Returns one
@@ -504,6 +528,8 @@ Things to notice:
 
 ### 3g. Cleanup
 
+Add this inside the class, below the previous piece and above its closing `}`:
+
 ```js
   // Removes every rock (e.g. on reset).
   clear() {
@@ -526,7 +552,9 @@ Things to notice:
 
 ### 3h. The Babylon.js parts
 
-These are the only methods that touch `BABYLON`:
+These are the only methods that touch `BABYLON`.
+
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // Draws the rock as a closed outline: one point per corner, spaced evenly
@@ -564,25 +592,6 @@ Things to notice:
 - **The mesh is built around its own origin** and then *moved and rotated* by `_syncMesh`. That's why spinning is just `mesh.rotation.z = rock.angle`, with no rebuilding of points.
 - The first point is **cloned** and added at the end to close the outline. `points[0].clone()` rather than reusing `points[0]` avoids two array slots pointing at the same object.
 - Lines have their own `color` property, so unlike bullets there's **no material to share**. That's why `_disposeRock` is a plain `dispose()`.
-
-### 3i. Export the class
-
-```js
-// The size table, for callers (and tests) that need to read it without
-// duplicating the numbers this class already owns.
-RockField.SIZES = ROCK_SIZES;
-
-// Plain <script> include (no bundler in this project), so export via both
-// CommonJS (for the QUnit/Node test runner) and the global scope (for
-// index.html) depending on which environment loads this file.
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = RockField;
-} else {
-  window.RockField = RockField;
-}
-```
-
-`RockField.SIZES` attaches the table to the class itself (the Breakout series' `PowerUpManager.TYPES` does the same), so tests can read it as `RockField.SIZES`.
 
 ---
 

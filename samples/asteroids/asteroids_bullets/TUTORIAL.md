@@ -115,13 +115,13 @@ Open `tests.html` in a browser. Everything should be green.
 
 ## Step 3: Write `BulletSystem`
 
-Open `js/bullets.js` (currently one comment line) and replace its contents as you work through the pieces below.
+Open `js/bullets.js` (currently one comment line). You'll first write the file's **skeleton**: the whole class, complete and closed, with just a constructor, plus the export footer at the bottom. Every later piece goes **inside the class**, below the previous one and above its closing `}`, so the file is valid JavaScript after every step and you can reload the page or the tests at any point.
 
 **Design:** a bullet is just a plain record, `{ x, y, vx, vy, life, mesh }`, not its own class. This is the same choice you saw for bricks in the Breakout series: a bullet has no behavior of its own, so a class per bullet would be overhead. One `BulletSystem` owns the whole list.
 
 As with `Ship`, `BulletSystem` only touches `BABYLON` when it's given a `scene`. That's what will let you test it without a browser engine.
 
-### 3a. The class and its constructor
+### 3a. The skeleton: constructor and export
 
 ```js
 // Manages every bullet in flight: firing (with a cooldown and a cap on how
@@ -158,16 +158,28 @@ class BulletSystem {
     }
   }
 }
+
+// Plain <script> include (no bundler in this project), so export via both
+// CommonJS (for the QUnit/Node test runner) and the global scope (for
+// index.html) depending on which environment loads this file.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = BulletSystem;
+} else {
+  window.BulletSystem = BulletSystem;
+}
 ```
 
 Things to notice:
 
 - `lifetime` and `maxBullets` are two different limits. Lifetime stops a bullet flying forever; the cap stops the player flooding the screen. Together they make you aim.
-- The material is created **once** here, not per bullet. You'll see why in 3d.
+- The material is created **once** here, not per bullet. You'll see why in 3e.
+- The constructor calls `this._createMaterial(scene, color)`, which you add in 3e. That's fine for now: nothing creates a `BulletSystem` with a scene until the game wires it up in Step 4, and by then every method is in place.
+
+The next pieces all go **inside the class**, below the constructor and above its closing `}`, in this order.
 
 ### 3b. Firing
 
-Add this inside the class, after the constructor:
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // Fires one bullet from the ship's nose, unless the gun is still cooling
@@ -199,6 +211,8 @@ Things to notice:
 - `fire()` returns `null` when it can't fire. That makes it easy for callers (and tests, and later the sound) to tell whether a shot actually happened.
 
 ### 3c. Updating every frame
+
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // Advances the cooldown and every bullet by dt seconds. Bullets wrap around
@@ -243,6 +257,8 @@ Things to notice:
 
 ### 3d. Cleanup
 
+Add this inside the class, below the previous piece and above its closing `}`:
+
 ```js
   // Removes every bullet in flight (e.g. on reset) and clears the cooldown.
   clear() {
@@ -265,7 +281,9 @@ Things to notice:
 
 ### 3e. The Babylon.js parts
 
-These are the only methods that touch `BABYLON`. Add them last, inside the class:
+These are the only methods that touch `BABYLON`.
+
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // One material is shared by every bullet. It's emissive with lighting
@@ -297,21 +315,6 @@ Things to notice:
 - **Emissive + `disableLighting`.** The Ship sample drew unlit lines. Here bullets are spheres, which normally need a light to be visible. `emissiveColor` makes a surface glow with its own color, and `disableLighting = true` tells the material to ignore lights entirely, so the bullets are full-bright without adding a light to the scene.
 - **One shared material.** Creating a material per bullet would allocate a new GPU resource every shot. Sharing one is cheaper.
 - **`dispose(false, false)`.** The signature is `dispose(doNotRecurse, disposeMaterialAndTextures)`. The Breakout sample used `(false, true)` to dispose each brick's own material along with it. Here the material is shared, so passing `true` would destroy it and the *next* bullet would render with a disposed material. The second argument has to be `false`.
-
-### 3f. Export the class
-
-Finally, close out the file with the same export footer every other class in this project uses:
-
-```js
-// Plain <script> include (no bundler in this project), so export via both
-// CommonJS (for the QUnit/Node test runner) and the global scope (for
-// index.html) depending on which environment loads this file.
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = BulletSystem;
-} else {
-  window.BulletSystem = BulletSystem;
-}
-```
 
 ---
 

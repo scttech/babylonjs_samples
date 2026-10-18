@@ -494,9 +494,9 @@ The UFO is one object that is either on screen (`active`) or waiting for its nex
 
 **It spawns itself.** While there's no UFO, `update()` counts down, and when the timer runs out it spawns one. `main.js` just calls `update()` every frame.
 
-Open `js/ufo.js` and build it up in pieces.
+Open `js/ufo.js`. You'll first write the file's **skeleton**: the whole class, complete and closed, with just a constructor, plus the export footer at the bottom. Every later piece goes **inside the class**, below the previous one and above its closing `}`, so the file is valid JavaScript after every step and you can reload the page or the tests at any point.
 
-### 3a. The size table and constructor
+### 3a. The skeleton: size table, constructor and export
 
 ```js
 // The flying saucer: it crosses the screen, weaves up and down, and shoots at
@@ -547,6 +547,19 @@ class Ufo {
     this.mesh = null;
   }
 }
+
+// The size table, for callers (and tests) that need to read it without
+// duplicating the numbers this class already owns.
+Ufo.SIZES = UFO_SIZES;
+
+// Plain <script> include (no bundler in this project), so export via both
+// CommonJS (for the QUnit/Node test runner) and the global scope (for
+// index.html) depending on which environment loads this file.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = Ufo;
+} else {
+  window.Ufo = Ufo;
+}
 ```
 
 Things to notice:
@@ -554,8 +567,14 @@ Things to notice:
 - **Two sizes in one table**, like `ROCK_SIZES`. The small UFO is *better in every way except being small*: faster, more accurate, and `leadsTarget: true`. Its `spread` (aiming error, in radians) is about a fifth of the big one's.
 - `bulletSpeed` is an option because the small UFO's aiming needs it (intercept math depends on how fast the bullet travels), and the number has to match the `BulletSystem` that fires the shot. `main.js` will pass the same constant to both.
 - The constructor **draws one `random()` value** to choose the delay before the first UFO. Remember that when you write the tests.
+- The constructor calls `this._randomSpawnDelay()`, which you add in 3f. That's fine for now: nothing runs the constructor until the tests (Step 4) and `main.js` (Step 5), and by then every method is in place.
+- `Ufo.SIZES = UFO_SIZES;` in the footer attaches the size table to the class itself, so tests can read it without duplicating the numbers.
+
+The next pieces all go **inside the class**, below the constructor and above its closing `}`, in this order.
 
 ### 3b. Choosing a size and spawning
+
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // Which size to send next. The big one is common early; the longer the
@@ -594,6 +613,8 @@ Things to notice:
 - Starting at 80% of the half-height keeps it from appearing right at the top or bottom edge.
 
 ### 3c. Flying, leaving, shooting
+
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // Advances the UFO by dt seconds and returns a shot to fire, or null.
@@ -645,6 +666,8 @@ Things to notice:
 
 ### 3d. Being destroyed
 
+Add this inside the class, below the previous piece and above its closing `}`:
+
 ```js
   // Shot down or rammed: removes the UFO, starts the wait for the next one,
   // and returns the points it was worth (0 if there was no UFO).
@@ -664,6 +687,8 @@ Things to notice:
 `destroy()` returns the **points**, so the caller can write `hud.addScore(ufo.destroy())` in one line. Destroying a UFO that isn't there is worth 0, so it's safe to call blindly. `reset()` is the same removal without scoring, for restarting the game.
 
 ### 3e. Aiming
+
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // Where to shoot, as { x, y, dirX, dirY }: from the UFO toward the target.
@@ -691,6 +716,8 @@ Then both get a **random error** from `rotateDirection`. `random() * 2 - 1` is b
 
 ### 3f. Housekeeping
 
+Add this inside the class, below the previous piece and above its closing `}`:
+
 ```js
   _leave() {
     this.active = false;
@@ -711,6 +738,8 @@ Then both get a **random error** from `rotateDirection`. `random() * 2 - 1` is b
 `_leave()` is shared by "flew off the far side", `destroy()` and `reset()`. They all mean the same thing for the UFO: stop being active, start waiting for the next one, tidy up the mesh. One private method means they can't drift apart.
 
 ### 3g. The Babylon.js parts
+
+Add this inside the class, below the previous piece and above its closing `}`:
 
 ```js
   // A saucer drawn as two separate line strokes: the hull (a flat diamond
@@ -752,23 +781,6 @@ Things to notice:
 - **`CreateLineSystem`** draws several separate polylines as a single mesh. The saucer is two strokes that don't touch end to end: the hull (a flat diamond, with a line through the middle) and the dome above it. `CreateLines`, which you've used for the ship and rocks, draws one connected path.
 - `v(x, y)` is a tiny local helper that scales a unit-sized point by the radius, so the same drawing serves both sizes.
 - The mesh is created at **spawn** and disposed in `_leave()`, so a saucer doesn't linger invisibly between appearances. It never rotates, so `_syncMesh()` only sets the position.
-
-### 3h. Export
-
-```js
-// The size table, for callers (and tests) that need to read it without
-// duplicating the numbers this class already owns.
-Ufo.SIZES = UFO_SIZES;
-
-// Plain <script> include (no bundler in this project), so export via both
-// CommonJS (for the QUnit/Node test runner) and the global scope (for
-// index.html) depending on which environment loads this file.
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = Ufo;
-} else {
-  window.Ufo = Ufo;
-}
-```
 
 ---
 

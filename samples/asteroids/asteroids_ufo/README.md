@@ -183,4 +183,4 @@ Browsers block audio until a user gesture. Pressing a key counts, and Babylon sh
 
 ## Next up
 
-[Asteroids](../README.md) continues with polish: a start screen and pause, particle explosions, and hyperspace.
+[Asteroids Polish](../asteroids_polish/README.md) adds a title screen and pause, particle explosions, and hyperspace.
