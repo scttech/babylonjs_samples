@@ -11,7 +11,7 @@ An Asteroids clone built up one step at a time, in the same incremental style as
 | 3 | [Asteroids Rocks](asteroids_rocks/README.md) ([tutorial](asteroids_rocks/TUTORIAL.md)) | Drifting rocks, circle-vs-circle collision, splitting large rocks into smaller ones, score |
 | 4 | [Asteroids Lives](asteroids_lives/README.md) ([tutorial](asteroids_lives/TUTORIAL.md)) | Ship-vs-rock collision, respawn with temporary invulnerability, game over, HUD |
 | 5 | [Asteroids Waves](asteroids_waves/README.md) ([tutorial](asteroids_waves/TUTORIAL.md)) | Wave progression, safe spawn distance from the ship, difficulty scaling, procedurally shaped rocks |
-| 6 | Asteroids UFO | An enemy saucer that aims and fires back; simple AI and targeting math |
+| 6 | [Asteroids UFO](asteroids_ufo/README.md) ([tutorial](asteroids_ufo/TUTORIAL.md)) | An enemy saucer that aims and fires back; simple AI and targeting math |
 | 7 | Asteroids Polish | Start screen and pause, particle explosions, synthesized thrust/fire/explosion sounds, hyperspace |
 | 8 | Asteroids Next Steps | Lit 3D rocks and ship under the same gameplay, optional chase-camera mode |
 

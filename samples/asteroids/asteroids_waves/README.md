@@ -147,4 +147,4 @@ Browsers block audio until a user gesture. Pressing a key counts, and Babylon sh
 
 ## Next up
 
-[Asteroids](../README.md) continues with the UFO, an enemy saucer that crosses the screen and fires back.
+[Asteroids UFO](../asteroids_ufo/README.md) adds an enemy saucer that crosses the screen and fires back.
