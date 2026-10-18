@@ -157,4 +157,4 @@ Browsers block audio until a user gesture. Pressing a key counts, and Babylon sh
 
 ## Next up
 
-[Asteroids](../README.md) continues with waves, replacing "four new rocks when the screen is cleared" with real, escalating waves.
+[Asteroids Waves](../asteroids_waves/README.md) replaces "four new rocks when the screen is cleared" with real, escalating waves.
