@@ -190,4 +190,4 @@ Browsers block audio until a user gesture. Starting the game with Enter or a cli
 
 ## Next up
 
-[Asteroids](../README.md) finishes with Next Steps: lit 3D rocks and ship, and an optional chase-camera mode.
+[Asteroids Next Steps](../asteroids_next_steps/README.md) finishes the series: lit 3D rocks, 3D ships and saucers, a ship picker, and an optional chase-camera mode.
