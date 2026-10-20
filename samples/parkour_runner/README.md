@@ -9,7 +9,7 @@ An endless parkour runner through a city street, built up one step at a time in 
 | # | Sample | Topic |
 |---|--------|-------|
 | 1 | [Parkour Runner World](parkour_runner_world/README.md) ([tutorial](parkour_runner_world/TUTORIAL.md)) | A street built from real 3D pieces, a perspective camera, fog and lights, loading each piece once and placing instances of it |
-| 2 | Parkour Runner Runner | The runner: an animated character that eases between three lanes |
+| 2 | [Parkour Runner Runner](parkour_runner_runner/README.md) ([tutorial](parkour_runner_runner/TUTORIAL.md)) | An animated character with clips and blending, easing between three lanes, a follow camera |
 | 3 | Parkour Runner Street | An endless street, recycled as the runner moves through it |
 | 4 | Parkour Runner Moves | Jump, slide, roll and vault, played with the character's animation clips |
 | 5 | Parkour Runner Obstacles | Barriers, fences and containers that appear ahead, and collisions with them |

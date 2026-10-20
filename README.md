@@ -46,3 +46,4 @@ A third series, building Asteroids from a single thrusting ship. See the [series
 A fourth series, and the first in real 3D from the start: an endless parkour runner through a city street, with a third-person camera and animated characters. See the [series roadmap](samples/parkour_runner/README.md).
 
 1. [Parkour Runner World](samples/parkour_runner/parkour_runner_world/README.md) — a city street built from real 3D pieces, with fog and lights, a camera you can walk down it, and a splash screen. Also available as a [step-by-step tutorial](samples/parkour_runner/parkour_runner_world/TUTORIAL.md).
+2. [Parkour Runner Runner](samples/parkour_runner/parkour_runner_runner/README.md) — an animated runner who sprints down the street, eases between three lanes, and is followed by a camera. Also available as a [step-by-step tutorial](samples/parkour_runner/parkour_runner_runner/TUTORIAL.md).

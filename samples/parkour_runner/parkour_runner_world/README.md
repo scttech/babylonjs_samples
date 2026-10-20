@@ -119,4 +119,4 @@ The 3D models are CC0 models from [Kenney](https://www.kenney.nl) (the City Kits
 
 ## Next up
 
-**Parkour Runner Runner** brings the street to life with an animated runner who eases between three lanes.
+[Parkour Runner Runner](../parkour_runner_runner/README.md) brings the street to life with an animated runner who eases between three lanes.

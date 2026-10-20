@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Parkour Runner Runner - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <style>
+    /* .hint has pointer-events: none so the canvas stays interactive; opt the
+       "Run tests" link back in so it can be clicked. */
+    .hint a {
+      pointer-events: auto;
+      color: #8ab4ff;
+    }
+    /* The splash covers the page while the street loads, then fades away. Its
+       white matches the white of the picture, so the picture has no visible edge. */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: #fff;
+      transition: opacity 0.6s ease;
+    }
+    #splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #splash img {
+      max-width: min(80vw, 720px);
+      max-height: 70vh;
+    }
+    #splash p {
+      margin: 0;
+      padding: 0 24px;
+      text-align: center;
+      color: #44506a;
+      font: 18px/1.4 system-ui, sans-serif;
+    }
+  </style>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script>
+    // Parkour Runner will use Space to jump later on, so move the shared
+    // screenshot shortcut to C for this series.
+    window.SCREENSHOT_KEY = "KeyC";
+  </script>
+</head>
+
+<body>
+  <a class="back-button" href="../../../index.html#parkour_runner">&larr; Samples</a>
+  <div class="hint">&larr;/&rarr; (A/D) to change lanes &middot; R to restart &middot; C for a screenshot &middot; <a href="tests.html">Run tests</a></div>
+  <div id="splash">
+    <img src="../parkour_runner_splash_small.jpg" alt="Parkour Runner">
+    <p id="splash-status">Loading the street&hellip;</p>
+  </div>
+  <canvas id="renderCanvas"></canvas>
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/runner.js"></script>
+  <script src="js/clips.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/splash.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
