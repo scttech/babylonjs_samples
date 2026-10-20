@@ -188,6 +188,7 @@ const SHIP_PREVIEW_Y = 2.8; // where the ship floats on the title screen
 const SHIP_PREVIEW_SCALE = 2.4; // and how much bigger it is there
 const ASSETS = "../assets/"; // the .glb models, shared by the Asteroids samples
 const UFO_CHASE_TILT = 0; // seen from behind the ship, the saucers are left level
+const SPLASH_MIN_MS = 3000; // the splash stays at least this long, even if the models load sooner
 const SAFE_DISTANCE = 3; // world units; rocks never spawn this close to the ship
 const RESPAWN_PROTECTION = 3; // seconds the ship can't be hurt after losing a life
 const UFO_BULLET_SPEED = 7; // world units/s; the small UFO needs this to lead its shots
@@ -378,6 +379,7 @@ const createScene = async () => {
   };
 
   const startGame = () => {
+    if (document.getElementById("splash")) return; // the splash is still up: the game can't start behind it
     game.start();
     hud.hideTitle();
     hud.hideShipChoice();
@@ -594,11 +596,13 @@ const createScene = async () => {
   return { scene, updateViewport };
 };
 
-const loading = document.getElementById("loading");
+const splash = document.getElementById("splash");
+const splashStatus = document.getElementById("splash-status");
+const shownAt = performance.now();
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 createScene()
-  .then(({ scene, updateViewport }) => {
-    loading.remove();
+  .then(async ({ scene, updateViewport }) => {
     initAudio();
 
     engine.runRenderLoop(() => {
@@ -609,10 +613,16 @@ createScene()
       engine.resize();
       updateViewport();
     });
+
+    // The game is ready, drawing behind the splash. Keep the splash up for its
+    // minimum time, then fade it out and take it away.
+    await delay(remainingSplashTime(shownAt, performance.now(), SPLASH_MIN_MS));
+    splash.classList.add("hidden");
+    setTimeout(() => splash.remove(), 700); // after the fade has finished
   })
   .catch((error) => {
     console.error(error);
-    loading.textContent =
+    splashStatus.textContent =
       "Something went wrong starting the game. If the 3D models didn't load: a page opened straight from a file " +
       "can't load them, so run a local web server (for example `npx serve` in the repo folder) and open the page " +
       "through that. The console has the details.";

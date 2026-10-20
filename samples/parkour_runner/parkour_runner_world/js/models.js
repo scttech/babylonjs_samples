@@ -1,0 +1,89 @@
+// Loading 3D pieces (.glb files) and placing copies of them in the world.
+//
+// A street is made of the same few pieces over and over: a road tile, a
+// sidewalk tile, a dozen buildings. Loading a file for every copy would be slow
+// and wasteful, so each piece is loaded ONCE, kept hidden as a template, and
+// every copy placed in the world is an instance of that template: a new node
+// that shares the template's geometry and materials.
+//
+// Pieces come out of their files centered wherever the artist felt like.
+// centerOnGround() works out how to move a piece so it is centered on the
+// ground at its own origin: then the numbers in world.js can say "this piece is
+// here" and mean it. See ../tests/models.tests.js.
+
+// Given the corners of a piece's bounding box and the scale it will be drawn at,
+// returns the position that centers the piece on the origin (x and z) and rests
+// it on the ground (y), already in scaled units.
+function centerOnGround(min, max, scale) {
+  return {
+    x: -((min.x + max.x) / 2) * scale,
+    y: -min.y * scale,
+    z: -((min.z + max.z) / 2) * scale,
+  };
+}
+
+class PieceLibrary {
+  // `baseUrl` is the folder the .glb files are in, and `scale` how much bigger
+  // every piece is drawn than it was modeled.
+  constructor(scene, { baseUrl = "", scale = 1 } = {}) {
+    this.scene = scene;
+    this.baseUrl = baseUrl;
+    this.scale = scale;
+    this.templates = new Map(); // piece name -> the hidden original
+  }
+
+  // Loads every piece in `names` that isn't loaded yet, all at once. A piece is
+  // named "kit/file", for example "commercial/building-a" is the file
+  // commercial/building-a.glb in the base folder.
+  async load(names) {
+    const wanted = [...new Set(names)].filter((name) => !this.templates.has(name));
+    await Promise.all(wanted.map((name) => this._loadOne(name)));
+  }
+
+  async _loadOne(name) {
+    const slash = name.lastIndexOf("/") + 1;
+    const result = await BABYLON.SceneLoader.ImportMeshAsync("", `${this.baseUrl}${name.slice(0, slash)}`, `${name.slice(slash)}.glb`, this.scene);
+
+    // The first mesh is the loader's root node; everything else hangs off it.
+    const loaded = result.meshes[0];
+    const bounds = loaded.getHierarchyBoundingVectors(true);
+    const offset = centerOnGround(bounds.min, bounds.max, this.scale);
+
+    loaded.scaling.scaleInPlace(this.scale); // scaleInPlace keeps the loader's mirroring of glTF
+    loaded.position.x = offset.x;
+    loaded.position.y = offset.y;
+    loaded.position.z = offset.z;
+
+    // The template is the node copies are made from. Disabled, it is never drawn.
+    const template = new BABYLON.TransformNode(name, this.scene);
+    loaded.parent = template;
+    template.setEnabled(false);
+    this.templates.set(name, template);
+  }
+
+  // Puts a copy of a loaded piece in the world at (x, y, z), turned by
+  // rotationY radians about the vertical axis, and returns it.
+  place(name, { x = 0, y = 0, z = 0, rotationY = 0 } = {}) {
+    const template = this.templates.get(name);
+    if (!template) throw new Error(`The piece "${name}" hasn't been loaded`);
+
+    const copy = template.instantiateHierarchy(null);
+    copy.position.x = x;
+    copy.position.y = y;
+    copy.position.z = z;
+    copy.rotation.y = rotationY;
+    return copy;
+  }
+
+
+}
+
+// Plain <script> include (no bundler in this project), so export via both
+// CommonJS (for the QUnit/Node test runner) and the global scope (for
+// index.html) depending on which environment loads this file.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { centerOnGround, PieceLibrary };
+} else {
+  window.centerOnGround = centerOnGround;
+  window.PieceLibrary = PieceLibrary;
+}

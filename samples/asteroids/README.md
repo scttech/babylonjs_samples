@@ -1,5 +1,7 @@
 # Asteroids
 
+<img src="asteroids_splash.png" alt="Asteroids" width="480">
+
 An Asteroids clone built up one step at a time, in the same incremental style as the [Breakout](../breakout/) series. Each sample builds on the one before it.
 
 ## Roadmap

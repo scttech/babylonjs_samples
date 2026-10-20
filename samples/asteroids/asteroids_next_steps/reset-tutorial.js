@@ -26,9 +26,11 @@ const PLACEHOLDERS = {
   "js/models.js": "// TODO: see TUTORIAL.md, step 1.\n",
   "js/chase.js": "// TODO: see TUTORIAL.md, step 5.\n",
   "js/ships.js": "// TODO: see TUTORIAL.md, step 6.\n",
+  "js/splash.js": "// TODO: see TUTORIAL.md, step 8.\n",
   "tests/models.tests.js": "// TODO: see TUTORIAL.md, step 1.\n",
   "tests/chase.tests.js": "// TODO: see TUTORIAL.md, step 5.\n",
   "tests/ships.tests.js": "// TODO: see TUTORIAL.md, step 6.\n",
+  "tests/splash.tests.js": "// TODO: see TUTORIAL.md, step 8.\n",
 };
 
 const confirm = (question) =>

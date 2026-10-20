@@ -10,14 +10,14 @@ By the end you'll have:
 - A **ship picker** on the title screen: choose the rocket or a fighter, and the ship you pick is the one you fly
 - **Lights**, so the 3D shapes have a bright side and a dark side
 - A **chase camera** on **V**: swap the overhead view for one behind the ship, which swings around as you turn
-- A loading screen, and a helpful message if the models can't be loaded
+- A **splash screen** that covers the page while the models load, shown for at least three seconds, and a helpful message if the models can't be loaded
 - Unit tests for all of it, and the game itself checked end to end
 
 **What you'll learn:** loading `.glb` (glTF) files with `SceneLoader`, parent nodes as adjusters (wrappers that recenter and resize a model), building a mesh from `VertexData`, normals and flat shading, `StandardMaterial` lit by `HemisphericLight` and `DirectionalLight`, why enabling and disabling nodes works better than `isVisible` for models, an async `createScene`, swapping one model for another, a small data table plus a class that chooses from it, and perspective versus orthographic cameras.
 
 ## Where you're starting
 
-This folder is a copy of the finished Polish sample, plus six empty placeholder files for the new code:
+This folder is a copy of the finished Polish sample, plus eight empty placeholder files for the new code:
 
 ```
 asteroids_next_steps/
@@ -28,12 +28,14 @@ asteroids_next_steps/
 │   │   game.js, waves.js, ufo.js, explosions.js, main.js   (from the Polish sample)
 │   ├── models.js                                           (placeholder -- Step 1)
 │   ├── chase.js                                            (placeholder -- Step 5)
-│   └── ships.js                                            (placeholder -- Step 6)
+│   ├── ships.js                                            (placeholder -- Step 6)
+│   └── splash.js                                           (placeholder -- Step 8)
 └── tests/
     ├── wrap / collision / aim / ship / bullets / rocks / hud / game / waves / ufo / explosions .tests.js   (from the Polish sample)
     ├── models.tests.js                                     (placeholder -- Step 1)
     ├── chase.tests.js                                      (placeholder -- Step 5)
-    └── ships.tests.js                                      (placeholder -- Step 6)
+    ├── ships.tests.js                                      (placeholder -- Step 6)
+    └── splash.tests.js                                     (placeholder -- Step 8)
 ```
 
 ### The models
@@ -2313,12 +2315,201 @@ Things to notice:
 
 ---
 
-## Step 8: Try it
+## Step 8: A splash screen
+
+The page is only a "Loading models…" message while the ships and saucers download, and with four models that can take a moment. Asteroids has a splash picture, so show that instead, and keep it up for **at least three seconds** even if the models load faster: a splash that flashes by too quickly looks like a glitch.
+
+The picture is already in `samples/asteroids/`: `asteroids_splash.png` at full size, and `asteroids_splash_small.jpg`, a 1280-pixel-wide copy of about 200 KB instead of 2 MB. A splash that takes a long time to download defeats its own purpose.
+
+### 8a. Working out how much longer
+
+The timing is plain arithmetic, so it goes in its own file. Put this in `js/splash.js`:
+
+```js
+// The splash screen covers the page while the game loads. If the models load
+// quickly, taking the splash away at once would just make it flash by, so it
+// stays up for a minimum time. This works out how much longer that is. Times
+// are in milliseconds, and `now` and `shownAt` come from performance.now().
+// See ../tests/splash.tests.js.
+function remainingSplashTime(shownAt, now, minimum) {
+  return Math.max(0, minimum - (now - shownAt));
+}
+
+// Plain <script> include (no bundler in this project), so export via both
+// CommonJS (for the QUnit/Node test runner) and the global scope (for
+// index.html) depending on which environment loads this file.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { remainingSplashTime };
+} else {
+  window.remainingSplashTime = remainingSplashTime;
+}
+```
+
+and its tests in `tests/splash.tests.js`:
+
+```js
+QUnit.module("remainingSplashTime", () => {
+  QUnit.test("a splash that has only just appeared has the whole minimum left", (assert) => {
+    assert.strictEqual(remainingSplashTime(1000, 1000, 3000), 3000);
+  });
+
+  QUnit.test("counts down as time passes", (assert) => {
+    assert.strictEqual(remainingSplashTime(1000, 2200, 3000), 1800);
+  });
+
+  QUnit.test("is zero once exactly the minimum has passed", (assert) => {
+    assert.strictEqual(remainingSplashTime(1000, 4000, 3000), 0);
+  });
+
+  QUnit.test("never goes below zero, however long loading took", (assert) => {
+    assert.strictEqual(remainingSplashTime(1000, 90000, 3000), 0);
+  });
+
+  QUnit.test("a minimum of zero never waits", (assert) => {
+    assert.strictEqual(remainingSplashTime(0, 0, 0), 0);
+  });
+});
+```
+
+Add the script and its tests to `tests.html`:
+
+```html
+  <script src="js/splash.js"></script>
+```
+```html
+  <script src="tests/splash.tests.js"></script>
+```
+
+Reload `tests.html`: **5 more** tests, all green.
+
+### 8b. The splash itself
+
+In `index.html`, add some styles to the `<style>` block, below the `.hint a` rule:
+
+```html
+    /* The splash covers the page while the game loads, then fades away. Its dark
+       blue matches the edges of the picture, which is shown whole. */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #050818;
+      transition: opacity 0.6s ease;
+    }
+    #splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #splash img {
+      max-width: 100vw;
+      max-height: 100vh;
+    }
+    #splash p {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 5vh;
+      margin: 0;
+      padding: 0 24px;
+      text-align: center;
+      color: #fff;
+      font: 18px/1.4 system-ui, sans-serif;
+      text-shadow: 0 2px 6px #000;
+    }
+```
+
+Replace the loading message (the `<div id="loading">` line) with the splash, and add the new script after `explosions.js`:
+
+```html
+  <div id="splash">
+    <img src="../asteroids_splash_small.jpg" alt="Asteroids">
+    <p id="splash-status">Loading models&hellip;</p>
+  </div>
+```
+
+```html
+  <script src="js/explosions.js"></script>
+  <script src="js/splash.js"></script>
+```
+
+Things to notice:
+
+- **A full-screen overlay** (`position: fixed; inset: 0`) with a high `z-index` covers the whole page until it's gone.
+- **Its dark blue background** matches the edges of the picture, so if the window is a different shape from the picture there is no hard edge. The picture is shown whole (`max-width` and `max-height`), never cropped.
+- **The `hidden` class fades it out:** `opacity` goes to 0 over 0.6 seconds (that's the `transition`), and `pointer-events: none` lets clicks through while it fades.
+- **The status line sits at the bottom of the picture,** with a text shadow so it stays readable over it. It's the same text the loading message had, and it's also where an error message goes.
+
+### 8c. `js/main.js`
+
+Add a constant under `UFO_CHASE_TILT`:
+
+```js
+const SPLASH_MIN_MS = 3000; // the splash stays at least this long, even if the models load sooner
+```
+
+and replace the whole bootstrap at the bottom (everything from `const loading =` to the end of the file) with:
+
+```js
+const splash = document.getElementById("splash");
+const splashStatus = document.getElementById("splash-status");
+const shownAt = performance.now();
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+createScene()
+  .then(async ({ scene, updateViewport }) => {
+    initAudio();
+
+    engine.runRenderLoop(() => {
+      scene.render();
+    });
+
+    window.addEventListener("resize", () => {
+      engine.resize();
+      updateViewport();
+    });
+
+    // The game is ready, drawing behind the splash. Keep the splash up for its
+    // minimum time, then fade it out and take it away.
+    await delay(remainingSplashTime(shownAt, performance.now(), SPLASH_MIN_MS));
+    splash.classList.add("hidden");
+    setTimeout(() => splash.remove(), 700); // after the fade has finished
+  })
+  .catch((error) => {
+    console.error(error);
+    splashStatus.textContent =
+      "Something went wrong starting the game. If the 3D models didn't load: a page opened straight from a file " +
+      "can't load them, so run a local web server (for example `npx serve` in the repo folder) and open the page " +
+      "through that. The console has the details.";
+  });
+```
+
+Things to notice:
+
+- **`shownAt` is taken as soon as the script runs,** roughly when the splash appeared.
+- **The game draws behind the splash** as soon as it's built, with the title screen and its drifting rocks. When it's ready, `remainingSplashTime` says how much of the three seconds is left, `await delay(...)` waits that long (zero if it's already been three seconds), and only then does the splash fade.
+- **The splash is removed after the fade,** 700 ms after the `hidden` class goes on, a little longer than the 0.6-second transition, so it fades completely before it vanishes.
+- **On a failure the splash stays** and its status line is replaced by the explanation, instead of fading away and leaving a broken page.
+
+One more change. The title screen is already running behind the splash, so a quick player could press Enter and start the game where nobody can see it. In `startGame`, add a first line:
+
+```js
+    if (document.getElementById("splash")) return; // the splash is still up: the game can't start behind it
+```
+
+so it does nothing while the splash is on the page. (The splash is removed once it has faded, so afterwards `getElementById` finds nothing and the game starts as usual.)
+
+---
+
+## Step 9: Try it
 
 Serve the game (see "You need a web server" above) and open it.
 
 - [ ] The **controls hint** is in the top right, and mentions V
-- [ ] A brief **Loading models…** appears, then the title screen, with 3D, lit, faceted rocks drifting behind it
+- [ ] The **Asteroids splash** appears at once and stays for at least three seconds, then fades to the title screen, with 3D, lit, faceted rocks drifting behind it
+- [ ] Pressing **Enter** while the splash is still up does nothing; once it has gone, Enter starts the game
 - [ ] Above the title, the **rocket turns slowly**, with `<  Rocket  >` below. **←/→** (or **A/D**) swaps it for the **fighter** and back, and both are nose-up as they turn
 - [ ] The rocks have a bright side and a dark side, tumble as they spin, and each has its own lumpy shape
 - [ ] After **Enter**, the ship is the **one you chose**, back to normal size and nose first. The chosen ship stays your ship after you lose a life, or press R. Turning it turns the rocket; thrust adds a glowing orange cone out of its tail
@@ -2328,12 +2519,14 @@ Serve the game (see "You need a web server" above) and open it.
 - [ ] **V** switches to the chase view: the camera swings behind the ship, the arena's edge shows as a thin blue rectangle, and turning the ship swings the view around
 - [ ] Flying off an edge in the chase view doesn't make the camera swoop across the arena
 - [ ] **V** again returns to the overhead view exactly as it was
-- [ ] Opening the page straight from a file (not through a server) shows the explanatory message instead of a blank screen
+- [ ] Opening the page straight from a file (not through a server) keeps the splash up and shows the explanatory message on it instead of a blank screen
 
 **If something's wrong**
 
 - **A blank dark screen:** open the console (F12). A red error about a `.glb` means the models weren't found. Check you're using a server and that the folder `samples/asteroids/assets/` has the four files.
 - **`loadModel is not defined` or `ChaseCamera is not defined`:** a script tag from 7a is missing from **`index.html`**.
+- **`remainingSplashTime is not defined`:** the `splash.js` script tag is missing from **`index.html`**.
+- **The splash never goes away:** open the console (F12). A red error means the game didn't finish loading; the splash stays on purpose, with the explanation on it.
 - **`SceneLoader.ImportMeshAsync` fails or there's no loader:** the loader script in 7a is missing.
 - **The rocket looks black or very dark:** the model is reflecting nothing. Try raising `maxMetallic` in `loadModel` (it's `0.3`), or lower it toward `0`.
 - **`SHIPS is not defined` or `ShipPicker is not defined`:** the `ships.js` script tag is missing from **`index.html`** (or, in the tests, from `tests.html`).
@@ -2349,12 +2542,13 @@ Serve the game (see "You need a web server" above) and open it.
 - `rate: 1` in the `ChaseCamera` options for a lazy, swinging camera
 - In `rockPoint`, change `ROCK_DEPTH` to `1.2` for rocks that are deeper than they are wide
 - Swap which saucer is which by exchanging the two `.glb` file names in the `Promise.all`
+- Change `SPLASH_MIN_MS` to `0`, or to `8000`
 - Change `SHIP_PREVIEW_SCALE` to `1.5` for a smaller showpiece, or `dt * 3` in the title branch of the frame loop for a ship that spins like a top
 - Swap the order of the two rows in `SHIPS` to change which ship the game starts with
 
 ---
 
-## Step 9: Tests, all together
+## Step 10: Tests, all together
 
 Your `tests.html` scripts should now look like this:
 
@@ -2366,6 +2560,7 @@ Your `tests.html` scripts should now look like this:
   <script src="js/models.js"></script>
   <script src="js/ships.js"></script>
   <script src="js/chase.js"></script>
+  <script src="js/splash.js"></script>
   <script src="js/ship.js"></script>
   <script src="js/bullets.js"></script>
   <script src="js/rocks.js"></script>
@@ -2380,6 +2575,7 @@ Your `tests.html` scripts should now look like this:
   <script src="tests/models.tests.js"></script>
   <script src="tests/ships.tests.js"></script>
   <script src="tests/chase.tests.js"></script>
+  <script src="tests/splash.tests.js"></script>
   <script src="tests/ship.tests.js"></script>
   <script src="tests/bullets.tests.js"></script>
   <script src="tests/rocks.tests.js"></script>
@@ -2390,15 +2586,15 @@ Your `tests.html` scripts should now look like this:
   <script src="tests/explosions.tests.js"></script>
 ```
 
-Open it. You should see **321 passing tests** in total (322 if you added the diagonal muzzle test in the Bullets tutorial): the 233 you started with, plus 16 for the model loader, 10 net for the rocks (5 replaced by 9, and 6 new), 15 for the ship, 14 for the UFO models, 18 for the chase camera, 11 for the ship table and picker, and 4 for the HUD's ship choice.
+Open it. You should see **326 passing tests** in total (327 if you added the diagonal muzzle test in the Bullets tutorial): the 233 you started with, plus 16 for the model loader, 10 net for the rocks (5 replaced by 9, and 6 new), 15 for the ship, 14 for the UFO models, 18 for the chase camera, 11 for the ship table and picker, 4 for the HUD's ship choice, and 5 for the splash timing.
 
-> **What these tests don't cover.** They check the logic and the calls the code makes, using stand-ins for Babylon.js. They can't tell you a rocket *looks* right. That check is Step 8, with your own eyes. It's a good example of why a test suite and a play-through are different things.
+> **What these tests don't cover.** They check the logic and the calls the code makes, using stand-ins for Babylon.js. They can't tell you a rocket *looks* right. That check is Step 9, with your own eyes. It's a good example of why a test suite and a play-through are different things.
 
 > **Try breaking something.** In `rockPoint`, delete the `Math.min(..., shape.length - 1)` guard, reload `tests.html`, and see which test notices. Then put it back.
 
 ---
 
-## Step 10: Publish the sample
+## Step 11: Publish the sample
 
 **Gallery.** In the root `index.html`, find the Asteroids series and give "Asteroids Next Steps" a `slug` and `tutorial: true`:
 
@@ -2450,7 +2646,8 @@ When you're ready, ask me and I'll draft the whole README from your finished cod
 | A perspective camera that follows the ship | `ChaseCamera`, `setChase` |
 | Easing that doesn't depend on frame rate | `approach` |
 | Waiting for assets before starting | `async createScene`, `Promise.all` |
-| Failing helpfully | the `.catch` and the loading message |
+| A splash with a minimum display time | `remainingSplashTime`, `SPLASH_MIN_MS` |
+| Failing helpfully | the `.catch` and the splash's status line |
 
 ## Challenges
 

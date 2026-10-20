@@ -1,6 +1,6 @@
 # Asteroids Next Steps
 
-Step 8 of the Asteroids series, and the last. Builds on [Asteroids Polish](../asteroids_polish/README.md); the gameplay is unchanged, but everything is now **lit 3D**: procedural rocks, **3D models** for the ships and both flying saucers, a **ship picker** on the title screen, and an optional **chase camera** on **V**.
+Step 8 of the Asteroids series, and the last. Builds on [Asteroids Polish](../asteroids_polish/README.md); the gameplay is unchanged, but everything is now **lit 3D**: procedural rocks, **3D models** for the ships and both flying saucers, a **ship picker** on the title screen, an optional **chase camera** on **V**, and a **splash screen** while the models load.
 
 This sample is also a [step-by-step tutorial](TUTORIAL.md) you can work through yourself, starting from the Polish sample. Run `node reset-tutorial.js` to return this folder to the tutorial's starting point.
 
@@ -13,6 +13,8 @@ This sample is also a [step-by-step tutorial](TUTORIAL.md) you can work through 
 **Shared, hidden-then-shown saucers.** The two UFO models are loaded once and enabled while a UFO of that size is flying. They lean toward the camera in the overhead view and sit level in the chase view (`setTilt`).
 
 **Choosing a ship is data plus a tiny class.** `SHIPS` lists each ship's name, file and correcting `rotation`; `ShipPicker` only tracks which is selected and wraps at both ends. `Ship.useModel` swaps the hull while the root, the flame, the position and the angle carry over. On the title screen the real ship is the preview, scaled up and turning slowly.
+
+**A splash that doesn't flash.** The page opens on the Asteroids picture. When the game is ready, `remainingSplashTime` works out how much of a three-second minimum is left, the game waits that long, and the splash fades away. Pressing Enter while it is still up does nothing, and if loading fails the splash stays and explains what to do instead.
 
 **A chase camera made of plain numbers.** `ChaseCamera` computes where a camera behind and above the ship should be, and eases toward it with `1 - e^(-rate × dt)` so the feel doesn't depend on frame rate. It snaps instead of easing whenever the ship teleports (wrap, respawn, hyperspace).
 
@@ -113,7 +115,7 @@ camera.fov = 0.9;
 - Meshes built from `VertexData` with `ComputeNormals`
 - `setEnabled` (cascades to children) instead of `isVisible`
 - Switching between orthographic and perspective cameras, with `upVector`
-- An `async` `createScene` and a loading message
+- An `async` `createScene`, and a splash screen (a CSS-faded overlay) that explains what to do if the models can't load
 
 ## Controls
 
@@ -129,7 +131,7 @@ camera.fov = 0.9;
 
 ## Running the tests
 
-Open [tests.html](tests.html) in a browser (or click "Run tests" from the running sample). The new tests cover `fitToSize` and `loadModel` (through a stubbed `BABYLON`), the ship table and `ShipPicker`, `Ship.attachModel`/`useModel`, the saucers with models and their lean, the HUD's ship choice, `rockPoint`, and the chase camera math.
+Open [tests.html](tests.html) in a browser (or click "Run tests" from the running sample). The new tests cover `fitToSize` and `loadModel` (through a stubbed `BABYLON`), the ship table and `ShipPicker`, `Ship.attachModel`/`useModel`, the saucers with models and their lean, the HUD's ship choice, `rockPoint`, the chase camera math, and the splash timing.
 
 ## Credits
 

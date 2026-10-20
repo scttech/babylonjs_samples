@@ -40,3 +40,9 @@ A third series, building Asteroids from a single thrusting ship. See the [series
 6. [Asteroids UFO](samples/asteroids/asteroids_ufo/README.md) — an enemy saucer that crosses the screen and shoots back: big and sloppy, or small and able to lead its shots using targeting math. Also available as a [step-by-step tutorial](samples/asteroids/asteroids_ufo/TUTORIAL.md).
 7. [Asteroids Polish](samples/asteroids/asteroids_polish/README.md) — a title screen, pause, particle explosions, a risky hyperspace jump, and a looping thrust rumble. Also available as a [step-by-step tutorial](samples/asteroids/asteroids_polish/TUTORIAL.md).
 8. [Asteroids Next Steps](samples/asteroids/asteroids_next_steps/README.md) — lit 3D rocks, a choice of two 3D ships on the title screen, 3D flying saucers, and an optional chase camera. Also available as a [step-by-step tutorial](samples/asteroids/asteroids_next_steps/TUTORIAL.md).
+
+## Parkour Runner
+
+A fourth series, and the first in real 3D from the start: an endless parkour runner through a city street, with a third-person camera and animated characters. See the [series roadmap](samples/parkour_runner/README.md).
+
+1. [Parkour Runner World](samples/parkour_runner/parkour_runner_world/README.md) — a city street built from real 3D pieces, with fog and lights, a camera you can walk down it, and a splash screen. Also available as a [step-by-step tutorial](samples/parkour_runner/parkour_runner_world/TUTORIAL.md).
