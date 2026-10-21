@@ -113,4 +113,4 @@ The 3D models are CC0 models from [Kenney](https://www.kenney.nl) (the street) a
 
 ## Next up
 
-**Parkour Runner Moves** gives the runner a jump, a slide, a roll and a vault, played with the character's animation clips.
+[Parkour Runner Moves](../parkour_runner_moves/README.md) gives the runner a jump, a slide and a roll, played with the character's animation clips.
