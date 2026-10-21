@@ -121,4 +121,4 @@ The 3D models are CC0 models from [Kenney](https://www.kenney.nl) (the street) a
 
 ## Next up
 
-**Parkour Runner Street** makes the street endless, recycling the pieces behind the runner so it never runs out.
+[Parkour Runner Street](../parkour_runner_street/README.md) makes the street endless, recycling the pieces behind the runner so it never runs out.

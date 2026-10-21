@@ -1,4 +1,4 @@
-const assertClose = (assert, actual, expected, tolerance, message) =>
+const assertNear = (assert, actual, expected, tolerance, message) =>
   assert.true(Math.abs(actual - expected) <= tolerance, message || `expected ${actual} to be within ${tolerance} of ${expected}`);
 
 QUnit.module("laneX", () => {
@@ -38,11 +38,11 @@ QUnit.module("approach", () => {
     const half = approach(approach(0, 10, 7, 0.1), 10, 7, 0.1);
     const whole = approach(0, 10, 7, 0.2);
 
-    assertClose(assert, half, whole, 1e-9);
+    assertNear(assert, half, whole, 1e-9);
   });
 
   QUnit.test("closes about 63% of the gap in 1 / rate seconds", (assert) => {
-    assertClose(assert, approach(0, 10, 4, 0.25), 10 * (1 - Math.exp(-1)), 1e-9);
+    assertNear(assert, approach(0, 10, 4, 0.25), 10 * (1 - Math.exp(-1)), 1e-9);
   });
 });
 
@@ -110,7 +110,7 @@ QUnit.module("Runner", () => {
 
     for (let i = 0; i < 120; i++) runner.update(1 / 60);
 
-    assertClose(assert, runner.x, -LANE_WIDTH, 1e-3);
+    assertNear(assert, runner.x, -LANE_WIDTH, 1e-3);
   });
 
   QUnit.test("sliding takes the same time at any frame rate", (assert) => {
@@ -122,7 +122,7 @@ QUnit.module("Runner", () => {
     for (let i = 0; i < 10; i++) slow.update(0.05);
     for (let i = 0; i < 50; i++) fast.update(0.01);
 
-    assertClose(assert, slow.x, fast.x, 1e-9);
+    assertNear(assert, slow.x, fast.x, 1e-9);
   });
 
   QUnit.test("update() runs forward at the run speed", (assert) => {
@@ -182,7 +182,7 @@ QUnit.module("Runner", () => {
 
     assert.true(right.heading > 0, "right is positive");
     assert.true(left.heading < 0, "left is negative");
-    assertClose(assert, right.heading, -left.heading, 1e-9, "the same amount either way");
+    assertNear(assert, right.heading, -left.heading, 1e-9, "the same amount either way");
   });
 
   QUnit.test("heading is a lean, never a full turn sideways", (assert) => {
@@ -200,7 +200,7 @@ QUnit.module("Runner", () => {
 
     for (let i = 0; i < 300; i++) runner.update(1 / 60);
 
-    assertClose(assert, runner.heading, 0, 1e-3);
+    assertNear(assert, runner.heading, 0, 1e-3);
   });
 
   QUnit.test("reset() goes back to the start, in the starting lane, running again", (assert) => {
