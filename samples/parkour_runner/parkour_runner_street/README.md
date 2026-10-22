@@ -1,6 +1,6 @@
 # Parkour Runner Street
 
-<img src="../parkour_runner_splash.png" alt="Parkour Runner" width="480">
+<img src="../assets/images/parkour_runner_splash.png" alt="Parkour Runner" width="480">
 
 Step 3 of the Parkour Runner series. Builds on [Parkour Runner Runner](../parkour_runner_runner/README.md), reusing its runner, lanes, animation and camera. What's new is the street: it is now **endless**. The runner can run as far as you like, and the street never ends and never gets bigger. Pieces are made a little way ahead of him, and the ones far behind are recycled and used again in front.
 

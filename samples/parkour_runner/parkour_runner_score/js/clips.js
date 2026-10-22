@@ -1,0 +1,129 @@
+// The runner's animation clips: which one plays now, and the choice of clip for
+// what the runner is doing. The character file holds one named clip per
+// movement ("Idle_Loop", "Sprint_Loop", ...), and this plays one at a time. It
+// only needs objects that can start() and stop(), so it is easy to test; main.js
+// gives it the real animation groups. See ../tests/clips.tests.js.
+
+// The clips this sample uses, by what the runner is doing.
+const CLIPS = {
+  idle: "Idle_Loop",
+  run: "Sprint_Loop",
+  jump: "Jump_Start",
+  slideStart: "Slide_Start",
+  slideExit: "Slide_Exit",
+  roll: "Roll",
+  vault: "NinjaJump_Start",
+  crash: "Death01",
+};
+
+// The clips were recorded slower than a game wants a jump or a roll to last. A
+// speed of 2 plays a clip in half the time, so it ends about when the move does.
+const JUMP_CLIP_SPEED = 2.2; // the jump clip is 1.33 seconds; the jump in the air is about 0.6
+const SLIDE_START_CLIP_SPEED = 2.2; // down into the slide in about 0.4 seconds
+const SLIDE_EXIT_CLIP_SPEED = 1.7; // and back up in about 0.3
+const SLIDE_EXIT_TIME = 0.3; // so the exit clip starts when this many seconds of the slide are left
+const ROLL_CLIP_SPEED = 2.2; // the roll clip is 1.47 seconds, but its last third is a slow stand-up, so the roll is cut short (0.55) and the sprint takes over
+const VAULT_CLIP_SPEED = 1.8; // the vault clip is 0.97 seconds; the vault is about 0.5
+const CRASH_CLIP_SPEED = 1.5; // the crash clip is 2.4 seconds: a fall, then lying still
+
+// The slide clip lowers the character until his hand and arm dip a few
+// centimeters into the street (about 4 in the held pose, and up to 8 on the way
+// down). Raising the whole model while he slides keeps them out. (It's 5 and not
+// 9: the street's top is at y = 0 now, so this only has to cover what the pose dips.)
+const SLIDE_LIFT = 0.05;
+
+// The crash clip lays him on his back, and his arm and head dip a few centimeters
+// (about 3, and 4 on the way down) below the street the same way.
+const CRASH_LIFT = 0.04;
+
+// A vault is a jump with a lean: he pitches forward over the barrier with his hands
+// out, which is what makes it look different from a jump. This is how far, in
+// radians, and main.js eases toward it like the lift.
+const VAULT_PITCH = 0.5;
+
+function pitchFor(runner) {
+  return runner.move === MOVES.vault ? VAULT_PITCH : 0;
+}
+
+// How far to raise the character above where the runner is, for the move he is
+// doing. main.js eases toward it, so the model glides up and down instead of hopping.
+function liftFor(runner) {
+  if (runner.move === MOVES.slide) return SLIDE_LIFT;
+  if (runner.move === MOVES.crash) return CRASH_LIFT;
+  return 0;
+}
+
+// The clip for a runner: { name, loop, speed }. Moves play once, at the speed that
+// fits them; running and standing loop. A slide is two clips: down into the
+// slide, which then holds its last pose, and up out of it at the end.
+function clipFor(runner) {
+  switch (runner.move) {
+    case MOVES.jump:
+      return { name: CLIPS.jump, loop: false, speed: JUMP_CLIP_SPEED };
+    case MOVES.slide:
+      return runner.timeLeft > SLIDE_EXIT_TIME
+        ? { name: CLIPS.slideStart, loop: false, speed: SLIDE_START_CLIP_SPEED }
+        : { name: CLIPS.slideExit, loop: false, speed: SLIDE_EXIT_CLIP_SPEED };
+    case MOVES.roll:
+      return { name: CLIPS.roll, loop: false, speed: ROLL_CLIP_SPEED };
+    case MOVES.vault:
+      return { name: CLIPS.vault, loop: false, speed: VAULT_CLIP_SPEED };
+    case MOVES.crash:
+      return { name: CLIPS.crash, loop: false, speed: CRASH_CLIP_SPEED };
+    default:
+            // Running plays faster as the runner does, so his feet keep up with the street.
+      return { name: runner.running ? CLIPS.run : CLIPS.idle, loop: true, speed: runner.running ? runner.speed / RUN_SPEED : 1 };
+  }
+}
+
+
+class ClipPlayer {
+  // `clips` is a Map from a clip's name to its animation group.
+  // `clips` is a Map from a clip's name to its animation group.
+  constructor(clips) {
+    this.clips = clips;
+    this.current = null; // the name of the clip playing now, if any
+    this.speed = 1; // and how fast it is playing
+  }
+
+  // Plays the named clip and stops whichever was playing. `loop` says whether it
+  // repeats or plays once and holds its last pose, and `speed` how fast (1 is as
+  // recorded). Asking for the clip that is already playing does nothing, except
+  // follow a change of speed (a runner who is speeding up): it doesn't start again,
+  // it just plays faster. So it is safe to call every frame.
+  play(name, { loop = true, speed = 1 } = {}) {
+    if (name === this.current) {
+      if (speed !== this.speed) {
+        this.clips.get(name).speedRatio = speed;
+        this.speed = speed;
+      }
+      return;
+    }
+    const next = this.clips.get(name);
+    if (!next) throw new Error(`The character has no clip called "${name}"`);
+
+    if (this.current) this.clips.get(this.current).stop();
+    next.start(loop, speed);
+    this.current = name;
+    this.speed = speed;
+  }
+
+  // Stops whichever clip is playing.
+  stop() {
+    if (this.current) this.clips.get(this.current).stop();
+    this.current = null;
+  }
+
+
+}
+
+// Plain <script> include (no bundler in this project), so export via both
+// CommonJS (for the QUnit/Node test runner) and the global scope (for
+// index.html) depending on which environment loads this file.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { CLIPS, SLIDE_EXIT_TIME, SLIDE_LIFT, CRASH_LIFT, VAULT_PITCH, clipFor, liftFor, pitchFor, ClipPlayer };
+} else {
+  Object.assign(window, { CLIPS, SLIDE_EXIT_TIME, SLIDE_LIFT, CRASH_LIFT, VAULT_PITCH, clipFor, liftFor, pitchFor, ClipPlayer });
+}
+
+

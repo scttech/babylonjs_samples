@@ -1,6 +1,6 @@
 # Parkour Runner World
 
-<img src="../parkour_runner_splash.png" alt="Parkour Runner" width="480">
+<img src="../assets/images/parkour_runner_splash.png" alt="Parkour Runner" width="480">
 
 Step 1 of the Parkour Runner series. Nobody is running yet: this sample builds the **city street** the runner will run through, and lets you walk a camera down it to look around. It's real 3D from the start: models for the road, sidewalks, buildings and street lights, a perspective camera, fog and two lights. A **splash screen** covers the page while the street loads and stays for at least three seconds.
 

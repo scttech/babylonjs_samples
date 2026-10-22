@@ -1,6 +1,6 @@
 # Parkour Runner Moves
 
-<img src="../parkour_runner_splash.png" alt="Parkour Runner" width="480">
+<img src="../assets/images/parkour_runner_splash.png" alt="Parkour Runner" width="480">
 
 Step 4 of the Parkour Runner series. Builds on [Parkour Runner Street](../parkour_runner_street/README.md), reusing its endless street, runner, lanes and camera. What's new is what the runner can *do*: **jump** (↑ / W / Space), **slide** low (↓ / S), and **dive** out of the air into a **roll** (↓ / S while jumping). There are no obstacles yet, but each move already changes how tall the runner is, which is what obstacles will care about in the next step.
 

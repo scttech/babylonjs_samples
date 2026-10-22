@@ -1,6 +1,6 @@
 # Parkour Runner Runner
 
-<img src="../parkour_runner_splash.png" alt="Parkour Runner" width="480">
+<img src="../assets/images/parkour_runner_splash.png" alt="Parkour Runner" width="480">
 
 Step 2 of the Parkour Runner series. Builds on [Parkour Runner World](../parkour_runner_world/README.md), reusing its street, fog, lights and splash screen. What's new is the **runner**: an animated character who runs down the street by himself, **eases between three lanes** when you press ←/→, and is followed by a camera from behind. At the end of the street he stops and stands.
 

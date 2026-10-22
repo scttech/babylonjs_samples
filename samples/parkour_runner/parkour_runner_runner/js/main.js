@@ -7,6 +7,7 @@ const FOG_DENSITY = 0.014;
 const STREET_ROWS = 24; // how many road tiles long the street is
 const SEED = 7; // the same seed gives the same street every load
 const SPLASH_MIN_MS = 3000; // the splash stays at least this long, even if the street loads sooner
+let started = false; // the run waits for the splash to go, so the player sees it from the start
 
 
 // The camera follows the runner, a little above and behind, looking down the street.
@@ -80,7 +81,7 @@ const createScene = async () => {
 
   scene.onBeforeRenderObservable.add(() => {
     // Clamp dt so a backgrounded tab doesn't throw the runner down the street.
-    const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
+    const dt = started ? Math.min(engine.getDeltaTime() / 1000, 0.05) : 0;
     runner.update(dt);
 
     // Put the character where the runner is, turned a little into a lane change.
@@ -115,6 +116,7 @@ createScene()
     // minimum time, then fade it out and take it away.
     await delay(remainingSplashTime(shownAt, performance.now(), SPLASH_MIN_MS));
     splash.classList.add("hidden");
+    started = true;
     setTimeout(() => splash.remove(), 700); // after the fade has finished
   })
   .catch((error) => {

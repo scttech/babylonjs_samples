@@ -1103,7 +1103,7 @@ and change `CAMERA_START_Z` to `RUNNER_START_Z - CAMERA_DISTANCE`:
 
   scene.onBeforeRenderObservable.add(() => {
     // Clamp dt so a backgrounded tab doesn't throw the runner down the street.
-    const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
+    const dt = started ? Math.min(engine.getDeltaTime() / 1000, 0.05) : 0;
     runner.update(dt);
 
     // Put the character where the runner is, turned a little into a lane change.

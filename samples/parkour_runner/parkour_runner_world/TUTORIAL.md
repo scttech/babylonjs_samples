@@ -21,8 +21,7 @@ This folder holds only empty placeholder files for the code you'll write. The 3D
 
 ```
 parkour_runner/
-├── assets/                                         (the 3D pieces, shared by the series)
-├── parkour_runner_splash.png, parkour_runner_splash_small.jpg
+├── assets/                                         (the 3D pieces and the images, shared by the series)
 └── parkour_runner_world/
     ├── index.html                                  (placeholder -- Step 1)
     ├── tests.html                                  (placeholder -- Step 2)
@@ -1562,7 +1561,7 @@ Replace the loading message (the `<div id="loading">` line) with the splash, and
 
 ```html
   <div id="splash">
-    <img src="../parkour_runner_splash_small.jpg" alt="Parkour Runner">
+    <img src="../assets/images/parkour_runner_splash_small.jpg" alt="Parkour Runner">
     <p id="splash-status">Loading the street&hellip;</p>
   </div>
 ```
@@ -1577,15 +1576,24 @@ Things to notice:
 - **A full-screen overlay** (`position: fixed; inset: 0`) with a high `z-index` covers everything, including the back button and hint, until it's gone.
 - **Its background is white** because the picture's own background is white, so the picture has no visible edge.
 - **The `hidden` class fades it out:** `opacity` goes to 0 over 0.6 seconds (that's the `transition`), and `pointer-events: none` lets clicks through while it fades.
-- **`parkour_runner_splash_small.jpg`** is a 960-pixel-wide copy of the full-size splash, about 145 KB instead of 1.6 MB. A splash that takes a long time to download defeats its own purpose.
+- **`assets/images/parkour_runner_splash_small.jpg`** is a 960-pixel-wide copy of the full-size splash, about 145 KB instead of 1.6 MB. A splash that takes a long time to download defeats its own purpose.
 
 ### 6c. `js/main.js`
 
-Add a constant below `SEED`:
+Add a constant and a flag below `SEED`:
 
 ```js
 const SPLASH_MIN_MS = 3000; // the splash stays at least this long, even if the street loads sooner
+let started = false; // the run waits for the splash to go, so the player sees it from the start
 ```
+
+The street is built, and drawing, behind the splash, so without the flag the camera would walk down it (and in later steps, the runner would run) while the splash was still up. In the frame loop in `createScene` (the `scene.onBeforeRenderObservable.add` callback), change the line that works out `dt` to:
+
+```js
+    const dt = started ? Math.min(engine.getDeltaTime() / 1000, 0.05) : 0;
+```
+
+Everything moves by `dt` seconds, so with none, nothing moves. Then, in the bootstrap below, `started` is set when the splash goes.
 
 and replace the whole bootstrap at the bottom (everything from `const loading =` to the end of the file) with:
 
@@ -1609,6 +1617,7 @@ createScene()
     // minimum time, then fade it out and take it away.
     await delay(remainingSplashTime(shownAt, performance.now(), SPLASH_MIN_MS));
     splash.classList.add("hidden");
+    started = true; // and now the run can begin
     setTimeout(() => splash.remove(), 700); // after the fade has finished
   })
   .catch((error) => {

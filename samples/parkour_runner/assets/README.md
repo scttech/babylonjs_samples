@@ -10,6 +10,7 @@ The 3D models used by the Parkour Runner samples. All of them are CC0 (public do
 | `industrial/` | Shipping containers, a water tower, factory buildings | Obstacles to jump or vault, and scenery |
 | `suburban/` | Fences, a planter and trees | Low obstacles and scenery |
 | `pickups/` | A coin, gems, a heart, a star and a bolt | Things to collect |
+| `images/` | The Parkour Runner logo, full size and a small copy for the splash screen | The READMEs and the splash screen |
 
 ## The runner's clips
 

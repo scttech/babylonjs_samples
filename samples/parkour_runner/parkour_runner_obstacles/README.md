@@ -1,6 +1,6 @@
 # Parkour Runner Obstacles
 
-<img src="../parkour_runner_splash.png" alt="Parkour Runner" width="480">
+<img src="../assets/images/parkour_runner_splash.png" alt="Parkour Runner" width="480">
 
 Step 5 of the Parkour Runner series. Builds on [Parkour Runner Moves](../parkour_runner_moves/README.md), reusing its runner, moves, endless street and camera. What's new is what gets in the way: **barriers** to jump or vault, **overhead bars** to slide under, and **containers** that only a lane change avoids. Hit one and the runner falls over, a message appears, and **R** starts the run again. The runner also learns a new move: the **vault**.
 
@@ -111,4 +111,4 @@ The 3D models are CC0 models from [Kenney](https://www.kenney.nl) (the street an
 
 ## Next up
 
-**Parkour Runner Score** adds coins to collect, a distance counter, a speed that rises as you go, and a combo for clean moves.
+[**Parkour Runner Score**](../parkour_runner_score/README.md) adds coins to collect, a distance counter, a speed that rises as you go, and a combo for clean moves.
