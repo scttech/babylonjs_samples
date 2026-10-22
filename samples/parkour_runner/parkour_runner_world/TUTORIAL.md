@@ -219,6 +219,12 @@ const WORLD_SCALE = 7;
 // One road tile is one row: this many world units long.
 const TILE = WORLD_SCALE;
 
+// The road and sidewalk tiles are a thin slab, 0.02 units thick as modeled, so
+// 0.14 after the scale. They are drawn sunk by this much, so the top of the street
+// is y = 0 and everything that stands on it (the runner, the obstacles, the lamps)
+// stands at y = 0 too.
+const ROAD_HEIGHT = 0.02 * WORLD_SCALE;
+
 // The sidewalk tiles sit right beside the road, and the buildings start a
 // little way into them, so about 4 units of sidewalk show in front of each.
 const SIDEWALK_X = TILE; // center of a sidewalk tile, to the left and right of the road
@@ -238,15 +244,16 @@ const FACE_RIGHT_SIDE = Math.PI / 2;
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDING_GAP, LIGHT_EVERY };
+  module.exports = { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDING_GAP, LIGHT_EVERY };
 } else {
-  Object.assign(window, { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDING_GAP, LIGHT_EVERY });
+  Object.assign(window, { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDING_GAP, LIGHT_EVERY });
 }
 ```
 
 Things to notice:
 
 - **The scale.** The Kenney pieces were drawn about seven times too small for the runner who arrives in the next step (a person is 1.83 units tall, but a road tile is 1 unit wide and a shipping container is 0.35 units tall). Drawing every piece seven times bigger makes a road tile seven units wide and a container about as tall as a real one.
+- **The road is sunk.** The road and sidewalk tiles are a thin slab, 0.02 units thick as modeled, which is 0.14 after the scale. If they were drawn standing on the ground, the *top* of the street would be 0.14 up, and anything standing on it at y = 0 (the runner, in the next tutorial) would have its feet inside the road. So `ROAD_HEIGHT` is the slab's thickness, and the tiles are drawn that far *below* the ground (you'll see it in Step 2e), which puts the top of the street at y = 0.
 - **The street runs along +z**, so a "row" of the street is one road tile long, `TILE` units. Rows are what the road and sidewalk tiles line up with.
 - **The sidewalks and buildings sit to the left and right.** A sidewalk tile's center is `SIDEWALK_X` from the middle, right beside the road. A building's *front* stands at `BUILDING_EDGE_X`, a little way into the sidewalk tile, so about four units of sidewalk show in front of each building.
 - **Which way do buildings face?** Every Kenney building comes out of its file facing **-z**, toward the camera at the start. To face one at the street from the side, it needs a quarter turn: +π/2 faces it toward -x (a building on the right looks back at the street), and -π/2 toward +x (the left side).
@@ -279,9 +286,9 @@ and replace the export block with:
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDING_GAP, LIGHT_EVERY, seededRandom };
+  module.exports = { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDING_GAP, LIGHT_EVERY, seededRandom };
 } else {
-  Object.assign(window, { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDING_GAP, LIGHT_EVERY, seededRandom });
+  Object.assign(window, { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDING_GAP, LIGHT_EVERY, seededRandom });
 }
 ```
 
@@ -379,9 +386,9 @@ and update the export block to add `BUILDINGS`:
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom };
+  module.exports = { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom };
 } else {
-  Object.assign(window, { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom });
+  Object.assign(window, { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom });
 }
 ```
 
@@ -440,9 +447,9 @@ and add `layoutSide` to the export block:
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide };
+  module.exports = { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide };
 } else {
-  Object.assign(window, { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide });
+  Object.assign(window, { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide });
 }
 ```
 
@@ -470,9 +477,9 @@ function streetLayout({ rows, random = Math.random, firstZ = -TILE } = {}) {
   for (let i = 0; i < rows; i++) {
     const z = firstZ + i * TILE;
     // The road tile is drawn running along x, so turn it a quarter turn to run along z.
-    placements.push({ piece: "roads/road_straight", x: 0, z, rotationY: Math.PI / 2 });
-    placements.push({ piece: "roads/tile_low", x: -SIDEWALK_X, z, rotationY: 0 });
-    placements.push({ piece: "roads/tile_low", x: SIDEWALK_X, z, rotationY: 0 });
+    placements.push({ piece: "roads/road_straight", x: 0, y: -ROAD_HEIGHT, z, rotationY: Math.PI / 2 });
+    placements.push({ piece: "roads/tile_low", x: -SIDEWALK_X, y: -ROAD_HEIGHT, z, rotationY: 0 });
+    placements.push({ piece: "roads/tile_low", x: SIDEWALK_X, y: -ROAD_HEIGHT, z, rotationY: 0 });
 
     if (i % LIGHT_EVERY === 0) {
       // Alternate sides, with the lamp's arm reaching over the road.
@@ -496,16 +503,16 @@ and add `streetLayout` to the exports:
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout };
+  module.exports = { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout };
 } else {
-  Object.assign(window, { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout });
+  Object.assign(window, { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout });
 }
 ```
 
 Things to notice:
 
 - **Every placement is `{ piece, x, z, rotationY }`** and nothing else. That's the whole interface between this file and the rest of the game.
-- **Each row gets a road tile and two sidewalks.** The road tile is modeled running along x, so it's turned a quarter turn to run along z.
+- **Each row gets a road tile and two sidewalks,** drawn sunk by `ROAD_HEIGHT` so their tops are at y = 0. The road tile is modeled running along x, so it's turned a quarter turn to run along z.
 - **Street lights alternate sides.** `(i / LIGHT_EVERY) % 2` is 0 for the first light, 1 for the second, and so on, so they zig-zag down the street. Each lamp's arm points along the piece's +z, so a quarter turn reaches it over the road: +π/2 turns +z into +x (for a lamp on the left) and -π/2 turns it into -x (for the right).
 - **`firstZ` defaults to one row behind the start (`-TILE`),** so there is street *behind* the camera too.
 
@@ -682,9 +689,9 @@ and replace the export block with the final version, which adds `piecesUsed` to 
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout, piecesUsed };
+  module.exports = { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout, piecesUsed };
 } else {
-  Object.assign(window, { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout, piecesUsed });
+  Object.assign(window, { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout, piecesUsed });
 }
 ```
 

@@ -18,7 +18,7 @@ This sample is also a [step-by-step tutorial](TUTORIAL.md) you can work through 
 
 **Animation chosen from state.** `clipFor(runner)` returns `{ name, loop, speed }`. Moves play once and hold their last pose. The clips were recorded slower than a game wants a move to last, so they're sped up to fit: the 1.33-second jump clip plays at 2.2 times speed for a 0.6-second jump. A slide is two clips: down into the slide, which holds, and back up for the last 0.3 seconds.
 
-**Keeping a hand out of the ground.** The slide clip lowers the character until his hand dips a few centimeters into the street. `liftFor` raises the model 9 cm while he slides, and `main.js` eases toward it so the model glides up and down instead of hopping.
+**Keeping a hand out of the ground.** The slide clip lowers the character until his hand dips a few centimeters into the street. `liftFor` raises the model 5 cm while he slides (the top of the street is at y = 0, so it only covers what the pose dips), and `main.js` eases toward it so the model glides up and down instead of hopping.
 
 **A camera that doesn't bob.** The camera copies only 40% of the runner's height, so a jump lifts the runner in the picture but doesn't throw the whole view up and down.
 
@@ -121,4 +121,4 @@ The 3D models are CC0 models from [Kenney](https://www.kenney.nl) (the street) a
 
 ## Next up
 
-**Parkour Runner Obstacles** puts barriers, fences and containers in the runner's way: low ones to jump, high ones to slide under, and ones to vault, with collisions that use the runner's height.
+[Parkour Runner Obstacles](../parkour_runner_obstacles/README.md) puts barriers, overhead bars and containers in the runner's way: low ones to jump or vault, high ones to slide under, and walls to dodge, with collisions that use the runner's height.

@@ -15,6 +15,12 @@ const WORLD_SCALE = 7;
 // One road tile is one row: this many world units long.
 const TILE = WORLD_SCALE;
 
+// The road and sidewalk tiles are a thin slab, 0.02 units thick as modeled, so
+// 0.14 after the scale. They are drawn sunk by this much, so the top of the street
+// is y = 0 and everything that stands on it (the runner, the obstacles, the lamps)
+// stands at y = 0 too.
+const ROAD_HEIGHT = 0.02 * WORLD_SCALE;
+
 // The sidewalk tiles sit right beside the road, and the buildings start a
 // little way into them, so about 4 units of sidewalk show in front of each.
 const SIDEWALK_X = TILE; // center of a sidewalk tile, to the left and right of the road
@@ -98,9 +104,9 @@ function streetLayout({ rows, random = Math.random, firstZ = -TILE } = {}) {
   for (let i = 0; i < rows; i++) {
     const z = firstZ + i * TILE;
     // The road tile is drawn running along x, so turn it a quarter turn to run along z.
-    placements.push({ piece: "roads/road_straight", x: 0, z, rotationY: Math.PI / 2 });
-    placements.push({ piece: "roads/tile_low", x: -SIDEWALK_X, z, rotationY: 0 });
-    placements.push({ piece: "roads/tile_low", x: SIDEWALK_X, z, rotationY: 0 });
+    placements.push({ piece: "roads/road_straight", x: 0, y: -ROAD_HEIGHT, z, rotationY: Math.PI / 2 });
+    placements.push({ piece: "roads/tile_low", x: -SIDEWALK_X, y: -ROAD_HEIGHT, z, rotationY: 0 });
+    placements.push({ piece: "roads/tile_low", x: SIDEWALK_X, y: -ROAD_HEIGHT, z, rotationY: 0 });
 
     if (i % LIGHT_EVERY === 0) {
       // Alternate sides, with the lamp's arm reaching over the road.
@@ -126,8 +132,8 @@ function piecesUsed(placements) {
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout, piecesUsed };
+  module.exports = { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout, piecesUsed };
 } else {
-  Object.assign(window, { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout, piecesUsed });
+  Object.assign(window, { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, layoutSide, streetLayout, piecesUsed });
 }
 

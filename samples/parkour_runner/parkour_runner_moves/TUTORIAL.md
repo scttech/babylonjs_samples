@@ -61,7 +61,7 @@ It asks for confirmation, then replaces `index.html`, `tests.html`, `js/` and `t
 
 ---
 
-Serve the page and open it to confirm it still works: the runner runs down the endless street. Open `tests.html` too and note how many tests pass (**131**); you'll watch that number grow. Keep the developer console open (F12) as you work.
+Serve the page and open it to confirm it still works: the runner runs down the endless street. Open `tests.html` too and note how many tests pass (**133**); you'll watch that number grow. Keep the developer console open (F12) as you work.
 
 ---
 
@@ -528,7 +528,7 @@ QUnit.module("Runner moves", () => {
 });
 ```
 
-Reload `tests.html`: **21 more** tests (**152** in all), all green. Look at *"a jump takes the same time at any frame rate"*, which runs the same jump in 20 steps of 10 ms and in 4 steps of 50 ms and checks they agree, and *"a dive gets to the ground much sooner than a plain jump"*.
+Reload `tests.html`: **21 more** tests (**154** in all), all green. Look at *"a jump takes the same time at any frame rate"*, which runs the same jump in 20 steps of 10 ms and in 4 steps of 50 ms and checks they agree, and *"a dive gets to the ground much sooner than a plain jump"*.
 
 ---
 
@@ -557,8 +557,9 @@ const ROLL_CLIP_SPEED = 2.2; // the roll clip is 1.47 seconds, but its last thir
 
 // The slide clip lowers the character until his hand and arm dip a few
 // centimeters into the street (about 4 in the held pose, and up to 8 on the way
-// down). Raising the whole model by this much while he slides keeps them out.
-const SLIDE_LIFT = 0.09;
+// down). Raising the whole model while he slides keeps them out. (The street's top
+// is at y = 0, so this only has to cover what the pose dips below it.)
+const SLIDE_LIFT = 0.05;
 
 // How far to raise the character above where the runner is, for the move he is
 // doing. main.js eases toward it, so the model glides up and down instead of hopping.
@@ -592,7 +593,7 @@ Things to notice:
 - **Speed fits the clip to the move.** The jump clip is 1.33 seconds long but the jump in the air lasts about 0.6, so it's played at 2.2 times speed. The roll clip is 1.47 seconds, but the last third of it is a slow stand-up that a runner who keeps running doesn't want. So the roll lasts 0.55 seconds and the clip is played at 2.2 times speed, which hands over to the sprint just as he is back at running height. (An earlier version let the whole clip play, and the runner stood still for a moment before running again.) If you change a move's time in `runner.js`, these are the numbers that follow.
 - **A slide is two clips.** While more than `SLIDE_EXIT_TIME` of the slide is left it plays `Slide_Start`, which drops into the slide and holds. For the last 0.3 seconds, the runner's `timeLeft` runs low enough to switch to `Slide_Exit`, which gets back up in time for the end of the slide.
 - **A `switch` on the move,** with the old rule (sprint or stand) as the default.
-- **`liftFor` keeps his hand out of the ground.** The slide clip drops the character very low, and his hand and arm dip a few centimeters into the street (the lowest point of the skinned model is about 4 cm below the ground in the held pose, and 8 cm on the way down). It's a fault in how the clip meets a flat floor, not a bug in the code, and the usual fix is to raise the whole model by about that much while the clip plays. `SLIDE_LIFT` is 9 cm, and `liftFor` says when to apply it. `main.js` eases toward it in Step 4, so the model glides up instead of hopping.
+- **`liftFor` keeps his hand out of the ground.** The slide clip drops the character very low, and his hand and arm dip a few centimeters into the street (the lowest point of the skinned model is about 4 cm below the ground in the held pose, and 8 cm on the way down). It's a fault in how the clip meets a flat floor, not a bug in the code, and the usual fix is to raise the whole model by about that much while the clip plays. `SLIDE_LIFT` is 5 cm, enough to clear the held pose (the dip is a little deeper for a moment on the way down). The top of the street is at y = 0, because the World tutorial drew the road tiles sunk by their thickness, so the lift only has to cover what the pose dips, not the road too. `liftFor` says when to apply it. `main.js` eases toward it in Step 4, so the model glides up instead of hopping.
 
 Now `ClipPlayer` has to pass the loop and speed on. Replace its `play` method with:
 
@@ -869,7 +870,7 @@ QUnit.module("liftFor", () => {
 });
 ```
 
-Reload `tests.html`: **10 more** tests (**162** in all), all green.
+Reload `tests.html`: **10 more** tests (**164** in all), all green.
 
 ---
 
@@ -973,7 +974,7 @@ QUnit.module("followPosition", () => {
 });
 ```
 
-Reload `tests.html`: **2 more** tests (**164** in all), all green.
+Reload `tests.html`: **2 more** tests (**166** in all), all green.
 
 ---
 
@@ -1104,7 +1105,7 @@ Serve the page and open it.
 
 ## Step 6: Tests, all together
 
-Your `tests.html` should be unchanged from the start of this step: the same scripts, no new files. Open it. You should see **164 passing tests**: the 131 you started with, plus 21 for the moves, 10 for the clips and 2 for the camera.
+Your `tests.html` should be unchanged from the start of this step: the same scripts, no new files. Open it. You should see **166 passing tests**: the 133 you started with, plus 21 for the moves, 10 for the clips and 2 for the camera.
 
 > **What these tests don't cover.** They check the logic and the calls the code makes, using stand-ins for Babylon.js. They can't tell you a jump *feels* right, or that a slide looks like a slide. That check is Step 5, with your own eyes. It's a good example of why a test suite and a play-through are different things.
 

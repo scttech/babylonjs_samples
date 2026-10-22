@@ -12,7 +12,7 @@ An endless parkour runner through a city street, built up one step at a time in 
 | 2 | [Parkour Runner Runner](parkour_runner_runner/README.md) ([tutorial](parkour_runner_runner/TUTORIAL.md)) | An animated character with clips and blending, easing between three lanes, a follow camera |
 | 3 | [Parkour Runner Street](parkour_runner_street/README.md) ([tutorial](parkour_runner_street/TUTORIAL.md)) | An endless street: streaming pieces in ahead, recycling them from behind with a pool |
 | 4 | [Parkour Runner Moves](parkour_runner_moves/README.md) ([tutorial](parkour_runner_moves/TUTORIAL.md)) | Jump, slide, and dive into a roll: a state machine, exact gravity, and clips played to fit each move |
-| 5 | Parkour Runner Obstacles | Barriers, fences and containers to jump, slide under or vault, and collisions that use the runner's height |
+| 5 | [Parkour Runner Obstacles](parkour_runner_obstacles/README.md) ([tutorial](parkour_runner_obstacles/TUTORIAL.md)) | Barriers to jump or vault, bars to slide under, containers to dodge; box collisions that use the runner's height; a course that can always be beaten |
 | 6 | Parkour Runner Score | Coins, distance, a rising speed, and a combo for clean moves |
 | 7 | Parkour Runner Polish | A title screen, pause, sounds, effects, and a choice of runner |
 

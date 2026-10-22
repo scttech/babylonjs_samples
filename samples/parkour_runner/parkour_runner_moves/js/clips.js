@@ -24,8 +24,9 @@ const ROLL_CLIP_SPEED = 2.2; // the roll clip is 1.47 seconds, but its last thir
 
 // The slide clip lowers the character until his hand and arm dip a few
 // centimeters into the street (about 4 in the held pose, and up to 8 on the way
-// down). Raising the whole model by this much while he slides keeps them out.
-const SLIDE_LIFT = 0.09;
+// down). Raising the whole model while he slides keeps them out. (The street's top
+// is at y = 0, so this only has to cover what the pose dips below it.)
+const SLIDE_LIFT = 0.05;
 
 // How far to raise the character above where the runner is, for the move he is
 // doing. main.js eases toward it, so the model glides up and down instead of hopping.

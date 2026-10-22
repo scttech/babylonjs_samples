@@ -155,6 +155,20 @@ QUnit.module("rowPieces", () => {
     assert.deepEqual(rowPieces(6), rowPieces(6));
   });
 
+  QUnit.test("the road and sidewalk tiles are sunk by their thickness, so the top of the street is at y = 0", (assert) => {
+    const slabs = rowPieces(2).filter((p) => p.piece === "roads/road_straight" || p.piece === "roads/tile_low");
+
+    assert.strictEqual(slabs.length, 3);
+    for (const slab of slabs) assertClose(assert, slab.y, -ROAD_HEIGHT, 1e-9, slab.piece);
+    assertClose(assert, ROAD_HEIGHT, 0.14, 1e-9, "0.02 units thick, times the scale of 7");
+  });
+
+  QUnit.test("everything else stands at y = 0, on top of the street", (assert) => {
+    const others = rowPieces(2).filter((p) => p.piece === "roads/light_square");
+
+    for (const piece of others) assert.true(piece.y === undefined || piece.y === 0, piece.piece);
+  });
+
   QUnit.test("rows behind the start work too", (assert) => {
     const road = ofPiece(rowPieces(-1), "roads/road_straight")[0];
 

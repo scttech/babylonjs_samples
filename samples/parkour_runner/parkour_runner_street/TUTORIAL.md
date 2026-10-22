@@ -96,9 +96,9 @@ function rowPieces(row) {
   const endZ = z + TILE / 2; // where the row ends along the street
   const pieces = [
     // The road tile is drawn running along x, so turn it a quarter turn to run along z.
-    { piece: "roads/road_straight", x: 0, z, rotationY: Math.PI / 2, endZ },
-    { piece: "roads/tile_low", x: -SIDEWALK_X, z, rotationY: 0, endZ },
-    { piece: "roads/tile_low", x: SIDEWALK_X, z, rotationY: 0, endZ },
+    { piece: "roads/road_straight", x: 0, y: -ROAD_HEIGHT, z, rotationY: Math.PI / 2, endZ },
+    { piece: "roads/tile_low", x: -SIDEWALK_X, y: -ROAD_HEIGHT, z, rotationY: 0, endZ },
+    { piece: "roads/tile_low", x: SIDEWALK_X, y: -ROAD_HEIGHT, z, rotationY: 0, endZ },
   ];
 
   if (row % LIGHT_EVERY === 0) {
@@ -115,6 +115,7 @@ Things to notice:
 - **A row is a number.** Row 0 is centered on z = 0, row 1 is one tile further along, row -1 one tile behind. Nothing about a row depends on any other row, so **rows can be made in any order**, at any time.
 - **It's the loop body of `streetLayout`,** with `i` as the row and the start of the street moved to 0. The lights still alternate sides.
 - **Every piece has an `endZ`,** the end of its row, for the same reason as the buildings.
+- **The slabs are sunk.** The road and sidewalk placements have a `y` of `-ROAD_HEIGHT` (0.14 units, from the World tutorial), so the top of the street is at y = 0 and everything that stands on it does.
 
 ### 1c. Every piece
 
@@ -253,6 +254,20 @@ QUnit.module("rowPieces", () => {
     assert.deepEqual(rowPieces(6), rowPieces(6));
   });
 
+  QUnit.test("the road and sidewalk tiles are sunk by their thickness, so the top of the street is at y = 0", (assert) => {
+    const slabs = rowPieces(2).filter((p) => p.piece === "roads/road_straight" || p.piece === "roads/tile_low");
+
+    assert.strictEqual(slabs.length, 3);
+    for (const slab of slabs) assertClose(assert, slab.y, -ROAD_HEIGHT, 1e-9, slab.piece);
+    assertClose(assert, ROAD_HEIGHT, 0.14, 1e-9, "0.02 units thick, times the scale of 7");
+  });
+
+  QUnit.test("everything else stands at y = 0, on top of the street", (assert) => {
+    const others = rowPieces(2).filter((p) => p.piece === "roads/light_square");
+
+    for (const piece of others) assert.true(piece.y === undefined || piece.y === 0, piece.piece);
+  });
+
   QUnit.test("rows behind the start work too", (assert) => {
     const road = ofPiece(rowPieces(-1), "roads/road_straight")[0];
 
@@ -285,7 +300,7 @@ QUnit.module("STREET_PIECES", () => {
 });
 ```
 
-Reload `tests.html`: **20 more** tests (**121** in all), all green.
+Reload `tests.html`: **22 more** tests (**123** in all), all green.
 
 ---
 
@@ -628,7 +643,7 @@ Add the scripts and the tests to `tests.html`, after `models.js` and `models.tes
   <script src="tests/stream.tests.js"></script>
 ```
 
-Reload `tests.html`: **20 more** tests (**141** in all), all green. Two are worth a look: *"only a bounded number of pieces exist at once, however far the runner goes"* runs the stream 20,000 units, and *"the same seed gives the same street, however the updates are spaced out"* builds it twice with different step sizes and compares.
+Reload `tests.html`: **20 more** tests (**143** in all), all green. Two are worth a look: *"only a bounded number of pieces exist at once, however far the runner goes"* runs the stream 20,000 units, and *"the same seed gives the same street, however the updates are spaced out"* builds it twice with different step sizes and compares.
 
 ---
 
@@ -690,7 +705,7 @@ Add tests for it **inside the `PieceLibrary` module**, above the test called *"p
   });
 ```
 
-Reload `tests.html`: **2 more** tests (**143** in all). The existing `place` tests still pass, which is the point of splitting it out without changing what it does.
+Reload `tests.html`: **2 more** tests (**145** in all). The existing `place` tests still pass, which is the point of splitting it out without changing what it does.
 
 ### 3b. The pool, closed
 
@@ -910,7 +925,7 @@ Add the script and its tests to `tests.html`, after the stream ones:
 
 The tests use a *fake* library, so they only check what the pool asks of it. The last one is the proof: a street of five pieces that loses its oldest and gains a new one a thousand times only ever makes **five** pieces.
 
-Reload `tests.html`: **8 more** tests (**151** in all), all green.
+Reload `tests.html`: **8 more** tests (**153** in all), all green.
 
 ---
 
@@ -920,11 +935,19 @@ Everything is built. Now `main.js` has to use the stream and the pool instead of
 
 ### 4a. `index.html`
 
-Add the two new scripts after `models.js`, before `runner.js`:
+Add the two new scripts after `models.js`, before `runner.js`, and above `main.js`: `main.js` has to be last, or it runs before the code it uses is loaded. The scripts at the bottom of the page should now be, in this order:
 
 ```html
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/models.js"></script>
   <script src="js/pool.js"></script>
   <script src="js/stream.js"></script>
+  <script src="js/runner.js"></script>
+  <script src="js/clips.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/splash.js"></script>
+  <script src="js/main.js"></script>
 ```
 
 ### 4b. `js/main.js`
@@ -1027,13 +1050,13 @@ Things to notice:
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, buildingAt, rowPieces, STREET_PIECES };
+  module.exports = { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, buildingAt, rowPieces, STREET_PIECES };
 } else {
-  Object.assign(window, { WORLD_SCALE, TILE, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, buildingAt, rowPieces, STREET_PIECES });
+  Object.assign(window, { WORLD_SCALE, TILE, ROAD_HEIGHT, SIDEWALK_X, BUILDING_EDGE_X, BUILDINGS, BUILDING_GAP, LIGHT_EVERY, seededRandom, buildingAt, rowPieces, STREET_PIECES });
 }
 ```
 
-In `tests/world.tests.js`, delete the three modules that tested them: `streetLayout`, `layoutSide` and `piecesUsed`. **Keep the `assertClose` helper** above `streetLayout`: the new tests use it. That takes away 20 tests, so `tests.html` now shows **131**.
+In `tests/world.tests.js`, delete the three modules that tested them: `streetLayout`, `layoutSide` and `piecesUsed`. **Keep the `assertClose` helper** above `streetLayout`: the new tests use it. That takes away 20 tests, so `tests.html` now shows **133**.
 
 ---
 
@@ -1093,7 +1116,7 @@ Your `tests.html` scripts should now look like this:
   <script src="tests/splash.tests.js"></script>
 ```
 
-Open it. You should see **131 passing tests**: 26 for the street plan, 29 for the piece library, 20 for the stream, 8 for the pool, 25 for the runner, 11 for the clip player, 7 for the camera and 5 for the splash timing.
+Open it. You should see **133 passing tests**: 28 for the street plan, 29 for the piece library, 20 for the stream, 8 for the pool, 25 for the runner, 11 for the clip player, 7 for the camera and 5 for the splash timing.
 
 > **What these tests don't cover.** They check the logic and the calls the code makes, using stand-ins for Babylon.js. They can't tell you the street *looks* right, or that pieces don't pop in view. That check is Step 5, with your own eyes. It's a good example of why a test suite and a play-through are different things.
 
