@@ -54,3 +54,9 @@ A fourth series, and the first in real 3D from the start: an endless parkour run
 7. [Parkour Runner Screens](samples/parkour_runner/parkour_runner_screens/README.md) — a title screen with your name and a choice of runner color, a pause, and a game over screen with a local leaderboard, all in the graffiti font of the logo. Also available as a [step-by-step tutorial](samples/parkour_runner/parkour_runner_screens/TUTORIAL.md).
 8. [Parkour Runner Effects](samples/parkour_runner/parkour_runner_effects/README.md) — sounds made with code (no sound files), gold sparkles for coins, dust and a camera shake for a crash, and a Sick Combo banner for combos of 5, 10, 15 and so on. Also available as a [step-by-step tutorial](samples/parkour_runner/parkour_runner_effects/TUTORIAL.md).
 9. [Parkour Runner Touch](samples/parkour_runner/parkour_runner_touch/README.md) — swipe and tap controls, a pause button, a camera that keeps all three lanes in view on a phone held upright, and a layout for small screens. Also available as a [step-by-step tutorial](samples/parkour_runner/parkour_runner_touch/TUTORIAL.md).
+
+## Rolling Rampage
+
+A fifth series: an isometric marble game in the spirit of the classic arcade games, with real physics (the Havok engine), made for the phone as well as the desktop, with tilt steering. Roll a steel marble down ramps and ledges, against the clock, past hazards and enemies. See the [series roadmap](samples/rolling_rampage/README.md).
+
+1. [Rolling Rampage World](samples/rolling_rampage/rolling_rampage_world/README.md) — a steel marble rolls down a course of ramps under Havok physics, seen through an isometric camera, on a page that fits a phone. Also available as a [step-by-step tutorial](samples/rolling_rampage/rolling_rampage_world/TUTORIAL.md).
