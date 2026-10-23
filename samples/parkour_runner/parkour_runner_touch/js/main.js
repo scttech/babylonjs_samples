@@ -46,6 +46,16 @@ const createScene = async () => {
   camera.maxZ = 400;
   scene.activeCamera = camera;
 
+  // How wide the camera looks depends on the shape of the screen: a phone held upright is
+  // tall and narrow, and would lose the side lanes off its edges. See fovFor.
+  const applyFov = () => {
+    const { horizontal, fov } = fovFor(engine.getAspectRatio(camera), CAMERA_FOV);
+    camera.fovMode = horizontal ? BABYLON.Camera.FOVMODE_HORIZONTAL_FIXED : BABYLON.Camera.FOVMODE_VERTICAL_FIXED;
+    camera.fov = fov;
+  };
+  applyFov();
+  engine.onResizeObservable.add(applyFov);
+
   // A soft light from the sky fills in the shadows; a stronger one from above
   // and ahead gives every building a bright side and a dark side.
   const sky = new BABYLON.HemisphericLight("sky", new BABYLON.Vector3(0, 1, 0), scene);
@@ -113,7 +123,13 @@ const createScene = async () => {
   // Babylon.js GUI, in the game's fonts.
   const score = new Score();
   await loadFonts();
-  const hud = new Hud({ ui: BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("hud", true, scene) });
+  const ui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("hud", true, scene);
+  const fitHud = () => {
+    ui.idealHeight = idealHeightFor(engine.getRenderHeight()); // the text scales with the screen
+  };
+  fitHud();
+  engine.onResizeObservable.add(fitHud);
+  const hud = new Hud({ ui });
 
   // The runner: loaded once, and standing at the start of the street.
   const character = await loadCharacter(scene, `${ASSETS}${RUNNER_FILE}`, { name: "runner" });
@@ -132,6 +148,7 @@ const createScene = async () => {
 
   // Shows the screen for what the game is doing. The score has no place on the title.
   const showScreen = () => {
+    screens.setPlaying(game.playing);
     screens.show(game.state);
     hud.setVisible(game.state !== STATES.title);
   };
@@ -202,6 +219,8 @@ const createScene = async () => {
   const endRun = () => {
     runner.crash();
     game.end();
+    screens.setPlaying(false);
+    if (navigator.vibrate) navigator.vibrate(150); // a phone buzzes; most other things have no such thing
     sounds.play("crash");
     shake.start();
     bursts.burst("dust", runner.x, 0.2, runner.z);
@@ -223,7 +242,7 @@ const createScene = async () => {
     screens.setSound(!sounds.muted);
   };
 
-  screens.bind({ play: playFromTitle, resume: togglePause, again: startRun, toTitle: goToTitle, sound: toggleSound });
+  screens.bind({ play: playFromTitle, resume: togglePause, again: startRun, toTitle: goToTitle, sound: toggleSound, pause: togglePause });
 
   // The browser only allows sound after the player has clicked or pressed a key.
   window.addEventListener("pointerdown", () => sounds.unlock());
@@ -232,6 +251,21 @@ const createScene = async () => {
   const RIGHT_KEYS = new Set(["ArrowRight", "KeyD"]);
   const JUMP_KEYS = new Set(["ArrowUp", "KeyW", "Space"]);
   const SLIDE_KEYS = new Set(["ArrowDown", "KeyS"]);
+
+  // What each move does. The keys and the swipes both come here, so they can't drift apart.
+  const moves = {
+    left: () => runner.moveLane(-1),
+    right: () => runner.moveLane(1),
+    jump: () => {
+      // Next to a barrier, a jump is a vault: a quick, low hop over it. A little
+      // further back, the vault waits until the barrier is close enough.
+      const gap = field.barrierGap(runner);
+      if (gap <= VAULT_RANGE) runner.vault();
+      else if (gap <= VAULT_QUEUE_RANGE) vaultQueued = true;
+      else runner.jump();
+    },
+    slide: () => runner.slide(),
+  };
 
   window.addEventListener("keydown", (event) => {
     sounds.unlock(); // a key press counts too, even a letter of the name
@@ -248,16 +282,11 @@ const createScene = async () => {
       event.preventDefault(); // arrow keys and the space bar otherwise scroll the page
       if (event.repeat) return; // one move per press; holding the key doesn't repeat it
 
-      if (LEFT_KEYS.has(event.code)) runner.moveLane(-1);
-      else if (RIGHT_KEYS.has(event.code)) runner.moveLane(1);
-      else if (JUMP_KEYS.has(event.code)) {
-        // Next to a barrier, a jump is a vault: a quick, low hop over it. A little
-        // further back, the vault waits until the barrier is close enough.
-        const gap = field.barrierGap(runner);
-        if (gap <= VAULT_RANGE) runner.vault();
-        else if (gap <= VAULT_QUEUE_RANGE) vaultQueued = true;
-        else runner.jump();
-      } else runner.slide();
+      if (LEFT_KEYS.has(event.code)) moves.left();
+      else if (RIGHT_KEYS.has(event.code)) moves.right();
+      else if (JUMP_KEYS.has(event.code)) moves.jump();
+      else moves.slide();
+
       return;
     }
 
@@ -271,6 +300,18 @@ const createScene = async () => {
     else if (event.code === "KeyT") goToTitle();
     else if (event.code === "KeyM") toggleSound();
     else if (event.code === "KeyR" && game.state !== STATES.title) startRun();
+  });
+
+  // Fingers on the picture: a swipe makes the move its key would, and a tap jumps. They only
+  // count in a run, like the keys.
+  document.body.classList.toggle("touch", isTouchDevice(browserTouchEnvironment()));
+  new TouchControls(canvas, {
+    onSwipe: (direction) => {
+      if (game.playing) moves[swipeMove(direction)]();
+    },
+    onTap: () => {
+      if (game.playing) moves.jump();
+    },
   });
 
   // Our frame loop

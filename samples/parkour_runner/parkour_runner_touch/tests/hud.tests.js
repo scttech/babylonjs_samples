@@ -181,3 +181,26 @@ QUnit.module("Hud", (hooks) => {
     assert.strictEqual(hud.scoreLabel, null);
   });
 });
+
+QUnit.module("idealHeightFor", () => {
+  QUnit.test("a screen between the limits is told its own height, so the text is its written size", (assert) => {
+    assert.strictEqual(idealHeightFor(600), 600);
+    assert.strictEqual(idealHeightFor(HUD_IDEAL_MIN), HUD_IDEAL_MIN);
+    assert.strictEqual(idealHeightFor(HUD_IDEAL_MAX), HUD_IDEAL_MAX);
+  });
+
+  QUnit.test("a short screen is told no less than the minimum, so the text can't shrink to nothing", (assert) => {
+    assert.strictEqual(idealHeightFor(320), HUD_IDEAL_MIN);
+    assert.strictEqual(idealHeightFor(0), HUD_IDEAL_MIN);
+  });
+
+  QUnit.test("a tall screen is told no more than the maximum, so the text is only a little bigger", (assert) => {
+    assert.strictEqual(idealHeightFor(1440), HUD_IDEAL_MAX);
+  });
+
+  QUnit.test("on a phone 320 pixels high the text is drawn at two thirds of its size, and not smaller", (assert) => {
+    const scale = 320 / idealHeightFor(320); // the GUI draws at the screen's height over the height it is told
+
+    assert.true(Math.abs(scale - 2 / 3) < 1e-9);
+  });
+});

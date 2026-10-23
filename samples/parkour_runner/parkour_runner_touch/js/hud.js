@@ -9,6 +9,19 @@
 const FONT_TITLE = "Sedgwick Ave Display";
 const FONT_SMALL = "Bangers";
 
+// The text's sizes are written for a screen about 720 pixels high. The GUI can scale them to
+// the screen it is on, by being told what height they were written for: on a screen half
+// that high it draws everything at half size. But scaled right down, a short phone screen
+// would make the text too small to read, and scaled right up a big monitor would make it
+// huge, so the height it is told is held between these two.
+const HUD_IDEAL_MIN = 480;
+const HUD_IDEAL_MAX = 720;
+
+// The height to tell the GUI its sizes were written for, on a screen `height` pixels high.
+function idealHeightFor(height) {
+  return Math.min(HUD_IDEAL_MAX, Math.max(HUD_IDEAL_MIN, height));
+}
+
 const HUD_COLOR = "white";
 const HUD_OUTLINE = "#050508"; // a dark edge round the letters, so they show against the sky too
 
@@ -29,13 +42,14 @@ class Hud {
     this.ui = ui;
 
     // The top-left corner holds three lines. The page's back button sits on top of the
-    // canvas from y = 12 to about y = 46, so they start below it.
-    this.scoreLabel = this._label({ top: "56px", fontSize: 38, font: FONT_TITLE });
-    this.distanceLabel = this._label({ top: "108px", fontSize: 24, font: FONT_SMALL });
-    this.coinsLabel = this._label({ top: "138px", fontSize: 24, font: FONT_SMALL });
+    // canvas from y = 12 to about y = 46, and the text is scaled down on a small screen, so
+    // they start well below it.
+    this.scoreLabel = this._label({ top: "72px", fontSize: 38, font: FONT_TITLE });
+    this.distanceLabel = this._label({ top: "124px", fontSize: 24, font: FONT_SMALL });
+    this.coinsLabel = this._label({ top: "154px", fontSize: 24, font: FONT_SMALL });
 
     // The combo is in the middle, near the top, so it is hard to miss.
-    this.comboLabel = this._label({ top: "56px", fontSize: 46, font: FONT_TITLE, centered: true });
+    this.comboLabel = this._label({ top: "72px", fontSize: 46, font: FONT_TITLE, centered: true });
     this.comboLabel.isVisible = false;
 
     this.update(this.shown);
@@ -104,7 +118,7 @@ class Hud {
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { FONT_TITLE, FONT_SMALL, Hud };
+  module.exports = { FONT_TITLE, FONT_SMALL, HUD_IDEAL_MIN, HUD_IDEAL_MAX, idealHeightFor, Hud };
 } else {
-  Object.assign(window, { FONT_TITLE, FONT_SMALL, Hud });
+  Object.assign(window, { FONT_TITLE, FONT_SMALL, HUD_IDEAL_MIN, HUD_IDEAL_MAX, idealHeightFor, Hud });
 }

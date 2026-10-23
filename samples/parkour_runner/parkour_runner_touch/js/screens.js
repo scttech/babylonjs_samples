@@ -20,6 +20,7 @@ class Screens {
     this.comboBanner = get("combo-banner");
     this.comboText = get("combo-text");
     this.board = get("board");
+    this.pauseButton = get("pause-button");
     this.buttons = {
       play: get("play"),
       resume: get("resume"),
@@ -27,6 +28,7 @@ class Screens {
       pauseTitle: get("pause-title"),
       overTitle: get("over-title"),
       sound: get("sound"),
+      pause: this.pauseButton,
     };
   }
 
@@ -40,7 +42,7 @@ class Screens {
 
   // Makes the buttons do something. Each lets go of the keyboard focus when it is clicked:
   // a button that keeps focus is pressed again by the space bar, which is the jump key.
-  bind({ play, resume, again, toTitle, sound }) {
+  bind({ play, resume, again, toTitle, sound, pause }) {
     const wire = (button, callback) =>
       button.addEventListener("click", () => {
         button.blur();
@@ -52,6 +54,7 @@ class Screens {
     wire(this.buttons.pauseTitle, toTitle);
     wire(this.buttons.overTitle, toTitle);
     wire(this.buttons.sound, sound);
+    wire(this.buttons.pause, pause);
   }
 
   // The name in the text field.
@@ -121,6 +124,12 @@ class Screens {
     this.comboBanner.classList.remove("show");
     void this.comboBanner.offsetWidth;
     this.comboBanner.classList.add("show");
+  }
+
+  // Shows the pause button, for a touch screen with no P key, while a run is going, and
+  // hides it the rest of the time (the screens have their own buttons).
+  setPlaying(playing) {
+    this.pauseButton.classList.toggle("hidden", !playing);
   }
 
   // Says on the sound button whether the sound is on.

@@ -58,3 +58,48 @@ QUnit.module("followPosition", () => {
     assert.strictEqual(view.z, 20 - CAMERA_DISTANCE);
   });
 });
+
+QUnit.module("fovFor", () => {
+  const VERTICAL = 0.9; // the game's vertical angle
+
+  QUnit.test("a wide screen keeps the vertical angle it was given", (assert) => {
+    assert.deepEqual(fovFor(16 / 9, VERTICAL), { horizontal: false, fov: VERTICAL });
+    assert.deepEqual(fovFor(1.6, VERTICAL), { horizontal: false, fov: VERTICAL });
+  });
+
+  QUnit.test("a tall screen, like a phone held upright, is set by the angle across it instead", (assert) => {
+    assert.deepEqual(fovFor(0.46, VERTICAL), { horizontal: true, fov: MIN_HORIZONTAL_FOV });
+  });
+
+  QUnit.test("a square screen is tall enough to need it too", (assert) => {
+    assert.true(fovFor(1, VERTICAL).horizontal);
+  });
+
+  QUnit.test("it changes over at the shape where the angle across would come out too narrow", (assert) => {
+    // The aspect at which the horizontal angle is exactly the minimum.
+    const edge = Math.tan(MIN_HORIZONTAL_FOV / 2) / Math.tan(VERTICAL / 2);
+
+    assert.false(fovFor(edge + 0.01, VERTICAL).horizontal);
+    assert.true(fovFor(edge - 0.01, VERTICAL).horizontal);
+  });
+
+  QUnit.test("the street is never seen narrower than the minimum, whatever the shape", (assert) => {
+    for (const aspect of [0.3, 0.46, 0.75, 1, 1.33, 1.6, 2.1, 3]) {
+      const { horizontal, fov } = fovFor(aspect, VERTICAL);
+      const across = horizontal ? fov : 2 * Math.atan(Math.tan(fov / 2) * aspect);
+      assert.true(across >= MIN_HORIZONTAL_FOV - 1e-9, `aspect ${aspect}`);
+    }
+  });
+
+  QUnit.test("a wider vertical angle can keep a taller screen on the vertical setting", (assert) => {
+    assert.false(fovFor(0.9, 1.6).horizontal);
+    assert.true(fovFor(0.9, 0.9).horizontal);
+  });
+
+  QUnit.test("the minimum is wider than the side lanes need: both lanes, and some street beside them, fit", (assert) => {
+    // At the camera's distance of 6.5, the street is seen across 2 * 6.5 * tan(fov / 2).
+    const width = 2 * CAMERA_DISTANCE * Math.tan(MIN_HORIZONTAL_FOV / 2);
+
+    assert.true(width > 2 * 2.2 + 2, `${width} wide`);
+  });
+});

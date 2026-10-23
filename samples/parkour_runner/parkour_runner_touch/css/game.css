@@ -272,3 +272,109 @@ button:hover {
   opacity: 0.7;
   border-color: #888;
 }
+/* Touch. The page must not scroll, zoom or select text when a finger moves over it, and
+   the text field has to stay usable. */
+html,
+body {
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+button {
+  touch-action: manipulation;
+}
+
+/* The game puts the class "touch" on the page when the screen is a touch screen. Then the
+   hints about keys give way to the hints about swipes, and the pause button shows. */
+.touch-only,
+.touch .desktop-only,
+.touch .hint {
+  display: none;
+}
+.touch .touch-only {
+  display: block;
+}
+.screen .keys {
+  padding: 0 16px;
+  text-align: center;
+}
+#pause-button {
+  display: none;
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 26;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  font-size: 22px;
+}
+.touch #pause-button {
+  display: block;
+}
+.touch #pause-button.hidden {
+  display: none;
+}
+
+/* A small screen: a phone, or a window made small. Everything over the picture gets smaller,
+   so the screens fit and the street stays in view. */
+@media (max-width: 640px), (max-height: 520px) {
+  .screen {
+    gap: 8px;
+    padding-top: 58px;
+    font-size: 18px;
+  }
+  .screen h2 {
+    font-size: 44px;
+    -webkit-text-stroke: 4px var(--ink);
+  }
+  .screen .keys {
+    font-size: 15px;
+  }
+  #title .logo {
+    max-height: 20vh;
+  }
+  .panel {
+    padding: 8px 10px;
+  }
+  #name {
+    font-size: 20px;
+  }
+  .swatch {
+    width: 28px;
+    height: 28px;
+  }
+  button.big,
+  button.quiet {
+    padding: 6px 16px;
+    font-size: 22px;
+  }
+  #over-score {
+    font-size: 34px;
+    -webkit-text-stroke: 4px var(--ink);
+  }
+  #over-best {
+    font-size: 22px;
+  }
+  #board {
+    font-size: 16px;
+  }
+  #high-score {
+    max-height: 16vh;
+  }
+  #combo-banner {
+    top: 12%;
+    width: min(50vw, 260px);
+  }
+  #combo-text {
+    font-size: 30px;
+  }
+  .hint {
+    display: none;
+  }
+}

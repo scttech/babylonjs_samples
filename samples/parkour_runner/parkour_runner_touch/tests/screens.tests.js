@@ -45,7 +45,8 @@ QUnit.module("Screens", () => {
   const IDS = [
     "title", "pause", "over", "name", "swatches", "title-best", "over-score", "over-best",
     "high-score", "board", "play", "resume", "again", "pause-title", "over-title",     
-    "combo-banner", "combo-text", "sound",
+    "combo-banner", "combo-text", "sound", "pause-button",
+
   ];
 
   // A page with every element the screens look for.
@@ -243,11 +244,31 @@ QUnit.module("Screens", () => {
       again: () => calls.push("again"),
       toTitle: () => calls.push("title"),
       sound: () => calls.push("sound"),
+      pause: () => calls.push("pause"),
     });
 
-    for (const id of ["play", "resume", "again", "pause-title", "over-title", "sound"]) els[id].click();
+    for (const id of ["play", "resume", "again", "pause-title", "over-title", "sound", "pause-button"]) els[id].click();
 
-    assert.deepEqual(calls, ["play", "resume", "again", "title", "title", "sound"]);
+    assert.deepEqual(calls, ["play", "resume", "again", "title", "title", "sound", "pause"]);
+  });
+
+  QUnit.test("setPlaying() shows the pause button in a run, and hides it otherwise", (assert) => {
+    const { screens, els } = makeScreens();
+
+    screens.setPlaying(true);
+    assert.false(els["pause-button"].hidden);
+
+    screens.setPlaying(false);
+    assert.true(els["pause-button"].hidden);
+  });
+
+  QUnit.test("the pause button lets go of the keyboard when clicked, like the others", (assert) => {
+    const { screens, els } = makeScreens();
+    screens.bind({ play() {}, resume() {}, again() {}, toTitle() {}, sound() {}, pause() {} });
+
+    els["pause-button"].click();
+
+    assert.strictEqual(els["pause-button"].blurred, 1);
   });
 
   QUnit.test("showCombo() says how long the combo is, and shows the banner", (assert) => {

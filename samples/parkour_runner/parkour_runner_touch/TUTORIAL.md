@@ -1301,6 +1301,7 @@ If you have a phone and your computer is on the same network, `npx serve` prints
 
 **If something's wrong**
 
+- **The splash says "Something went wrong starting the game. If the 3D models didn't load...", but the models are fine:** that message is the game's catch-all for *any* error while it starts up, and it blames the models because that is the usual cause. The real error is in the console (F12). If it says `Cannot read properties of null (reading 'addEventListener')` or `(reading 'classList')`, an element the code looks for by `id` isn't in `index.html`. After this step the likely one is the pause button: check that `<button id="pause-button" ...>` is there, directly below the sound button, and that every `id` in `Screens` has an element with exactly that name.
 - **`TouchControls is not defined` and so on:** the `touch.js` script tag is missing, or comes after `main.js`.
 - **Swipes do nothing:** in device mode, check the console for errors first. Then check that the game is *playing* (swipes don't count on the title), and that the drag is long enough: 24 pixels, or 6% of the screen's smaller side.
 - **A swipe does the wrong move:** `SWIPE_MOVES` maps each direction to a key of `moves`. On a screen `y` grows downward, so a negative `dy` is up.
