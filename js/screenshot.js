@@ -5,6 +5,8 @@
 // scripts don't need to expose their engine/scene to use it.
 window.addEventListener("keydown", (event) => {
   if (event.code !== (window.SCREENSHOT_KEY || "Space")) return;
+  // A key typed into a text field is a letter, not a shortcut.
+  if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
   event.preventDefault();
 
   const engine = BABYLON.EngineStore.LastCreatedEngine;

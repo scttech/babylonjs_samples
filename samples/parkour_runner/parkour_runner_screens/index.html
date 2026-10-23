@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Parkour Runner Screens - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <style>
+    /* The game's two fonts, from the files in assets/fonts. Sedgwick Ave Display is the
+       graffiti lettering of the logo, for big words. It is thin, so Bangers, a chunkier
+       font, does the small text. */
+    @font-face {
+      font-family: "Sedgwick Ave Display";
+      src: url("../assets/fonts/SedgwickAveDisplay-Regular.ttf") format("truetype");
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Bangers";
+      src: url("../assets/fonts/Bangers-Regular.ttf") format("truetype");
+      font-display: swap;
+    }
+    :root {
+      --title-font: "Sedgwick Ave Display", "Bangers", cursive;
+      --small-font: "Bangers", system-ui, sans-serif;
+      --ink: #050508;
+      --yellow: #ffd23a;
+      --orange: #ff8a1d;
+      --cyan: #29d3ff;
+    }
+    /* .hint has pointer-events: none so the canvas stays interactive; opt the
+       "Run tests" link back in so it can be clicked. */
+    .hint a {
+      pointer-events: auto;
+      color: #8ab4ff;
+    }
+    /* The splash covers the page while the street loads, then fades away. Its
+       white matches the white of the picture, so the picture has no visible edge. */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: #fff;
+      transition: opacity 0.6s ease;
+    }
+    #splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #splash img {
+      max-width: min(80vw, 720px);
+      max-height: 70vh;
+    }
+    #splash p {
+      margin: 0;
+      padding: 0 24px;
+      text-align: center;
+      color: #44506a;
+      font: 18px/1.4 system-ui, sans-serif;
+    }
+    /* The screens over the picture: the title, the pause and the game over. Only the
+       controls on them take clicks, so the picture behind them stays visible. */
+    .screen {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 64px 16px 16px;
+      overflow-y: auto;
+      color: #fff;
+      font-family: var(--small-font);
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      transition: opacity 0.25s ease, visibility 0.25s;
+    }
+    .screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .screen h2 {
+      margin: 0;
+      font: 400 64px/1 var(--title-font);
+      color: var(--yellow);
+      -webkit-text-stroke: 6px var(--ink);
+      paint-order: stroke fill;
+      text-shadow: 0 4px 12px #000;
+    }
+    .screen p {
+      margin: 0;
+      text-shadow: 0 2px 6px #000;
+    }
+    .screen .keys {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+    #pause {
+      justify-content: center;
+      padding-top: 16px;
+      background: rgba(5, 8, 20, 0.45);
+    }
+    #over {
+      background: rgba(5, 8, 20, 0.8);
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px 16px;
+    }
+    .panel {
+      padding: 12px 18px;
+      background: rgba(5, 5, 8, 0.72);
+      border-radius: 14px;
+    }
+
+    /* The title: the logo, then the name, the color and Play. The logo is a PNG with its
+       white background taken off, and a shadow lifts it off the street. */
+    #title .logo {
+      max-width: min(60vw, 320px);
+      max-height: 26vh;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
+    }
+    #name {
+      width: 11ch;
+      padding: 6px 10px;
+      border: 3px solid var(--ink);
+      border-radius: 8px;
+      font: 24px var(--small-font);
+      letter-spacing: 0.04em;
+    }
+    .swatch {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    .swatch.selected {
+      border-color: #fff;
+      box-shadow: 0 0 0 3px var(--yellow);
+      transform: scale(1.12);
+    }
+    #swatches {
+      display: flex;
+      gap: 10px;
+    }
+    button.big,
+    button.quiet {
+      padding: 8px 24px;
+      border: 3px solid var(--ink);
+      border-radius: 10px;
+      font: 26px var(--small-font);
+      letter-spacing: 0.06em;
+      cursor: pointer;
+    }
+    button.big {
+      background: linear-gradient(var(--yellow), var(--orange));
+      color: var(--ink);
+    }
+    button.quiet {
+      background: rgba(5, 5, 8, 0.7);
+      color: #fff;
+      border-color: var(--cyan);
+    }
+    button:hover {
+      filter: brightness(1.15);
+    }
+
+    /* The game over: a picture for a new best, the score, and the leaderboard. */
+    #high-score {
+      max-width: min(70vw, 420px);
+      max-height: 22vh;
+    }
+    #high-score.hidden {
+      display: none;
+    }
+    #over-score {
+      font: 400 44px/1 var(--title-font);
+      color: #fff;
+      -webkit-text-stroke: 5px var(--ink);
+      paint-order: stroke fill;
+    }
+    #over-best {
+      color: var(--cyan);
+      font-size: 26px;
+    }
+    #board {
+      width: min(86vw, 360px);
+      margin: 0;
+      padding: 6px 12px;
+      list-style: none;
+      background: rgba(5, 5, 8, 0.6);
+      border-radius: 12px;
+      font-size: 20px;
+    }
+    #board li {
+      display: flex;
+      justify-content: space-between;
+      padding: 1px 8px;
+      border-radius: 6px;
+    }
+    #board li.you {
+      background: var(--yellow);
+      color: var(--ink);
+    }
+  </style>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+  <script>
+    // Parkour Runner will use Space to jump later on, so move the shared
+    // screenshot shortcut to C for this series.
+    window.SCREENSHOT_KEY = "KeyC";
+  </script>
+</head>
+
+<body>
+  <a class="back-button" href="../../../index.html#parkour_runner">&larr; Samples</a>
+  <div class="hint">&larr;/&rarr; (A/D) lanes &middot; &uarr; (W/Space) jump or vault &middot; &darr; (S) slide &middot; P pause &middot; R restart &middot; C for a screenshot &middot; <a href="tests.html">Run tests</a></div>
+  <div id="splash">
+    <img src="../assets/images/parkour_runner_splash_small.jpg" alt="Parkour Runner">
+    <p id="splash-status">Loading the street&hellip;</p>
+  </div>
+    <div id="title" class="screen">
+    <img class="logo" src="../assets/images/parkour_runner_logo_small.png" alt="Parkour Runner">
+    <div class="row panel">
+      <input id="name" type="text" maxlength="12" placeholder="Your name" autocomplete="off" spellcheck="false">
+      <div id="swatches"></div>
+      <button id="play" class="big" type="button">Play</button>
+    </div>
+    <p id="title-best"></p>
+    <p class="keys">Enter to play &middot; &larr;/&rarr; lanes &middot; &uarr; jump &middot; &darr; slide &middot; P pause</p>
+  </div>
+  <div id="pause" class="screen hidden">
+    <h2>Paused</h2>
+    <div class="row">
+      <button id="resume" class="big" type="button">Resume</button>
+      <button id="pause-title" class="quiet" type="button">Title</button>
+    </div>
+    <p class="keys">P or Esc to carry on &middot; T for the title</p>
+  </div>
+  <div id="over" class="screen hidden">
+    <img id="high-score" class="hidden" src="../assets/images/high_score_small.png" alt="High score">
+    <h2>Game Over</h2>
+    <p id="over-score"></p>
+    <p id="over-best"></p>
+    <ol id="board"></ol>
+    <div class="row">
+      <button id="again" class="big" type="button">Run again</button>
+      <button id="over-title" class="quiet" type="button">Title</button>
+    </div>
+    <p class="keys">Enter or R to run again &middot; T for the title</p>
+  </div>
+  <canvas id="renderCanvas"></canvas>
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/pool.js"></script>
+  <script src="js/stream.js"></script>
+  <script src="js/runner.js"></script>
+  <script src="js/score.js"></script>
+  <script src="js/obstacles.js"></script>
+  <script src="js/clips.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/colors.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/screens.js"></script>
+  <script src="js/splash.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

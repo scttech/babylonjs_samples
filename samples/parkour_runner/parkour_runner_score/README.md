@@ -112,4 +112,4 @@ The 3D models are CC0 models from [Kenney](https://www.kenney.nl) (the street, t
 
 ## Next up
 
-**Parkour Runner Polish** adds a title screen, pause, sounds, effects and a choice of runner.
+[**Parkour Runner Screens**](../parkour_runner_screens/README.md) adds a title screen with your name and a choice of runner color, a pause, and a game over screen with a local leaderboard.

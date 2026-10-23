@@ -10,7 +10,8 @@ The 3D models used by the Parkour Runner samples. All of them are CC0 (public do
 | `industrial/` | Shipping containers, a water tower, factory buildings | Obstacles to jump or vault, and scenery |
 | `suburban/` | Fences, a planter and trees | Low obstacles and scenery |
 | `pickups/` | A coin, gems, a heart, a star and a bolt | Things to collect |
-| `images/` | The Parkour Runner logo, full size and a small copy for the splash screen | The READMEs and the splash screen |
+| `images/` | The Parkour Runner logo, and the High Score and Sick Combo banners, each full size and with a small copy for the game. The small copies of the banners have a transparent background, and so does `parkour_runner_logo_small.png`, the logo for the title screen (the splash keeps the white one) | The READMEs, the splash and the game's screens |
+| `fonts/` | Sedgwick Ave Display (graffiti handwriting) and Bangers, with their licenses | The text in the game |
 
 ## The runner's clips
 
@@ -25,6 +26,7 @@ The kits don't share a scale with the character. The runner is about 1.83 units 
 - City kits by [Kenney](https://www.kenney.nl) (CC0): [City Kit (Roads)](https://kenney.nl/assets/city-kit-roads), [City Kit (Commercial)](https://kenney.nl/assets/city-kit-commercial), [City Kit (Industrial)](https://kenney.nl/assets/city-kit-industrial) and [City Kit (Suburban)](https://kenney.nl/assets/city-kit-suburban)
 - The mannequin and its animations are from the Universal Animation Library and the Universal Animation Library 2 (Standard), by [Quaternius](https://quaternius.com) (CC0)
 - The pickups are from the Ultimate Platformer Pack by [Quaternius](https://quaternius.com) (CC0)
+- The fonts are [Sedgwick Ave Display](https://fonts.google.com/specimen/Sedgwick+Ave+Display) and [Bangers](https://fonts.google.com/specimen/Bangers), from Google Fonts, under the SIL Open Font License (the license texts are in `fonts/`)
 
 ## Changes made to the files
 

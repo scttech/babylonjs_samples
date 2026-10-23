@@ -14,7 +14,9 @@ An endless parkour runner through a city street, built up one step at a time in 
 | 4 | [Parkour Runner Moves](parkour_runner_moves/README.md) ([tutorial](parkour_runner_moves/TUTORIAL.md)) | Jump, slide, and dive into a roll: a state machine, exact gravity, and clips played to fit each move |
 | 5 | [Parkour Runner Obstacles](parkour_runner_obstacles/README.md) ([tutorial](parkour_runner_obstacles/TUTORIAL.md)) | Barriers to jump or vault, bars to slide under, containers to dodge; box collisions that use the runner's height; a course that can always be beaten |
 | 6 | [Parkour Runner Score](parkour_runner_score/README.md) ([tutorial](parkour_runner_score/TUTORIAL.md)) | Coins, distance, a rising speed, and a combo for clean moves, shown with Babylon.js GUI |
-| 7 | Parkour Runner Polish | A title screen, pause, sounds, effects, and a choice of runner |
+| 7 | [Parkour Runner Screens](parkour_runner_screens/README.md) ([tutorial](parkour_runner_screens/TUTORIAL.md)) | A game-state machine, a title screen with a name and a choice of runner color, a pause, a game over screen with a local leaderboard, and the game's font |
+| 8 | Parkour Runner Effects | Sounds, coin sparkles, crash dust, a camera shake, and a banner for big combos |
+| 9 | Parkour Runner Touch | Swipe controls and a layout for phones and tablets |
 
 The plan may shift as each step teaches something unexpected.
 
