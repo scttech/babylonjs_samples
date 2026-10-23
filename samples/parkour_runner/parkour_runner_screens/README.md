@@ -115,4 +115,4 @@ The 3D models are CC0 models from [Kenney](https://www.kenney.nl) (the street, t
 
 ## Next up
 
-**Parkour Runner Effects** adds sounds, coin sparkles, crash dust, a camera shake, and a banner for big combos.
+[**Parkour Runner Effects**](../parkour_runner_effects/README.md) adds sounds, coin sparkles, crash dust, a camera shake, and a banner for big combos.

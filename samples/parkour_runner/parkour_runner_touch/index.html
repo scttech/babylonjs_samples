@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Parkour Runner Touch - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <link rel="stylesheet" href="css/game.css">
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+  <script>
+    // Parkour Runner will use Space to jump later on, so move the shared
+    // screenshot shortcut to C for this series.
+    window.SCREENSHOT_KEY = "KeyC";
+  </script>
+</head>
+
+<body>
+  <a class="back-button" href="../../../index.html#parkour_runner">&larr; Samples</a>
+  <div class="hint">&larr;/&rarr; (A/D) lanes &middot; &uarr; (W/Space) jump or vault &middot; &darr; (S) slide &middot; P pause &middot; M sound &middot; R restart &middot; C for a screenshot &middot; <a href="tests.html">Run tests</a></div>
+  <div id="splash">
+    <img src="../assets/images/parkour_runner_splash_small.jpg" alt="Parkour Runner">
+    <p id="splash-status">Loading the street&hellip;</p>
+  </div>
+    <div id="title" class="screen">
+    <img class="logo" src="../assets/images/parkour_runner_logo_small.png" alt="Parkour Runner">
+    <div class="row panel">
+      <input id="name" type="text" maxlength="12" placeholder="Your name" autocomplete="off" spellcheck="false">
+      <div id="swatches"></div>
+      <button id="play" class="big" type="button">Play</button>
+    </div>
+    <p id="title-best"></p>
+    <p class="keys">Enter to play &middot; &larr;/&rarr; lanes &middot; &uarr; jump &middot; &darr; slide &middot; P pause</p>
+  </div>
+  <div id="pause" class="screen hidden">
+    <h2>Paused</h2>
+    <div class="row">
+      <button id="resume" class="big" type="button">Resume</button>
+      <button id="pause-title" class="quiet" type="button">Title</button>
+    </div>
+    <p class="keys">P or Esc to carry on &middot; T for the title</p>
+  </div>
+  <div id="over" class="screen hidden">
+    <img id="high-score" class="hidden" src="../assets/images/high_score_small.png" alt="High score">
+    <h2>Game Over</h2>
+    <p id="over-score"></p>
+    <p id="over-best"></p>
+    <ol id="board"></ol>
+    <div class="row">
+      <button id="again" class="big" type="button">Run again</button>
+      <button id="over-title" class="quiet" type="button">Title</button>
+    </div>
+    <p class="keys">Enter or R to run again &middot; T for the title</p>
+  </div>
+  <div id="combo-banner">
+    <img src="../assets/images/sick_combo_small.png" alt="Sick combo">
+    <p id="combo-text"></p>
+  </div>
+  <button id="sound" class="quiet" type="button">Sound: on</button>
+  <canvas id="renderCanvas"></canvas>
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/pool.js"></script>
+  <script src="js/stream.js"></script>
+  <script src="js/runner.js"></script>
+  <script src="js/score.js"></script>
+  <script src="js/obstacles.js"></script>
+  <script src="js/clips.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/colors.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/screens.js"></script>
+  <script src="js/splash.js"></script>
+  <script src="js/sounds.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

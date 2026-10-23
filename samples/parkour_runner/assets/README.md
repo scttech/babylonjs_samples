@@ -10,7 +10,7 @@ The 3D models used by the Parkour Runner samples. All of them are CC0 (public do
 | `industrial/` | Shipping containers, a water tower, factory buildings | Obstacles to jump or vault, and scenery |
 | `suburban/` | Fences, a planter and trees | Low obstacles and scenery |
 | `pickups/` | A coin, gems, a heart, a star and a bolt | Things to collect |
-| `images/` | The Parkour Runner logo, and the High Score and Sick Combo banners, each full size and with a small copy for the game. The small copies of the banners have a transparent background, and so does `parkour_runner_logo_small.png`, the logo for the title screen (the splash keeps the white one) | The READMEs, the splash and the game's screens |
+| `images/` | The Parkour Runner logo, and the High Score and Sick Combo banners, each full size and with a small copy for the game. The small copies of the banners (High Score, used on the game over screen, and Sick Combo, used for big combos) have a transparent background, and so does `parkour_runner_logo_small.png`, the logo for the title screen (the splash keeps the white one) | The READMEs, the splash and the game's screens |
 | `fonts/` | Sedgwick Ave Display (graffiti handwriting) and Bangers, with their licenses | The text in the game |
 
 ## The runner's clips

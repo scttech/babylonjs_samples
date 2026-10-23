@@ -6,7 +6,7 @@
 //
 // "The beginning" is a copy of the previous sample, ../parkour_runner_score, plus
 // empty placeholders for the files the tutorial has you write. This
-// overwrites your work in index.html, tests.html, js/ and tests/. It leaves
+// overwrites your work in index.html, tests.html, css/, js/ and tests/. It leaves
 // TUTORIAL.md, README.md, and this script alone.
 //
 // Needs Node.js 16.7 or newer. No packages to install.
@@ -19,10 +19,11 @@ const here = __dirname;
 const source = path.join(here, "..", "parkour_runner_score");
 
 // What the reset replaces. Everything else in this folder is left alone.
-const RESET_PATHS = ["index.html", "tests.html", "js", "tests"];
+const RESET_PATHS = ["index.html", "tests.html", "css", "js", "tests"];
 
 // Files you write during the tutorial, restored as placeholders.
 const PLACEHOLDERS = {
+  "css/game.css": "/* TODO: see TUTORIAL.md, step 4. */\n",
   "js/game.js": "// TODO: see TUTORIAL.md, step 1.\n",
   "tests/game.tests.js": "// TODO: see TUTORIAL.md, step 1.\n",
   "js/colors.js": "// TODO: see TUTORIAL.md, step 2.\n",
@@ -49,7 +50,8 @@ const reset = () => {
     fs.rmSync(path.join(here, name), { recursive: true, force: true });
   }
   for (const name of RESET_PATHS) {
-    fs.cpSync(path.join(source, name), path.join(here, name), { recursive: true });
+    // (The sample before this one may have no css folder.)
+    if (fs.existsSync(path.join(source, name))) fs.cpSync(path.join(source, name), path.join(here, name), { recursive: true });
   }
 
   // The copied pages are still titled as the previous sample.
@@ -61,6 +63,7 @@ const reset = () => {
   fs.writeFileSync(testsPath, tests.replace("<title>Score tests - Babylon.js Samples</title>", "<title>Screens tests - Babylon.js Samples</title>"));
 
   for (const [name, contents] of Object.entries(PLACEHOLDERS)) {
+    fs.mkdirSync(path.dirname(path.join(here, name)), { recursive: true });
     fs.writeFileSync(path.join(here, name), contents);
   }
 };
@@ -72,7 +75,7 @@ const main = async () => {
   }
 
   if (!process.argv.includes("--yes")) {
-    console.log("This will overwrite index.html, tests.html, js/ and tests/ in this folder");
+    console.log("This will overwrite index.html, tests.html, css/, js/ and tests/ in this folder");
     console.log("with the tutorial's starting point. Your changes there will be lost.");
     if (!(await confirm("Continue? (y/N) "))) {
       console.log("Cancelled. Nothing was changed.");

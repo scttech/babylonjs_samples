@@ -21,6 +21,8 @@ This folder is a copy of the finished Score sample, plus empty placeholder files
 ```
 parkour_runner_screens/
 ├── index.html, tests.html
+├── css/
+│   └── game.css            (placeholder -- Step 4)
 ├── js/
 │   ├── game.js             (placeholder -- Step 1)
 │   ├── colors.js           (placeholder -- Step 2)
@@ -60,7 +62,7 @@ To get back to exactly this starting point at any time, run the reset script fro
 node reset-tutorial.js
 ```
 
-It asks for confirmation, then replaces `index.html`, `tests.html`, `js/` and `tests/` with a fresh copy of the Score sample plus the placeholders. Pass `--yes` to skip the question. Your work in those files is overwritten, so copy anything you want to keep first. `TUTORIAL.md` and `README.md` are never touched. It needs [Node.js](https://nodejs.org/) 16.7 or newer and no other setup.
+It asks for confirmation, then replaces `index.html`, `tests.html`, `css/`, `js/` and `tests/` with a fresh copy of the Score sample plus the placeholders. Pass `--yes` to skip the question. Your work in those files is overwritten, so copy anything you want to keep first. `TUTORIAL.md` and `README.md` are never touched. It needs [Node.js](https://nodejs.org/) 16.7 or newer and no other setup.
 
 ---
 
@@ -1265,205 +1267,229 @@ In `tests/hud.tests.js`, add these five tests to the `Hud` module, directly abov
 
 Reload `tests.html`: **5 more** tests (**384** in all).
 
-### 4b. The fonts, and a few shared colors
+### 4b. The style gets its own file
 
-Now the page. In `index.html`, add these rules at the top of the `<style>` block, above the `.hint a` rule:
+The page's `<style>` block is already a lot of CSS (the splash and the message), and this step adds a lot more: the fonts and every screen. Move it out to a file of its own. The placeholder `css/game.css` is waiting. Cut everything between `<style>` and `</style>` in `index.html`, and paste it into `css/game.css`. Then replace the whole `<style>...</style>` block in `index.html` with a link to it, directly below the line that links `sample.css`:
 
 ```html
-    /* The game's two fonts, from the files in assets/fonts. Sedgwick Ave Display is the
-       graffiti lettering of the logo, for big words. It is thin, so Bangers, a chunkier
-       font, does the small text. */
-    @font-face {
-      font-family: "Sedgwick Ave Display";
-      src: url("../assets/fonts/SedgwickAveDisplay-Regular.ttf") format("truetype");
-      font-display: swap;
-    }
-    @font-face {
-      font-family: "Bangers";
-      src: url("../assets/fonts/Bangers-Regular.ttf") format("truetype");
-      font-display: swap;
-    }
-    :root {
-      --title-font: "Sedgwick Ave Display", "Bangers", cursive;
-      --small-font: "Bangers", system-ui, sans-serif;
-      --ink: #050508;
-      --yellow: #ffd23a;
-      --orange: #ff8a1d;
-      --cyan: #29d3ff;
-    }
+  <link rel="stylesheet" href="css/game.css">
+```
+
+Reload the page. It should look exactly as it did, which is the check that nothing was lost.
+
+Things to notice:
+
+- **The order of the `<link>` tags matters.** When two rules are equally specific, the later one wins. `game.css` comes after `sample.css` so the game can override the shared rules, as it does for the back button below.
+- **A `url(...)` inside a CSS file is relative to that file,** not to the page. That is why the font paths in the next step start with `../../` (out of `css/`, out of the sample folder, then into `assets/`).
+- **A separate file is cached and edited on its own,** and `index.html` goes back to being about the page: what is on it, and which scripts it loads.
+
+### 4c. The fonts, and a few shared colors
+
+At the top of `css/game.css`, above the `.hint a` rule, add:
+
+```css
+/* The game's two fonts, from the files in assets/fonts. Sedgwick Ave Display is the
+   graffiti lettering of the logo, for big words. It is thin, so Bangers, a chunkier
+   font, does the small text. */
+@font-face {
+  font-family: "Sedgwick Ave Display";
+  src: url("../../assets/fonts/SedgwickAveDisplay-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Bangers";
+  src: url("../../assets/fonts/Bangers-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+:root {
+  --title-font: "Sedgwick Ave Display", "Bangers", cursive;
+  --small-font: "Bangers", system-ui, sans-serif;
+  --ink: #050508;
+  --yellow: #ffd23a;
+  --orange: #ff8a1d;
+  --cyan: #29d3ff;
+}
 ```
 
 Things to notice:
 
 - **`@font-face` names a font and says where its file is.** The name is what CSS and the HUD use afterwards. `font-display: swap` shows the text at once in a stand-in font and swaps when the file arrives, so a slow connection doesn't leave blank space.
+- **The paths are relative to the CSS file.** `css/game.css` is two folders below `assets/`, so the fonts are at `../../assets/fonts/`.
 - **The variables name the two roles,** `--title-font` and `--small-font`, and the game's few colors. The title font lists Bangers after it, so if Sedgwick can't load, the big words are in the other font and not a plain one.
 
-### 4c. The look of the screens
+### 4d. The look of the screens
 
-Remove the rules for `#message` (the crash message is replaced by the game over screen), and add these at the **end** of the `<style>` block, just above `</style>`:
+Remove the rules for `#message` from `css/game.css` (the crash message is replaced by the game over screen), and add these at the **end** of the file:
 
-```html
-    /* The screens over the picture: the title, the pause and the game over. Only the
-       controls on them take clicks, so the picture behind them stays visible. */
-    .screen {
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      padding: 64px 16px 16px;
-      overflow-y: auto;
-      color: #fff;
-      font-family: var(--small-font);
-      font-size: 22px;
-      letter-spacing: 0.04em;
-      transition: opacity 0.25s ease, visibility 0.25s;
-    }
-    .screen.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-    .screen h2 {
-      margin: 0;
-      font: 400 64px/1 var(--title-font);
-      color: var(--yellow);
-      -webkit-text-stroke: 6px var(--ink);
-      paint-order: stroke fill;
-      text-shadow: 0 4px 12px #000;
-    }
-    .screen p {
-      margin: 0;
-      text-shadow: 0 2px 6px #000;
-    }
-    .screen .keys {
-      font-size: 18px;
-      opacity: 0.9;
-    }
-    #pause {
-      justify-content: center;
-      padding-top: 16px;
-      background: rgba(5, 8, 20, 0.45);
-    }
-    #over {
-      background: rgba(5, 8, 20, 0.8);
-    }
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 12px 16px;
-    }
-    .panel {
-      padding: 12px 18px;
-      background: rgba(5, 5, 8, 0.72);
-      border-radius: 14px;
-    }
+```css
+/* The screens over the picture: the title, the pause and the game over. */
+/* The screens cover the whole page, so the back button and the hint (and its Run tests
+   link) are lifted above them, or they couldn't be clicked while a screen is up. The
+   splash, which should cover everything while the game loads, is higher still. */
+.back-button,
+.hint {
+  z-index: 26;
+}
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 64px 16px 16px;
+  overflow-y: auto;
+  color: #fff;
+  font-family: var(--small-font);
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  transition: opacity 0.25s ease, visibility 0.25s;
+}
+.screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+.screen h2 {
+  margin: 0;
+  font: 400 64px/1 var(--title-font);
+  color: var(--yellow);
+  -webkit-text-stroke: 6px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 12px #000;
+}
+.screen p {
+  margin: 0;
+  text-shadow: 0 2px 6px #000;
+}
+.screen .keys {
+  font-size: 18px;
+  opacity: 0.9;
+}
+#pause {
+  justify-content: center;
+  padding-top: 16px;
+  background: rgba(5, 8, 20, 0.45);
+}
+#over {
+  background: rgba(5, 8, 20, 0.8);
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 16px;
+}
+.panel {
+  padding: 12px 18px;
+  background: rgba(5, 5, 8, 0.72);
+  border-radius: 14px;
+}
 
-    /* The title: the logo, then the name, the color and Play. The logo is a PNG with its
-       white background taken off, and a shadow lifts it off the street. */
-    #title .logo {
-      max-width: min(60vw, 320px);
-      max-height: 26vh;
-      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
-    }
-    #name {
-      width: 11ch;
-      padding: 6px 10px;
-      border: 3px solid var(--ink);
-      border-radius: 8px;
-      font: 24px var(--small-font);
-      letter-spacing: 0.04em;
-    }
-    .swatch {
-      width: 34px;
-      height: 34px;
-      padding: 0;
-      border: 3px solid var(--ink);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: transform 0.1s ease;
-    }
-    .swatch.selected {
-      border-color: #fff;
-      box-shadow: 0 0 0 3px var(--yellow);
-      transform: scale(1.12);
-    }
-    #swatches {
-      display: flex;
-      gap: 10px;
-    }
-    button.big,
-    button.quiet {
-      padding: 8px 24px;
-      border: 3px solid var(--ink);
-      border-radius: 10px;
-      font: 26px var(--small-font);
-      letter-spacing: 0.06em;
-      cursor: pointer;
-    }
-    button.big {
-      background: linear-gradient(var(--yellow), var(--orange));
-      color: var(--ink);
-    }
-    button.quiet {
-      background: rgba(5, 5, 8, 0.7);
-      color: #fff;
-      border-color: var(--cyan);
-    }
-    button:hover {
-      filter: brightness(1.15);
-    }
+/* The title: the logo, then the name, the color and Play. The logo is a PNG with its
+   white background taken off, and a shadow lifts it off the street. */
+#title .logo {
+  max-width: min(60vw, 320px);
+  max-height: 26vh;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
+}
+#name {
+  width: 11ch;
+  padding: 6px 10px;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  font: 24px var(--small-font);
+  letter-spacing: 0.04em;
+}
+.swatch {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.swatch.selected {
+  border-color: #fff;
+  box-shadow: 0 0 0 3px var(--yellow);
+  transform: scale(1.12);
+}
+#swatches {
+  display: flex;
+  gap: 10px;
+}
+button.big,
+button.quiet {
+  padding: 8px 24px;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  font: 26px var(--small-font);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+button.big {
+  background: linear-gradient(var(--yellow), var(--orange));
+  color: var(--ink);
+}
+button.quiet {
+  background: rgba(5, 5, 8, 0.7);
+  color: #fff;
+  border-color: var(--cyan);
+}
+button:hover {
+  filter: brightness(1.15);
+}
 
-    /* The game over: a picture for a new best, the score, and the leaderboard. */
-    #high-score {
-      max-width: min(70vw, 420px);
-      max-height: 22vh;
-    }
-    #high-score.hidden {
-      display: none;
-    }
-    #over-score {
-      font: 400 44px/1 var(--title-font);
-      color: #fff;
-      -webkit-text-stroke: 5px var(--ink);
-      paint-order: stroke fill;
-    }
-    #over-best {
-      color: var(--cyan);
-      font-size: 26px;
-    }
-    #board {
-      width: min(86vw, 360px);
-      margin: 0;
-      padding: 6px 12px;
-      list-style: none;
-      background: rgba(5, 5, 8, 0.6);
-      border-radius: 12px;
-      font-size: 20px;
-    }
-    #board li {
-      display: flex;
-      justify-content: space-between;
-      padding: 1px 8px;
-      border-radius: 6px;
-    }
-    #board li.you {
-      background: var(--yellow);
-      color: var(--ink);
-    }
+/* The game over: a picture for a new best, the score, and the leaderboard. */
+#high-score {
+  max-width: min(70vw, 420px);
+  max-height: 22vh;
+}
+#high-score.hidden {
+  display: none;
+}
+#over-score {
+  font: 400 44px/1 var(--title-font);
+  color: #fff;
+  -webkit-text-stroke: 5px var(--ink);
+  paint-order: stroke fill;
+}
+#over-best {
+  color: var(--cyan);
+  font-size: 26px;
+}
+#board {
+  width: min(86vw, 360px);
+  margin: 0;
+  padding: 6px 12px;
+  list-style: none;
+  background: rgba(5, 5, 8, 0.6);
+  border-radius: 12px;
+  font-size: 20px;
+}
+#board li {
+  display: flex;
+  justify-content: space-between;
+  padding: 1px 8px;
+  border-radius: 6px;
+}
+#board li.you {
+  background: var(--yellow);
+  color: var(--ink);
+}
 ```
 
 Things to notice:
 
+- **The back button and the hint are lifted above the screens** (`z-index: 26`, against 20 for a screen). The screens cover the whole page, so without that a screen would sit on top of the *Samples* button and its clicks would never arrive. The splash is higher still (30), because it should cover everything while the game loads.
 - **A screen that is away is `visibility: hidden`,** so its buttons can't be clicked or tabbed to, and `opacity` fades it in and out. Both change together in the `transition`.
 - **`paint-order: stroke fill` with `-webkit-text-stroke`** draws the outline *behind* the letters, so a thick outline doesn't eat into thin letters. That's what makes the thin graffiti font readable on any background.
 - **The logo is a PNG with a transparent background.** The splash picture is a JPEG on white, which suits the splash (it is white too) but would be a white box on the street. A copy made for the title has the white taken off: the white that touches the edge becomes transparent, and the pixels along the edge fade out, so there is no white fringe. `filter: drop-shadow` follows the *shape* of the picture, unlike `box-shadow`, so the shadow is the shape of the letters.
 - **The High Score picture is a PNG with a transparent background.** The original has a black background with a glow. A copy made for the game has the black turned into transparency (brightness becomes opacity), so the glow lies over the street and not in a black box.
 
-### 4d. The markup
+### 4e. The markup
 
 Remove the `<div id="message">` line, and put these directly below the splash `<div>`:
 
@@ -1507,7 +1533,7 @@ Things to notice:
 - **The swatches are made by code,** so there is only an empty `<div id="swatches">` for them.
 - **They are `<button type="button">`, not links.** A button can be reached with the keyboard and is announced as a button by a screen reader.
 
-### 4e. The class that drives them
+### 4f. The class that drives them
 
 Open the placeholder `js/screens.js` and replace its contents with:
 
@@ -1659,7 +1685,7 @@ Things to notice:
 - **A name is set as `textContent`, never `innerHTML`.** A name typed by a player goes into the page. If it were HTML, a name like `<img src=x onerror=...>` would run code in everyone's page that loads the saved board. `textContent` shows it as the text it is. There's a test for exactly this.
 - **`replaceChildren()`** empties an element, so rendering twice doesn't stack rows.
 
-### 4f. Tests
+### 4g. Tests
 
 The screens need a page to work in. The tests give them a stand-in: elements that remember what is done to them, and a `document` that makes more. Replace the placeholder `tests/screens.tests.js` with:
 
@@ -2228,7 +2254,7 @@ Serve the page and open it. After the splash you should see the title.
 **If something's wrong**
 
 - **`Game is not defined`, `Screens is not defined`, and so on:** a script tag is missing from `index.html`, or comes after `main.js`. `profile.js` has to come before `leaderboard.js`.
-- **The text is in a plain font:** open the Network tab (F12) and look for a red `.ttf` file. The path in `@font-face` is relative to `index.html`, so it is `../assets/fonts/...`. The names in `hud.js` must match `font-family` in the CSS exactly.
+- **The text is in a plain font:** open the Network tab (F12) and look for a red `.ttf` file. The path in `@font-face` is relative to the CSS file, so it is `../../assets/fonts/...`. The names in `hud.js` must match `font-family` in the CSS exactly.
 - **The score is in a plain font but the screens aren't:** `await loadFonts()` is missing, or comes after `new Hud`.
 - **Nothing happens when you click Play:** `screens.bind` isn't called, or an ID in `index.html` doesn't match the one `screens.js` looks for (the console will say `Cannot read properties of null`).
 - **Typing a name moves the runner, or Space doesn't type a space:** the `event.target instanceof HTMLInputElement` check is missing, or comes after the moves.
