@@ -1592,7 +1592,7 @@ Things to notice:
 
 ## Step 5: Wiring it up
 
-Add the two new scripts to the list at the **bottom of `<body>`** in `index.html`. `steering.js` goes before `marble.js` (which uses it) and `controls.js` after it:
+Add the two new scripts to the list at the **bottom of `<body>`** in `index.html`. The list already has `marble.js`; `steering.js` goes just **before** it (since `marble.js` uses it), and `controls.js` just after it. Don't add a second `marble.js`: a script loaded twice stops with `Identifier 'MARBLE_RADIUS' has already been declared`. The three lines should read:
 
 ```html
   <script src="js/steering.js"></script>

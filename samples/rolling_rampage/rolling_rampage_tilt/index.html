@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Rolling Rampage Tilt - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <link rel="stylesheet" href="css/game.css">
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
+  <script>
+    // Rolling Rampage will use Space for other things later, so move the shared
+    // screenshot shortcut to C for this series.
+    window.SCREENSHOT_KEY = "KeyC";
+  </script>
+</head>
+
+<body>
+  <a class="back-button" href="../../../index.html#rolling_rampage">&larr; Samples</a>
+  <div class="hint">Arrows or WASD to roll &middot; R to start again &middot; C for a screenshot &middot; <a href="tests.html">Run tests</a></div>
+  <div id="stick-ring" class="hidden"><div id="stick-knob"></div></div>
+  <p class="touch-hint">Touch and drag anywhere to steer</p>
+  <div id="tilt-panel">
+    <button id="tilt-toggle" class="hazard" type="button">Tilt: off</button>
+    <button id="tilt-level" class="hazard hidden" type="button">Set level</button>
+    <p id="tilt-status"></p>
+  </div>
+  <div id="tilt-gauge" class="hidden"><div id="tilt-dot"></div></div>
+  <div id="splash">
+    <img src="../assets/images/rolling_rampage_logo_small.webp" alt="Rolling Rampage">
+    <p id="splash-status">Loading&hellip;</p>
+  </div>
+  <button id="drop" class="hazard" type="button">Drop again</button>
+  <canvas id="renderCanvas"></canvas>
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/course.js"></script>
+  <script src="js/steering.js"></script>
+  <script src="js/marble.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/tilt.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/splash.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

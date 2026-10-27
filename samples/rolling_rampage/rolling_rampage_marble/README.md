@@ -83,4 +83,4 @@ The logo was made for this project, and the fonts are Russo One, Barlow Condense
 
 ## Next up
 
-**Rolling Rampage Tilt** (coming next) steers the marble by tilting the phone.
+[**Rolling Rampage Tilt**](../rolling_rampage_tilt/README.md) steers the marble by tipping the phone, as a third kind of stick.
