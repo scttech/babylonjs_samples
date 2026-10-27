@@ -1,0 +1,26 @@
+/* .hint has pointer-events: none so the canvas stays interactive; opt the
+   "Run tests" link back in so it can be clicked. */
+.hint a {
+  pointer-events: auto;
+  color: var(--blue);
+}
+.hint {
+  font-family: var(--small-font);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* The back button and the hint stay above the splash's fade and anything else. */
+.back-button,
+.hint {
+  z-index: 26;
+}
+
+/* Touch. The page must not scroll, zoom or select text when a finger moves over it. */
+html,
+body {
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}

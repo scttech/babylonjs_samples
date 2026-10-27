@@ -1,0 +1,46 @@
+/* The look of Rolling Rampage, taken from its logo: riveted gunmetal, chrome lettering,
+   hazard-stripe yellow and safety orange, and one cool blue. The colors and the fonts are
+   named once here, and everything else uses the names. */
+@font-face {
+  font-family: "Russo One";
+  src: url("../../assets/fonts/RussoOne-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("../../assets/fonts/BarlowCondensed-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("../../assets/fonts/BarlowCondensed-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Saira Stencil One";
+  src: url("../../assets/fonts/SairaStencilOne-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+:root {
+  /* The three fonts. Russo One is wide and heavy, for big words and numbers. Barlow
+     Condensed is the legible one, for everything small, and the one to fall back on. The
+     stencil is for a few labels, and only big: its letters have gaps. */
+  --title-font: "Russo One", "Barlow Condensed", system-ui, sans-serif;
+  --small-font: "Barlow Condensed", system-ui, sans-serif;
+  --stencil-font: "Saira Stencil One", "Russo One", system-ui, sans-serif;
+
+  --ink: #0b0909; /* the black outline round everything in the logo */
+  --gunmetal: #211e21;
+  --steel-dark: #30384a;
+  --steel: #4b5367;
+  --chrome-dark: #757d8e;
+  --chrome: #a2adc0;
+  --chrome-light: #d9dbdc;
+  --yellow: #f6bf0e; /* hazard stripes: the main accent */
+  --orange: #ef5e07; /* the crate, and the flame's tail: danger */
+  --rust: #b25b0e;
+  --blue: #248de3; /* the sky: the one cool color, for good things */
+  --background: #161b26; /* behind the course: dark, so chrome and yellow stand out */
+}
