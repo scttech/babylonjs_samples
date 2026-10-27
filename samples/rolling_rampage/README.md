@@ -17,7 +17,7 @@ The game is built from boxes and spheres and code. There are no 3D models to dow
 | 3 | [Rolling Rampage Tilt](rolling_rampage_tilt/README.md) ([tutorial](rolling_rampage_tilt/TUTORIAL.md)) | Steering by tipping the phone like a tray: the motion sensor, asking permission, calibration, a dead zone and easing, and testing hardware with a fake sensor |
 | 4 | [Rolling Rampage Levels](rolling_rampage_levels/README.md) ([tutorial](rolling_rampage_levels/TUTORIAL.md)) | A course drawn as a grid of heights becomes a mesh the marble rolls on: ramps and holes, walls, a mesh physics shape, a fall limit, and going on to the next level |
 | 5 | [Rolling Rampage Clock](rolling_rampage_clock/README.md) ([tutorial](rolling_rampage_clock/TUTORIAL.md)) | A countdown, a goal and checkpoints with bonus seconds: the rules of a run as a state machine, and Havok trigger zones |
-| 6 | Rolling Rampage Hazards | Moving platforms, pistons and slime |
+| 6 | [Rolling Rampage Hazards](rolling_rampage_hazards/README.md) ([tutorial](rolling_rampage_hazards/TUTORIAL.md)) | A moving platform, a piston and slime: motion as a function of time, animated physics bodies, carrying a rolling marble, and a hazard that builds up |
 | 7 | Rolling Rampage Enemies | Marbles that chase you |
 | 8 | Rolling Rampage Screens | A title screen, a pause, a score and a leaderboard, and sound |
 | 9 | Rolling Rampage Polish | Effects, finishing touches |

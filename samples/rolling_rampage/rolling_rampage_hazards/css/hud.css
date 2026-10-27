@@ -1,0 +1,51 @@
+/* The clock, under the name of the level, and a banner in the middle of the screen for what happens:
+   a checkpoint, the goal, the time running out. Neither takes a touch, so touches reach the canvas. */
+#clock {
+  position: fixed;
+  right: 12px;
+  top: 88px;
+  z-index: 20;
+  margin: 0;
+  color: var(--chrome-light);
+  font: 400 clamp(34px, 8vw, 52px) / 1 var(--title-font);
+  letter-spacing: 0.04em;
+  text-shadow: 0 3px 6px var(--ink);
+  pointer-events: none;
+}
+#clock.low {
+  color: var(--orange);
+}
+#banner {
+  position: fixed;
+  left: 50%;
+  top: 18%;
+  z-index: 25;
+  padding: 14px 34px;
+  transform: translateX(-50%);
+  border: 6px solid;
+  border-image: repeating-linear-gradient(45deg, var(--yellow) 0 8px, var(--ink) 8px 16px) 6;
+  background: rgba(33, 30, 33, 0.92);
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+#banner.hidden {
+  display: none;
+}
+#banner h2 {
+  margin: 0;
+  color: var(--yellow);
+  font: 400 clamp(30px, 7vw, 56px) / 1.1 var(--title-font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+#banner p {
+  margin: 6px 0 0;
+  color: var(--chrome);
+  font: 600 clamp(20px, 4vw, 28px) / 1.1 var(--small-font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+#banner p:empty {
+  display: none;
+}

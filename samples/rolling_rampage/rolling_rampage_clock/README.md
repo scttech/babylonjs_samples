@@ -98,4 +98,4 @@ The logo was made for this project, and the fonts are Russo One, Barlow Condense
 
 ## Next up
 
-**Rolling Rampage Hazards** (coming next) adds moving platforms, pistons and slime.
+[**Rolling Rampage Hazards**](../rolling_rampage_hazards/README.md) adds moving platforms, pistons and slime.
