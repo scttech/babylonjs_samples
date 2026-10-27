@@ -13,7 +13,7 @@ The game is built from boxes and spheres and code. There are no 3D models to dow
 | # | Sample | What it teaches |
 |---|--------|-----------------|
 | 1 | [Rolling Rampage World](rolling_rampage_world/README.md) ([tutorial](rolling_rampage_world/TUTORIAL.md)) | Loading Havok, bodies, gravity, friction and bounce, a course made from data, a marble, an isometric camera, a page for a phone, and testing physics with no screen |
-| 2 | Rolling Rampage Marble | Steering with forces: keyboard and a touch stick, camera-relative controls |
+| 2 | [Rolling Rampage Marble](rolling_rampage_marble/README.md) ([tutorial](rolling_rampage_marble/TUTORIAL.md)) | Steering with forces: keyboard and a floating touch stick, controls relative to the camera, a push that fades near top speed, and a ground check with a ray |
 | 3 | Rolling Rampage Tilt | Steering by tilting the phone: the sensors, permission, calibration and smoothing |
 | 4 | Rolling Rampage Levels | A grid of heights becomes ramps and ledges, with falling off and respawning |
 | 5 | Rolling Rampage Clock | The goal, checkpoints and time bonuses, with trigger zones |

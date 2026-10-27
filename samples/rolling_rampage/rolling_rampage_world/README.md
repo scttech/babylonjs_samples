@@ -101,4 +101,4 @@ The logo was made for this project, and the fonts are Russo One, Barlow Condense
 
 ## Next up
 
-**Rolling Rampage Marble** (coming next) steers the marble with the keyboard and a thumb on a touch screen.
+[**Rolling Rampage Marble**](../rolling_rampage_marble/README.md) steers the marble with the keyboard and a thumb on a touch screen.
