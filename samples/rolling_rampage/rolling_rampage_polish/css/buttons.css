@@ -1,0 +1,25 @@
+/* A button for pressing: dark steel, with a hazard-stripe border, like the edge of a ramp.
+   Pressing it, or hovering, lights it up in yellow. */
+button.hazard {
+  padding: 8px 20px;
+  border: 6px solid;
+  border-image: repeating-linear-gradient(45deg, var(--yellow) 0 8px, var(--ink) 8px 16px) 6;
+  background: var(--steel-dark);
+  color: var(--chrome-light);
+  font: 700 22px/1 var(--small-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+button.hazard:hover,
+button.hazard:active {
+  background: var(--yellow);
+  color: var(--ink);
+}
+#drop {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 20;
+}

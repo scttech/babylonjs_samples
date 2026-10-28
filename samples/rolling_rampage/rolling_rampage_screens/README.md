@@ -107,4 +107,4 @@ The logo was made for this project, and the fonts are Russo One, Barlow Condense
 
 ## Next up
 
-**Rolling Rampage Polish** (coming next) adds the finishing touches: effects and a few more.
+[**Rolling Rampage Polish**](../rolling_rampage_polish/README.md) adds the finishing touches: sparks, a firework, a trail and a camera shake, and a `?dev` panel of sliders to tune the game while you play.

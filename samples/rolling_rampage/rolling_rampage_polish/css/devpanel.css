@@ -1,0 +1,66 @@
+/* The developer panel (see devpanel.js): sliders on the left of the screen, above the pause and sound buttons, only there with ?dev in the address.
+   It folds up to its title bar, and a short screen starts it folded up, so it never covers the marble in the middle. */
+#dev-panel {
+  position: fixed;
+  left: 8px;
+  bottom: 152px;
+  z-index: 30;
+  width: min(300px, 80vw);
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  padding: 6px 10px 10px;
+  border: 2px solid var(--yellow);
+  background: rgba(11, 9, 9, 0.88);
+  color: var(--chrome-light);
+  font: 600 14px/1.3 var(--small-font);
+}
+#dev-panel.hidden {
+  display: none;
+}
+#dev-panel .dev-head {
+  width: 100%;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--yellow);
+  font: 400 18px var(--title-font);
+  text-align: left;
+  letter-spacing: 0.06em;
+}
+#dev-panel.collapsed .dev-body {
+  display: none;
+}
+#dev-panel.collapsed {
+  width: auto;
+}
+#dev-panel h3 {
+  margin: 10px 0 2px;
+  color: var(--orange);
+  font: 400 14px var(--title-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+#dev-panel .dev-row {
+  display: grid;
+  grid-template-columns: 84px 1fr 44px;
+  align-items: center;
+  gap: 6px;
+}
+#dev-panel .dev-row input {
+  width: 100%;
+  min-width: 0;
+}
+#dev-panel output {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+#dev-panel .dev-copy {
+  margin-top: 10px;
+  padding: 4px 12px;
+  font-size: 16px;
+}
+@media (max-height: 520px) {
+  #dev-panel {
+    max-height: calc(100vh - 170px);
+  }
+}

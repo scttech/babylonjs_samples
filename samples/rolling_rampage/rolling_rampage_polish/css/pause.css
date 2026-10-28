@@ -1,0 +1,5 @@
+/* The pause: the game, dimmed, with a way to carry on or to leave. It is see-through, so the player can see
+   where they were. */
+#pause {
+  background: rgba(11, 9, 9, 0.72);
+}
