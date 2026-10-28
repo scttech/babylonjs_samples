@@ -1,0 +1,785 @@
+QUnit.module("hasFallen", () => {
+  QUnit.test("a marble on the course hasn't fallen", (assert) => {
+    assert.false(hasFallen(0));
+    assert.false(hasFallen(MARBLE_START.y));
+  });
+
+  QUnit.test("one below the limit has", (assert) => {
+    assert.true(hasFallen(FALL_LIMIT - 1));
+    assert.false(hasFallen(FALL_LIMIT));
+  });
+
+  QUnit.test("the limit is below the lowest slab, or a marble would be put back while still rolling", (assert) => {
+    const lowest = Math.min(...COURSE.flatMap((slab) => [slab.from[1], slab.to[1]]));
+
+    assert.true(FALL_LIMIT < lowest - 5);
+  });
+
+  QUnit.test("takes the limit as a second argument", (assert) => {
+    assert.true(hasFallen(-3, -2));
+    assert.false(hasFallen(-3, -4));
+  });
+});
+
+QUnit.module("MARBLE_DAMPING", () => {
+  QUnit.test("slows the marble a little, and not so much that it would crawl", (assert) => {
+    assert.true(MARBLE_DAMPING.linear > 0 && MARBLE_DAMPING.linear < 1);
+    assert.true(MARBLE_DAMPING.angular > 0 && MARBLE_DAMPING.angular < 1);
+  });
+});
+
+QUnit.module("the start", () => {
+  QUnit.test("is above the top of the course, over a slab, so the marble is dropped onto something", (assert) => {
+    const over = COURSE.filter((slab) => MARBLE_START.x >= slab.from[0] && MARBLE_START.x <= slab.to[0]);
+
+    assert.true(over.length > 0, "there is a slab under the start");
+    const slab = over[0];
+    const t = (MARBLE_START.x - slab.from[0]) / (slab.to[0] - slab.from[0]);
+    const top = slab.from[1] + t * (slab.to[1] - slab.from[1]);
+    assert.true(MARBLE_START.y > top + MARBLE_RADIUS, "and the marble starts above it");
+  });
+});
+
+// These put a marble on the real course, with real physics, in a NullEngine that draws
+// nothing, and let time go by with stepPhysics.
+QUnit.module("a marble on the course", (hooks) => {
+  let engine;
+  let scene;
+  let marble;
+
+  hooks.beforeEach(async () => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+    await loadPhysics(scene);
+    buildCourse(scene);
+    marble = new Marble(scene);
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  // Puts the marble somewhere, still.
+  const placeAt = (x, y, z) => {
+    marble.start = { x, y, z };
+    marble.reset();
+  };
+
+  QUnit.test("starts where it should, and doesn't move until the physics does", (assert) => {
+    assert.deepEqual({ x: marble.position.x, y: marble.position.y, z: marble.position.z }, MARBLE_START);
+    assert.strictEqual(marble.speed, 0);
+  });
+
+  QUnit.test("is a ball of the radius it says", (assert) => {
+    const size = marble.mesh.getBoundingInfo().boundingBox.extendSize;
+
+    assert.true(Math.abs(size.x - MARBLE_RADIUS) < 1e-6);
+  });
+
+  QUnit.test("falls when it is dropped", (assert) => {
+    stepPhysics(scene, 0.2);
+
+    assert.true(marble.position.y < MARBLE_START.y - 0.2, `${marble.position.y}`);
+  });
+
+  QUnit.test("comes to rest on a flat floor with its middle one radius above the top", (assert) => {
+    placeAt(-10, 5, 0); // over the start deck, whose top is at 4
+
+    stepPhysics(scene, 3);
+
+    assert.true(Math.abs(marble.position.y - (4 + MARBLE_RADIUS)) < 0.03, `${marble.position.y}`);
+    assert.true(marble.speed < 0.05, `still moving at ${marble.speed}`);
+  });
+
+  QUnit.test("sits still on a flat floor: it stays where it landed", (assert) => {
+    placeAt(-10, 5, 0);
+    stepPhysics(scene, 3);
+    const landed = marble.position.x;
+
+    stepPhysics(scene, 2);
+
+    assert.true(Math.abs(marble.position.x - landed) < 0.05);
+  });
+
+  QUnit.test("bounces a little, but not up to where it fell from", (assert) => {
+    placeAt(-10, 12, 0);
+    let highestAfterLanding = -Infinity;
+    let landed = false;
+
+    for (let i = 0; i < 240; i++) {
+      stepPhysics(scene, 1 / 60);
+      const y = marble.position.y;
+      if (!landed && y < 4 + MARBLE_RADIUS + 0.05) landed = true;
+      if (landed && marble.speed > 0.5) highestAfterLanding = Math.max(highestAfterLanding, y);
+    }
+
+    assert.true(landed, "it reached the floor");
+    assert.true(highestAfterLanding < 12 - 2, `bounced up to ${highestAfterLanding}`);
+  });
+
+  QUnit.test("rolls down a ramp, toward the low end, and gets faster", (assert) => {
+    placeAt(-4, 4.1, 0); // on the ramp, near the top
+    const x0 = marble.position.x;
+
+    stepPhysics(scene, 0.5);
+    const slow = marble.speed;
+    stepPhysics(scene, 0.5);
+    const fast = marble.speed;
+
+    assert.true(marble.position.x > x0 + 1, `rolled to ${marble.position.x}`);
+    assert.true(fast > slow, `${slow} then ${fast}`);
+  });
+
+  QUnit.test("keeps rolling along the course, not off sideways", (assert) => {
+    placeAt(-4, 4.1, 0);
+
+    stepPhysics(scene, 2);
+
+    assert.true(Math.abs(marble.position.z) < 0.05, `drifted to z = ${marble.position.z}`);
+  });
+
+  QUnit.test("rolls on to the lower deck, and slows there, because of the damping", (assert) => {
+    placeAt(-4, 4.1, 0);
+
+    for (let t = 0; marble.position.x < 7 && t < 6; t += 0.1) stepPhysics(scene, 0.1);
+    assert.true(marble.position.x >= 7, `reached x = ${marble.position.x}`);
+    const onDeck = marble.speed;
+    stepPhysics(scene, 0.5);
+
+    assert.true(marble.position.x < 14, "and it is still on the lower deck");
+    assert.true(marble.speed < onDeck, `${onDeck} then ${marble.speed}`);
+  });
+
+  QUnit.test("rolls off the edge of a slab, and falls past the limit", (assert) => {
+    placeAt(-10, 4.6, 5); // the start deck is 8 deep, so this is just over its edge
+
+    stepPhysics(scene, 2);
+
+    assert.true(marble.position.y < 4, `${marble.position.y}`);
+    assert.true(marble.position.y < MARBLE_START.y - 4);
+    stepPhysics(scene, 2);
+    assert.true(hasFallen(marble.position.y), `${marble.position.y}`);
+  });
+
+  QUnit.test("reset() puts it back at the start, with no speed and no spin", (assert) => {
+    stepPhysics(scene, 0.3); // falling
+    assert.true(marble.speed > 0, "it was moving");
+
+    marble.reset();
+
+    assert.deepEqual({ x: marble.position.x, y: marble.position.y, z: marble.position.z }, MARBLE_START);
+    assert.strictEqual(marble.speed, 0);
+    assert.strictEqual(marble.aggregate.body.getAngularVelocity().length(), 0);
+  });
+
+  QUnit.test("after a reset it falls the same way as the first time", (assert) => {
+    stepPhysics(scene, 1);
+    const first = { x: marble.position.x, y: marble.position.y };
+
+    marble.reset();
+    stepPhysics(scene, 1);
+
+    assert.true(Math.abs(marble.position.x - first.x) < 0.01, `${marble.position.x} against ${first.x}`);
+    assert.true(Math.abs(marble.position.y - first.y) < 0.01, `${marble.position.y} against ${first.y}`);
+  });
+
+  QUnit.test("a marble that has fallen can be reset and rolls again", (assert) => {
+    placeAt(-10, 4.6, 5);
+    stepPhysics(scene, 4);
+    assert.true(hasFallen(marble.position.y));
+
+    marble.start = MARBLE_START;
+    marble.reset();
+    stepPhysics(scene, 3);
+
+    assert.false(hasFallen(marble.position.y));
+    assert.true(Math.abs(marble.position.y - (4 + MARBLE_RADIUS)) < 0.03, "and it has landed on the start deck again");
+  });
+});
+
+// A floor big enough to roll about on, so a push can be watched for a long time without the
+// marble running out of course.
+const BIG_FLOOR = [{ name: "big floor", from: [-100, 0], to: [100, 0], z: 0, depth: 100 }];
+
+QUnit.module("grounded", (hooks) => {
+  let engine;
+  let scene;
+  let marble;
+
+  hooks.beforeEach(async () => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+    await loadPhysics(scene);
+    buildCourse(scene);
+    marble = new Marble(scene);
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  const placeAt = (x, y, z) => {
+    marble.start = { x, y, z };
+    marble.reset();
+  };
+
+  QUnit.test("a marble resting on a floor is on the ground", (assert) => {
+    placeAt(-10, 4.6, 0);
+    stepPhysics(scene, 2);
+
+    assert.true(marble.grounded);
+  });
+
+  QUnit.test("one in the air is not", (assert) => {
+    placeAt(-10, 9, 0);
+
+    assert.false(marble.grounded);
+  });
+
+  QUnit.test("one that has rolled off the side of the course is not, though nothing is under it", (assert) => {
+    placeAt(-10, 4.6, 20);
+
+    assert.false(marble.grounded);
+  });
+
+  QUnit.test("one on a ramp is on the ground", (assert) => {
+    placeAt(0, 2.6, 0);
+    stepPhysics(scene, 0.5);
+
+    assert.true(marble.grounded);
+  });
+
+  QUnit.test("it does not count the marble itself as the floor", (assert) => {
+    placeAt(100, 50, 100); // nothing anywhere near
+
+    assert.false(marble.grounded);
+  });
+
+  QUnit.test("one that has just left the floor, by more than GROUND_REACH, is not on the ground", (assert) => {
+    placeAt(-10, 4 + MARBLE_RADIUS + GROUND_REACH + 0.2, 0);
+
+    assert.false(marble.grounded);
+  });
+
+  QUnit.test("one that is only just off the floor, within GROUND_REACH, still is: a bounce is not flying", (assert) => {
+    placeAt(-10, 4 + MARBLE_RADIUS + GROUND_REACH / 2, 0);
+
+    assert.true(marble.grounded);
+  });
+});
+
+QUnit.module("pushing the marble", (hooks) => {
+  let engine;
+  let scene;
+  let marble;
+
+  hooks.beforeEach(async () => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+    await loadPhysics(scene);
+    buildCourse(scene, BIG_FLOOR);
+    marble = new Marble(scene);
+    marble.start = { x: -50, y: 0.6, z: 0 };
+    marble.reset();
+    stepPhysics(scene, 1); // let it settle
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  // Pushes the marble every frame for `seconds`, the way the game does.
+  const pushFor = (direction, seconds) => {
+    for (let t = 0; t < seconds - 1e-9; t += 1 / 60) {
+      marble.push(direction);
+      stepPhysics(scene, 1 / 60);
+    }
+  };
+
+  QUnit.test("a marble that is not pushed stays where it is", (assert) => {
+    const x = marble.position.x;
+
+    stepPhysics(scene, 2);
+
+    assert.true(Math.abs(marble.position.x - x) < 0.05);
+  });
+
+  QUnit.test("pushing it sets it rolling the way it is pushed", (assert) => {
+    const x = marble.position.x;
+
+    pushFor({ x: 1, y: 0, z: 0 }, 1);
+
+    assert.true(marble.position.x > x + 3, `moved ${marble.position.x - x}`);
+    assert.true(marble.velocity.x > 3);
+    assert.true(Math.abs(marble.velocity.z) < 0.1, "and not sideways");
+  });
+
+  QUnit.test("it keeps to the floor: a push along the ground doesn't lift it", (assert) => {
+    pushFor({ x: 1, y: 0, z: 0 }, 1);
+
+    assert.true(Math.abs(marble.position.y - MARBLE_RADIUS) < 0.05, `${marble.position.y}`);
+  });
+
+  QUnit.test("it rolls, it doesn't slide: pushed along, it is turning too", (assert) => {
+    pushFor({ x: 1, y: 0, z: 0 }, 1);
+
+    assert.true(marble.aggregate.body.getAngularVelocity().length() > 2);
+  });
+
+  QUnit.test("pushing the other way sends it the other way", (assert) => {
+    const z = marble.position.z;
+
+    pushFor({ x: 0, y: 0, z: -1 }, 1);
+
+    assert.true(marble.position.z < z - 3);
+  });
+
+  QUnit.test("a half push is a gentler push", (assert) => {
+    pushFor({ x: 0.5, y: 0, z: 0 }, 1);
+    const gentle = marble.velocity.x;
+    marble.reset();
+    stepPhysics(scene, 1);
+
+    pushFor({ x: 1, y: 0, z: 0 }, 1);
+
+    assert.true(gentle < marble.velocity.x * 0.75, `${gentle} against ${marble.velocity.x}`);
+  });
+
+  QUnit.test("pushing with no direction does nothing, and doesn't mind being asked", (assert) => {
+    pushFor({ x: 0, y: 0, z: 0 }, 1);
+
+    assert.true(marble.speed < 0.05);
+  });
+
+  QUnit.test("however long it is pushed, it doesn't go much past TOP_SPEED", (assert) => {
+    pushFor({ x: 1, y: 0, z: 0 }, 6);
+
+    assert.true(marble.speed > TOP_SPEED * 0.7, `${marble.speed}`);
+    assert.true(marble.speed < TOP_SPEED * 1.1, `${marble.speed}`);
+  });
+
+  QUnit.test("it can turn round: pushed back the other way it slows, stops and comes back", (assert) => {
+    pushFor({ x: 1, y: 0, z: 0 }, 2);
+    assert.true(marble.velocity.x > 5);
+
+    pushFor({ x: -1, y: 0, z: 0 }, 2);
+
+    assert.true(marble.velocity.x < 0, `${marble.velocity.x}`);
+  });
+
+  QUnit.test("a push in the air is much weaker than one on the ground", (assert) => {
+    marble.start = { x: -50, y: 40, z: 0 };
+    marble.reset();
+    pushFor({ x: 1, y: 0, z: 0 }, 0.5);
+    const air = marble.velocity.x;
+    marble.start = { x: -50, y: 0.6, z: 0 };
+    marble.reset();
+    stepPhysics(scene, 1);
+
+    pushFor({ x: 1, y: 0, z: 0 }, 0.5);
+
+    assert.true(air < marble.velocity.x * 0.5, `${air} against ${marble.velocity.x}`);
+    assert.true(air > 0, "but it isn't nothing");
+  });
+
+  QUnit.test("it wakes up a marble that has been at rest long enough to go to sleep", (assert) => {
+    stepPhysics(scene, 10);
+
+    pushFor({ x: 1, y: 0, z: 0 }, 0.5);
+
+    assert.true(marble.velocity.x > 1, `${marble.velocity.x}`);
+  });
+});
+
+// The controls are given to the player as seen on the screen: up is up on the screen. Whether a
+// push really goes that way on the screen is checked here, with a real camera.
+QUnit.module("pushing, as seen on the screen", (hooks) => {
+  let engine;
+  let scene;
+  let marble;
+  let camera;
+
+  hooks.beforeEach(async () => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+    await loadPhysics(scene);
+    buildCourse(scene, BIG_FLOOR);
+    camera = new BABYLON.ArcRotateCamera("camera", ISO_ALPHA, ISO_BETA, CAMERA_RADIUS, BABYLON.Vector3.Zero(), scene);
+    camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+    marble = new Marble(scene);
+    marble.start = { x: 0, y: 0.6, z: 0 };
+    marble.reset();
+    stepPhysics(scene, 1);
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  // How far the marble went across the screen (x, right is positive) and up it (y), after being
+  // pushed with a stick for a second. The camera's view matrix turns a move in the world into
+  // a move as the camera sees it.
+  const movedOnScreen = (stick) => {
+    const before = marble.position.clone();
+    for (let t = 0; t < 1; t += 1 / 60) {
+      marble.push(worldDirection(stick, camera.alpha));
+      stepPhysics(scene, 1 / 60);
+    }
+    const moved = marble.position.subtract(before);
+    const view = BABYLON.Vector3.TransformNormal(moved, camera.getViewMatrix(true));
+    return { x: view.x, y: view.y };
+  };
+
+  QUnit.test("pushing the stick up rolls the marble up the screen, and not sideways across it", (assert) => {
+    const { x, y } = movedOnScreen({ x: 0, y: 1 });
+
+    assert.true(y > 1, `up ${y}`);
+    assert.true(Math.abs(x) < 0.15, `across ${x}`);
+  });
+
+  QUnit.test("pushing it down rolls it down the screen", (assert) => {
+    const { x, y } = movedOnScreen({ x: 0, y: -1 });
+
+    assert.true(y < -1, `up ${y}`);
+    assert.true(Math.abs(x) < 0.15, `across ${x}`);
+  });
+
+  QUnit.test("pushing it right rolls it right across the screen, and not up or down", (assert) => {
+    const { x, y } = movedOnScreen({ x: 1, y: 0 });
+
+    assert.true(x > 1, `across ${x}`);
+    assert.true(Math.abs(y) < 0.15, `up ${y}`);
+  });
+
+  QUnit.test("pushing it left rolls it left", (assert) => {
+    const { x } = movedOnScreen({ x: -1, y: 0 });
+
+    assert.true(x < -1, `across ${x}`);
+  });
+
+  QUnit.test("a diagonal push goes diagonally on the screen: up and right", (assert) => {
+    const { x, y } = movedOnScreen({ x: 0.7, y: 0.7 });
+
+    assert.true(x > 0.5 && y > 0.5, `${x}, ${y}`);
+  });
+});
+
+// A marble that has arrived somewhere has to stay there. These put it on the test course and let time go by.
+QUnit.module("stopping a marble", (hooks) => {
+  let engine;
+  let scene;
+  let marble;
+
+  hooks.beforeEach(async () => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+    await loadPhysics(scene);
+    buildCourse(scene);
+    marble = new Marble(scene);
+    stepPhysics(scene, 1); // let it land on the start deck
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  QUnit.test("stopping takes all its speed away at once", (assert) => {
+    marble.aggregate.body.setLinearVelocity(new BABYLON.Vector3(5, 0, 0));
+    marble.aggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, -10));
+
+    marble.stop();
+
+    assert.strictEqual(marble.speed, 0);
+    assert.strictEqual(marble.aggregate.body.getAngularVelocity().length(), 0);
+  });
+
+  QUnit.test("and it stays where it is, on the flat", (assert) => {
+    marble.aggregate.body.setLinearVelocity(new BABYLON.Vector3(5, 0, 0));
+    const x = marble.position.x;
+
+    marble.stop();
+    stepPhysics(scene, 1);
+
+    assert.true(Math.abs(marble.position.x - x) < 0.05, `it moved ${marble.position.x - x}`);
+    assert.true(marble.speed < 0.05);
+  });
+
+  QUnit.test("on a slope it is held back to a creep, where a free marble would roll away", (assert) => {
+    marble.start = { x: -2, y: 3.3, z: 0 }; // on the ramp
+    marble.reset();
+    stepPhysics(scene, 0.3);
+    const x = marble.position.x;
+
+    marble.stop();
+    stepPhysics(scene, 1);
+
+    assert.true(Math.abs(marble.position.x - x) < 1, `it only crept ${marble.position.x - x}`);
+  });
+
+  QUnit.test("resetting lets it roll again", (assert) => {
+    marble.stop();
+    marble.start = { x: -2, y: 3.3, z: 0 }; // on the ramp
+    marble.reset();
+
+    stepPhysics(scene, 1);
+
+    assert.true(marble.speed > 1, `speed ${marble.speed}`);
+  });
+});
+
+QUnit.module("glideVelocity", () => {
+  QUnit.test("is still at the point, and very near it", (assert) => {
+    assert.deepEqual(glideVelocity({ x: 3, z: 4 }, { x: 3, z: 4 }), { x: 0, z: 0 });
+    assert.deepEqual(glideVelocity({ x: 3, z: 4 }, { x: 3.01, z: 4 }), { x: 0, z: 0 });
+  });
+
+  QUnit.test("heads toward the point, whichever way it is", (assert) => {
+    const east = glideVelocity({ x: 0, z: 0 }, { x: 1, z: 0 });
+    const southWest = glideVelocity({ x: 0, z: 0 }, { x: -1, z: -1 });
+
+    assert.true(east.x > 0 && Math.abs(east.z) < 1e-9);
+    assert.true(southWest.x < 0 && southWest.z < 0);
+    assert.true(Math.abs(southWest.x - southWest.z) < 1e-9, "straight at it");
+  });
+
+  QUnit.test("goes slower the nearer it is, so it eases in", (assert) => {
+    const far = Math.hypot(...Object.values(glideVelocity({ x: 0, z: 0 }, { x: 0.8, z: 0 })));
+    const near = Math.hypot(...Object.values(glideVelocity({ x: 0, z: 0 }, { x: 0.2, z: 0 })));
+
+    assert.true(near < far);
+    assert.true(Math.abs(near - 0.2 * GLIDE_RATE) < 1e-9, "in proportion to the distance");
+  });
+
+  QUnit.test("never goes faster than the top speed, however far", (assert) => {
+    const v = glideVelocity({ x: 0, z: 0 }, { x: 300, z: 400 });
+
+    assert.true(Math.abs(Math.hypot(v.x, v.z) - GLIDE_MAX_SPEED) < 1e-9);
+  });
+});
+
+QUnit.module("gliding a marble", (hooks) => {
+  let engine;
+  let scene;
+  let marble;
+
+  hooks.beforeEach(async () => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+    await loadPhysics(scene);
+    buildCourse(scene);
+    marble = new Marble(scene);
+    stepPhysics(scene, 1); // let it land on the start deck
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  QUnit.test("a stopped marble glides to a point on the floor, and stays there", (assert) => {
+    marble.stop();
+    const target = { x: marble.position.x + 1.4, z: marble.position.z + 0.6 };
+
+    for (let i = 0; i < 120; i++) {
+      marble.glideTo(target);
+      stepPhysics(scene, 1 / 60);
+    }
+
+    assert.true(Math.hypot(marble.position.x - target.x, marble.position.z - target.z) < 0.05, `it is at ${marble.position.x}, ${marble.position.z}`);
+    assert.true(marble.speed < 0.1, `and is still: ${marble.speed}`);
+    assert.true(marble.grounded, "on the floor");
+  });
+});
+
+// Slime is thick, and eats a marble green. These put it on the test course and let time go by.
+QUnit.module("a marble in slime", (hooks) => {
+  let engine;
+  let scene;
+  let marble;
+
+  hooks.beforeEach(async () => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+    await loadPhysics(scene);
+    buildCourse(scene);
+    marble = new Marble(scene);
+    stepPhysics(scene, 1); // let it land on the start deck
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  // How fast the marble is going after a second of rolling along the deck from the same push.
+  const speedAfterASecond = () => {
+    marble.aggregate.body.setLinearVelocity(new BABYLON.Vector3(5, 0, 0));
+    stepPhysics(scene, 1);
+    return marble.speed;
+  };
+
+  QUnit.test("it loses its speed faster in slime than out of it", (assert) => {
+    const clean = speedAfterASecond();
+    marble.reset();
+    stepPhysics(scene, 1);
+
+    marble.slow(true);
+    const slimy = speedAfterASecond();
+
+    assert.true(slimy < clean * 0.5, `${slimy} in slime, ${clean} out of it`);
+  });
+
+  QUnit.test("slowing it back down to normal gives its speed back", (assert) => {
+    marble.slow(true);
+    marble.slow(false);
+
+    const speed = speedAfterASecond();
+
+    assert.true(speed > 1.5, `${speed}`);
+  });
+
+  QUnit.test("it goes green as it is eaten, by the amount", (assert) => {
+    const green = BABYLON.Color3.FromHexString(SLIME_GREEN);
+
+    marble.tint(0);
+    assert.true(marble.mesh.material.emissiveColor.equals(BABYLON.Color3.Black()), "not at all");
+
+    marble.tint(1);
+    assert.true(marble.mesh.material.emissiveColor.equals(green), "all the way");
+
+    marble.tint(0.5);
+    assert.true(Math.abs(marble.mesh.material.emissiveColor.g - green.g / 2) < 1e-6, "half way");
+  });
+
+  QUnit.test("resetting makes it clean and normal again", (assert) => {
+    marble.slow(true);
+    marble.tint(1);
+
+    marble.reset();
+
+    assert.true(marble.mesh.material.emissiveColor.equals(BABYLON.Color3.Black()));
+    stepPhysics(scene, 1);
+    assert.true(speedAfterASecond() > 1.5, "and rolls freely");
+  });
+});
+
+// A marble on a floor that moves has to go with it. These put it on the test course, which stands still,
+// and tell it the floor is moving.
+QUnit.module("carrying a marble", (hooks) => {
+  let engine;
+  let scene;
+  let marble;
+
+  hooks.beforeEach(async () => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+    await loadPhysics(scene);
+    buildCourse(scene);
+    marble = new Marble(scene);
+    stepPhysics(scene, 1); // let it land on the start deck
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  QUnit.test("it is on the course, and the course is what it is on", (assert) => {
+    assert.true(marble.grounded);
+    assert.strictEqual(marble.ground.name, "start deck");
+  });
+
+  QUnit.test("it is on nothing in the air", (assert) => {
+    marble.start = { x: -11, y: 12, z: 0 };
+    marble.reset();
+
+    assert.strictEqual(marble.ground, null);
+    assert.false(marble.grounded);
+  });
+
+  QUnit.test("it closes on the speed of the floor, a share at a time, and never overshoots", (assert) => {
+    const speed = [];
+    for (let i = 0; i < 60; i++) {
+      marble.carry({ x: 2, z: -1 }, 1 / 60);
+      speed.push(marble.velocity);
+    }
+
+    assert.true(speed[0].x > 0 && speed[0].x < 2, "part of the way at first");
+    assert.true(speed[59].x > 1.9 && speed[59].x <= 2 + 1e-6, `and there in the end: ${speed[59].x}`);
+    assert.true(speed[59].z < -0.95 && speed[59].z >= -1 - 1e-6);
+    assert.true(speed.every((v, i) => i === 0 || v.x >= speed[i - 1].x - 1e-9), "steadily");
+  });
+
+  QUnit.test("it leaves the speed up and down to the physics", (assert) => {
+    marble.aggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 3, 0));
+
+    marble.carry({ x: 2, z: 0 }, 1 / 60);
+
+    assert.strictEqual(marble.velocity.y, 3);
+  });
+});
+
+// A marble can be made a different marble: a name, a look, a weight and a strength. These make one and look at it.
+QUnit.module("a marble with options", (hooks) => {
+  let engine;
+  let scene;
+
+  hooks.beforeEach(async () => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+    await loadPhysics(scene);
+    buildCourse(scene);
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  QUnit.test("with none, it is the player's marble: named marble, made of steel, and of the usual weight", (assert) => {
+    const marble = new Marble(scene);
+
+    assert.strictEqual(marble.mesh.name, "marble");
+    assert.strictEqual(marble.mesh.material.name, "steel");
+    assert.strictEqual(marble.aggregate.body.getMassProperties().mass, MARBLE_MASS);
+    assert.deepEqual(marble.steer, {});
+  });
+
+  QUnit.test("the player's marble is shiny: a sharp highlight and a pale glow at its edge", (assert) => {
+    const material = new Marble(scene).mesh.material;
+
+    assert.true(material.specularPower >= 128, "a small, sharp highlight");
+    assert.deepEqual(material.specularColor.asArray(), [1, 1, 1], "a white one");
+    assert.true(Boolean(material.emissiveFresnelParameters), "something at the edge");
+    assert.true(material.emissiveFresnelParameters.rightColor.b > material.emissiveFresnelParameters.leftColor.b, "brighter at the edge than in the middle");
+  });
+
+  QUnit.test("it can be given a name, a look and a weight", (assert) => {
+    const look = new BABYLON.StandardMaterial("odd", scene);
+
+    const marble = new Marble(scene, { name: "other", material: look, mass: 5 });
+
+    assert.strictEqual(marble.mesh.name, "other");
+    assert.strictEqual(marble.mesh.material, look);
+    assert.strictEqual(marble.aggregate.body.getMassProperties().mass, 5);
+  });
+
+  QUnit.test("a marble given less force is pushed less by the same push", (assert) => {
+    const strong = new Marble(scene);
+    const weak = new Marble(scene, { start: { x: -11, y: 5, z: 3 }, steer: { force: STEER_FORCE / 4 } });
+    stepPhysics(scene, 1); // land them both on the deck
+
+    for (let i = 0; i < 60; i++) {
+      strong.push({ x: 1, y: 0, z: 0 });
+      weak.push({ x: 1, y: 0, z: 0 });
+      stepPhysics(scene, 1 / 60);
+    }
+
+    assert.true(weak.speed < strong.speed * 0.6, `${weak.speed} against ${strong.speed}`);
+  });
+});

@@ -1,0 +1,10 @@
+/* A small screen: a phone, or a window made small. */
+@media (max-width: 640px), (max-height: 520px) {
+  .hint {
+    display: none;
+  }
+  button.hazard {
+    padding: 6px 14px;
+    font-size: 20px;
+  }
+}

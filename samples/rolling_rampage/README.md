@@ -21,6 +21,7 @@ The game is built from boxes and spheres and code. There are no 3D models to dow
 | 7 | [Rolling Rampage Enemies](rolling_rampage_enemies/README.md) ([tutorial](rolling_rampage_enemies/TUTORIAL.md)) | Marbles that chase you: reusing a class with options, a chase as a state machine, collision events, and a hit with a cooldown |
 | 8 | [Rolling Rampage Screens](rolling_rampage_screens/README.md) ([tutorial](rolling_rampage_screens/TUTORIAL.md)) | A mirror-chrome pinball marble, a game as a state machine, a title, a pause, a score and a leaderboard remembered in the browser, sound made in code, and screens that fit a phone |
 | 9 | [Rolling Rampage Polish](rolling_rampage_polish/README.md) ([tutorial](rolling_rampage_polish/TUTORIAL.md)) | Seven more levels (ten in all), particle bursts and a trail, a camera shake, and a `?dev` panel of sliders to tune the game while you play |
+| 10 | [Rolling Rampage Editor](rolling_rampage_editor/README.md) ([tutorial](rolling_rampage_editor/TUTORIAL.md)) | A level editor inside the game: every limit in one place, level rules as code, a draft with undo, never trusting data from outside, gestures as plain functions, and playing your own levels |
 
 The plan may shift as each step teaches something unexpected.
 

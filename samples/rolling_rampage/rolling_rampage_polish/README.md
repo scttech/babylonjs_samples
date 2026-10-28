@@ -2,7 +2,7 @@
 
 <img src="../assets/images/rolling_rampage_logo_small.webp" alt="Rolling Rampage" width="360">
 
-Step 9 of the Rolling Rampage series, the last. Builds on [Rolling Rampage Screens](../rolling_rampage_screens/README.md). What's new is **feel**, and **length**: there are now **ten levels**, not three. A bump throws **sparks** and **shakes** the screen, a checkpoint **glitters**, the goal sets off a **firework**, the slime's win is a green **puff**, and a marble going fast leaves a **trail**. And there is something for the person making the game: a **developer panel**. Add `?dev` to the address and a panel of sliders appears, for the marble's look, how it feels to roll, the lights and the effects, so you can tune them while you play.
+Step 9 of the Rolling Rampage series. Builds on [Rolling Rampage Screens](../rolling_rampage_screens/README.md). What's new is **feel**, and **length**: there are now **ten levels**, not three. A bump throws **sparks** and **shakes** the screen, a checkpoint **glitters**, the goal sets off a **firework**, the slime's win is a green **puff**, and a marble going fast leaves a **trail**. And there is something for the person making the game: a **developer panel**. Add `?dev` to the address and a panel of sliders appears, for the marble's look, how it feels to roll, the lights and the effects, so you can tune them while you play.
 
 This sample is also a [step-by-step tutorial](TUTORIAL.md) you can work through yourself, starting from the Screens sample. Run `node reset-tutorial.js` to return this folder to the tutorial's starting point.
 
@@ -101,6 +101,8 @@ Open [tests.html](tests.html) in a browser (or click "Run tests" from the runnin
 
 The logo was made for this project, and the fonts are Russo One, Barlow Condensed and Saira Stencil One, from Google Fonts, under the SIL Open Font License, as listed in [the assets README](../assets/README.md). The particles follow the pattern of the Parkour Runner series.
 
-## The end of the series
+## Next up
 
-This is the last of the nine. The challenges at the end of the [tutorial](TUTORIAL.md) suggest where to take it next.
+This finishes the game. The challenges at the end of the [tutorial](TUTORIAL.md) suggest where to take it next.
+
+[**Rolling Rampage Editor**](../rolling_rampage_editor/README.md) gives the game a level editor, so anyone can make, test, save, play and share levels of their own.

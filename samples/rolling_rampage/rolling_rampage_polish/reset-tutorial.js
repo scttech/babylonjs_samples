@@ -23,18 +23,12 @@ const RESET_PATHS = ["index.html", "tests.html", "css", "js", "tests"];
 
 // Files you write during the tutorial, restored as placeholders.
 const PLACEHOLDERS = {
-  "js/particles.js": "// TODO: see TUTORIAL.md, step 1.
-",
-  "tests/particles.tests.js": "// TODO: see TUTORIAL.md, step 1.
-",
-  "js/shake.js": "// TODO: see TUTORIAL.md, step 2.
-",
-  "tests/shake.tests.js": "// TODO: see TUTORIAL.md, step 2.
-",
-  "js/devpanel.js": "// TODO: see TUTORIAL.md, step 4.
-",
-  "tests/devpanel.tests.js": "// TODO: see TUTORIAL.md, step 4.
-",
+  "js/particles.js": "// TODO: see TUTORIAL.md, step 1.\n",
+  "tests/particles.tests.js": "// TODO: see TUTORIAL.md, step 1.\n",
+  "js/shake.js": "// TODO: see TUTORIAL.md, step 2.\n",
+  "tests/shake.tests.js": "// TODO: see TUTORIAL.md, step 2.\n",
+  "js/devpanel.js": "// TODO: see TUTORIAL.md, step 4.\n",
+  "tests/devpanel.tests.js": "// TODO: see TUTORIAL.md, step 4.\n",
 };
 
 const confirm = (question) =>

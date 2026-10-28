@@ -1,6 +1,6 @@
 # Tutorial: Rolling Rampage Polish -- Sparks, a Shake, Ten Levels, and a Panel to Tune It With
 
-This is the ninth and last tutorial in the Rolling Rampage series. The game is complete: it has a title, a score and sound. What it lacks is *feel*. A bump costs you three seconds, but nothing *happens*. A goal says "Goal!", and that is all. In this step you add the finishing touches that make a game feel good: **sparks** where the marble is hit, **glitter** at a checkpoint, a **firework** at the goal, a **puff** when the slime wins, a **trail** behind a marble going fast, and a **shake** of the camera when something big happens. The game also grows from three levels to **ten**. Then you add something for *you*: a **developer panel** (add `?dev` to the address) with sliders for the look of the marble, how it feels to roll, the lights and the effects, so you can tune all of it while you play. You write the code; this document tells you what to write and why.
+This is the ninth tutorial in the Rolling Rampage series. The game is complete: it has a title, a score and sound. What it lacks is *feel*. A bump costs you three seconds, but nothing *happens*. A goal says "Goal!", and that is all. In this step you add the finishing touches that make a game feel good: **sparks** where the marble is hit, **glitter** at a checkpoint, a **firework** at the goal, a **puff** when the slime wins, a **trail** behind a marble going fast, and a **shake** of the camera when something big happens. The game also grows from three levels to **ten**. Then you add something for *you*: a **developer panel** (add `?dev` to the address) with sliders for the look of the marble, how it feels to roll, the lights and the effects, so you can tune all of it while you play. You write the code; this document tells you what to write and why.
 
 By the end you'll have:
 
@@ -2009,4 +2009,4 @@ Open it. You should see **592 passing tests**: the 520 you started with, plus 28
 
 ---
 
-*That's the end of the Rolling Rampage series. You have a complete game: a physics world, a marble, three ways to steer it, three levels, a clock, hazards, enemies, a title, a score, a leaderboard, sound, effects, and a panel to tune all of it. The same panel, and the habit of putting numbers somewhere you can reach them, is worth taking to every game you make.*
+*That's the end of the game itself. You have a complete game: a physics world, a marble, three ways to steer it, ten levels, a clock, hazards, enemies, a title, a score, a leaderboard, sound, effects, and a panel to tune all of it. The same panel, and the habit of putting numbers somewhere you can reach them, is worth taking to every game you make. The next tutorial gives it a level editor.*
