@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Rolling Rampage Screens - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/page.css">
+  <link rel="stylesheet" href="css/splash.css">
+  <link rel="stylesheet" href="css/buttons.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/stick.css">
+  <link rel="stylesheet" href="css/tilt.css">
+  <link rel="stylesheet" href="css/levels.css">
+  <link rel="stylesheet" href="css/hud.css">
+  <link rel="stylesheet" href="css/panel.css">
+  <link rel="stylesheet" href="css/title.css">
+  <link rel="stylesheet" href="css/pause.css">
+  <link rel="stylesheet" href="css/result.css">
+  <link rel="stylesheet" href="css/leaderboard.css">
+  <link rel="stylesheet" href="css/controls.css">
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
+  <script>
+    // Rolling Rampage will use Space for other things later, so move the shared
+    // screenshot shortcut to C for this series.
+    window.SCREENSHOT_KEY = "KeyC";
+  </script>
+</head>
+
+<body>
+  <a class="back-button" href="../../../index.html#rolling_rampage">&larr; Samples</a>
+  <div class="hint">Arrows or WASD to roll &middot; R to start again &middot; N for the next level &middot; P pause &middot; M sound &middot; C for a screenshot &middot; <a href="tests.html">Run tests</a></div>
+  <div id="stick-ring" class="hidden"><div id="stick-knob"></div></div>
+  <p class="touch-hint">Touch and drag anywhere to steer</p>
+  <p id="level-name"></p>
+  <p id="clock"></p>
+  <div id="banner" class="hidden">
+    <h2 id="banner-title"></h2>
+    <p id="banner-detail"></p>
+  </div>
+  <div id="tilt-panel">
+    <button id="tilt-toggle" class="hazard" type="button">Tilt: off</button>
+    <button id="tilt-level" class="hazard hidden" type="button">Set level</button>
+    <p id="tilt-status"></p>
+  </div>
+  <div id="tilt-gauge" class="hidden"><div id="tilt-dot"></div></div>
+  <div id="splash">
+    <img src="../assets/images/rolling_rampage_logo_small.webp" alt="Rolling Rampage">
+    <p id="splash-status">Loading&hellip;</p>
+  </div>
+  <div id="title" class="screen">
+    <img class="logo" src="../assets/images/rolling_rampage_logo_small.webp" alt="Rolling Rampage">
+    <div class="row panel">
+      <input id="name" type="text" maxlength="12" placeholder="Your name" autocomplete="off" spellcheck="false">
+      <button id="play" class="hazard big" type="button">Play</button>
+    </div>
+    <p id="title-best"></p>
+    <p class="keys desktop-only">Enter to play &middot; arrows or WASD to roll &middot; P pause &middot; M sound</p>
+    <p class="keys touch-only">Drag anywhere to steer, or tilt your phone.</p>
+  </div>
+  <div id="pause" class="screen hidden">
+    <h2>Paused</h2>
+    <div class="row">
+      <button id="resume" class="hazard big" type="button">Resume</button>
+      <button id="pause-title" class="hazard" type="button">Title</button>
+    </div>
+    <p class="keys desktop-only">P or Esc to carry on &middot; T for the title</p>
+  </div>
+  <div id="over" class="screen hidden">
+    <h2 id="over-heading">Game over</h2>
+    <p id="over-score"></p>
+    <p id="over-best"></p>
+    <ol id="board"></ol>
+    <div class="row">
+      <button id="again" class="hazard big" type="button">Play again</button>
+      <button id="over-title" class="hazard" type="button">Title</button>
+    </div>
+    <p class="keys desktop-only">Enter or R to play again &middot; T for the title</p>
+  </div>
+  <button id="sound" class="hazard quiet" type="button">Sound: on</button>
+  <button id="pause-button" class="hazard quiet hidden" type="button" aria-label="Pause">II</button>
+  <button id="next-level" class="hazard" type="button">Next level</button>
+  <button id="drop" class="hazard" type="button">Drop again</button>
+  <canvas id="renderCanvas"></canvas>
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/course.js"></script>
+  <script src="js/level.js"></script>
+  <script src="js/clock.js"></script>
+  <script src="js/zones.js"></script>
+  <script src="js/movers.js"></script>
+  <script src="js/slime.js"></script>
+  <script src="js/steering.js"></script>
+  <script src="js/marble.js"></script>
+  <script src="js/enemies.js"></script>
+  <script src="js/score.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/sounds.js"></script>
+  <script src="js/screens.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/tilt.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/splash.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

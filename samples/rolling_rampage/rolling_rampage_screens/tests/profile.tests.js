@@ -1,0 +1,169 @@
+// A stand-in for localStorage: a Map with the two methods the game uses.
+const profileMemory = () => {
+  const data = new Map();
+  return {
+    data,
+    getItem: (key) => (data.has(key) ? data.get(key) : null),
+    setItem: (key, value) => data.set(key, String(value)),
+  };
+};
+
+// One that refuses to save, as a private window can.
+const profileBroken = () => ({
+  getItem() {
+    throw new Error("blocked");
+  },
+  setItem() {
+    throw new Error("full");
+  },
+});
+
+QUnit.module("cleanName", () => {
+  QUnit.test("keeps an ordinary name as it is", (assert) => {
+    assert.strictEqual(cleanName("Ana"), "Ana");
+  });
+
+  QUnit.test("trims the spaces round it and squeezes the ones inside", (assert) => {
+    assert.strictEqual(cleanName("   Ana    Maria  "), "Ana Maria");
+  });
+
+  QUnit.test("cuts a long name to NAME_MAX characters, with no space left on the end", (assert) => {
+    assert.strictEqual(cleanName("abcdefghijklmnopqrstuvwxyz"), "abcdefghijkl");
+    assert.strictEqual(cleanName("abcdefghijk mnop"), "abcdefghijk");
+  });
+
+  QUnit.test("an empty name, spaces, nothing at all, or something that isn't text, is the default name", (assert) => {
+    for (const name of ["", "     ", undefined, null]) assert.strictEqual(cleanName(name), DEFAULT_NAME);
+  });
+
+  QUnit.test("numbers are turned into text", (assert) => {
+    assert.strictEqual(cleanName(42), "42");
+  });
+
+  QUnit.test("markup is only text: it is kept as it is, for the page to show as text", (assert) => {
+    assert.strictEqual(cleanName("<b>hi</b>"), "<b>hi</b>");
+  });
+});
+
+QUnit.module("readJson and writeJson", () => {
+  QUnit.test("a value that is written can be read back", (assert) => {
+    const storage = profileMemory();
+
+    assert.true(writeJson(storage, "k", { a: [1, 2] }));
+
+    assert.deepEqual(readJson(storage, "k"), { a: [1, 2] });
+  });
+
+  QUnit.test("reading what was never saved gives null", (assert) => {
+    assert.strictEqual(readJson(profileMemory(), "nothing"), null);
+  });
+
+  QUnit.test("reading something that isn't JSON gives null, not an error", (assert) => {
+    const storage = profileMemory();
+    storage.setItem("k", "{oops");
+
+    assert.strictEqual(readJson(storage, "k"), null);
+  });
+
+  QUnit.test("with no storage at all, reading gives null and writing says it failed", (assert) => {
+    assert.strictEqual(readJson(null, "k"), null);
+    assert.false(writeJson(null, "k", 1));
+  });
+
+  QUnit.test("storage that throws is the same as none", (assert) => {
+    const storage = profileBroken();
+
+    assert.strictEqual(readJson(storage, "k"), null);
+    assert.false(writeJson(storage, "k", 1));
+  });
+});
+
+QUnit.module("Profile", () => {
+  QUnit.test("starts as the default name", (assert) => {
+    const profile = new Profile({ storage: profileMemory() });
+
+    assert.strictEqual(profile.name, DEFAULT_NAME);
+  });
+
+  QUnit.test("a saved profile comes back in a new one", (assert) => {
+    const storage = profileMemory();
+    const first = new Profile({ storage });
+    first.name = "Ana";
+
+    assert.true(first.save());
+    const second = new Profile({ storage });
+
+    assert.strictEqual(second.name, "Ana");
+  });
+
+  QUnit.test("the sound is on to begin with", (assert) => {
+    assert.false(new Profile({ storage: profileMemory() }).muted);
+  });
+
+  QUnit.test("turning the sound off is remembered", (assert) => {
+    const storage = profileMemory();
+    const first = new Profile({ storage });
+    first.muted = true;
+    first.save();
+
+    assert.true(new Profile({ storage }).muted);
+  });
+
+  QUnit.test("a saved profile from before there was a sound setting has the sound on", (assert) => {
+    const storage = profileMemory();
+    storage.setItem(PROFILE_KEY, JSON.stringify({ name: "Ana" }));
+
+    assert.false(new Profile({ storage }).muted);
+  });
+
+  QUnit.test("only a real true turns the sound off, so a damaged save can't", (assert) => {
+    for (const value of ["true", 1, "yes", null, {}]) {
+      const storage = profileMemory();
+      storage.setItem(PROFILE_KEY, JSON.stringify({ name: "Ana", muted: value }));
+
+      assert.false(new Profile({ storage }).muted, JSON.stringify(value));
+    }
+  });
+
+
+  QUnit.test("uses its own key, so it doesn't mix with other saves", (assert) => {
+    const storage = profileMemory();
+    new Profile({ storage }).save();
+
+    assert.true(storage.data.has(PROFILE_KEY));
+    assert.strictEqual(storage.data.size, 1);
+  });
+
+  QUnit.test("a saved name is cleaned, in case the save was edited", (assert) => {
+    const storage = profileMemory();
+    storage.setItem(PROFILE_KEY, JSON.stringify({ name: "   a very long name indeed   " }));
+
+    assert.strictEqual(new Profile({ storage }).name, "a very long");
+  });
+
+  QUnit.test("a damaged save is ignored", (assert) => {
+    for (const text of ["{oops", "42", "null", "[1,2]", '"text"']) {
+      const storage = profileMemory();
+      storage.setItem(PROFILE_KEY, text);
+
+      const profile = new Profile({ storage });
+
+      assert.strictEqual(profile.name, DEFAULT_NAME, text);
+    }
+  });
+
+  QUnit.test("works without storage: it just can't remember", (assert) => {
+    const profile = new Profile({ storage: null });
+    profile.name = "Ana";
+
+    assert.false(profile.save());
+    assert.strictEqual(profile.name, "Ana");
+  });
+
+  QUnit.test("storage that throws doesn't stop the game", (assert) => {
+    const profile = new Profile({ storage: profileBroken() });
+
+    assert.strictEqual(profile.name, DEFAULT_NAME);
+    assert.false(profile.save());
+  });
+});

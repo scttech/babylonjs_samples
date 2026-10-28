@@ -1,0 +1,48 @@
+/* The title: the logo, a place to put a name, and the Play button. */
+#title .logo {
+  max-width: min(78vw, 480px);
+  max-height: 44vh;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
+}
+#title .panel {
+  padding: 10px 14px;
+  border: 4px solid var(--steel);
+  background: rgba(11, 9, 9, 0.5);
+}
+#name {
+  width: 11em;
+  max-width: 50vw;
+  padding: 8px 10px;
+  border: 3px solid var(--chrome-dark);
+  background: var(--ink);
+  color: var(--chrome-light);
+  font: 700 22px / 1 var(--small-font);
+  letter-spacing: 0.05em;
+  text-align: center;
+  user-select: text;
+  -webkit-user-select: text;
+}
+#name:focus {
+  border-color: var(--yellow);
+  outline: none;
+}
+#title-best {
+  min-height: 1.2em;
+  color: var(--blue);
+  font: 700 24px / 1.2 var(--small-font);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@media (max-height: 520px) {
+  #title .logo {
+    max-height: 36vh;
+  }
+  #name {
+    padding: 4px 8px;
+    font-size: 18px;
+  }
+  #title-best {
+    font-size: 18px;
+  }
+}

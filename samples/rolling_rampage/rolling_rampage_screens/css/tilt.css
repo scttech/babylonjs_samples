@@ -1,0 +1,55 @@
+/* Tilt. The buttons and a line saying what tilt is doing, below the back button, and a gauge
+   that shows the tilt as a dot. Only on a screen that is touched with a finger: a phone is
+   the one that has a tilt sensor. */
+#tilt-panel {
+  display: none;
+  position: fixed;
+  left: 12px;
+  top: 58px;
+  z-index: 20;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: min(60vw, 360px);
+}
+#tilt-panel .hidden,
+#tilt-gauge.hidden {
+  display: none;
+}
+#tilt-status {
+  margin: 0;
+  color: var(--chrome);
+  font: 600 18px/1.2 var(--small-font);
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 3px var(--ink);
+  pointer-events: none;
+}
+#tilt-gauge {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  z-index: 15;
+  width: 72px;
+  height: 72px;
+  margin-left: -36px;
+  border: 4px solid rgba(246, 191, 14, 0.75);
+  border-radius: 50%;
+  background: rgba(11, 9, 9, 0.25);
+  pointer-events: none;
+}
+#tilt-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--yellow);
+}
+@media (pointer: coarse) {
+  #tilt-panel {
+    display: flex;
+  }
+}

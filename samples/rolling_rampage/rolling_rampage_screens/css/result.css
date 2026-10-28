@@ -1,0 +1,29 @@
+/* The result: how the game ended, and what it was worth. */
+#over-score {
+  color: var(--chrome-light);
+  font: 400 clamp(26px, 5vw, 40px) / 1.1 var(--title-font);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+#over-best {
+  color: var(--chrome);
+  font: 700 22px / 1.2 var(--small-font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+#over-best.new {
+  color: var(--orange);
+  font-size: 28px;
+}
+
+@media (max-height: 520px) {
+  #over-score {
+    font-size: 22px;
+  }
+  #over-best {
+    font-size: 16px;
+  }
+  #over-best.new {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,20 @@
+/* Levels. The name of the level, under the hint, and a button to go on to the next, above the one to drop again. */
+#level-name {
+  position: fixed;
+  right: 12px;
+  top: 56px;
+  z-index: 20;
+  margin: 0;
+  color: var(--chrome);
+  font: 400 clamp(18px, 4vw, 26px) / 1 var(--title-font);
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 4px var(--ink);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+#next-level {
+  position: fixed;
+  right: 12px;
+  bottom: 68px;
+  z-index: 20;
+}

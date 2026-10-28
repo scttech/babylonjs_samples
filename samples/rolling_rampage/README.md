@@ -19,7 +19,7 @@ The game is built from boxes and spheres and code. There are no 3D models to dow
 | 5 | [Rolling Rampage Clock](rolling_rampage_clock/README.md) ([tutorial](rolling_rampage_clock/TUTORIAL.md)) | A countdown, a goal and checkpoints with bonus seconds: the rules of a run as a state machine, and Havok trigger zones |
 | 6 | [Rolling Rampage Hazards](rolling_rampage_hazards/README.md) ([tutorial](rolling_rampage_hazards/TUTORIAL.md)) | A moving platform, a piston and slime: motion as a function of time, animated physics bodies, carrying a rolling marble, and a hazard that builds up |
 | 7 | [Rolling Rampage Enemies](rolling_rampage_enemies/README.md) ([tutorial](rolling_rampage_enemies/TUTORIAL.md)) | Marbles that chase you: reusing a class with options, a chase as a state machine, collision events, and a hit with a cooldown |
-| 8 | Rolling Rampage Screens | A title screen, a pause, a score and a leaderboard, and sound |
+| 8 | [Rolling Rampage Screens](rolling_rampage_screens/README.md) ([tutorial](rolling_rampage_screens/TUTORIAL.md)) | A mirror-chrome pinball marble, a game as a state machine, a title, a pause, a score and a leaderboard remembered in the browser, sound made in code, and screens that fit a phone |
 | 9 | Rolling Rampage Polish | Effects, finishing touches |
 
 The plan may shift as each step teaches something unexpected.

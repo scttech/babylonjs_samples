@@ -1,0 +1,25 @@
+/* The two small buttons that are always at hand while playing: the sound, and (for a screen with no P key) the pause. */
+button.quiet {
+  padding: 4px 12px;
+  font-size: 18px;
+}
+#sound {
+  position: fixed;
+  left: 12px;
+  bottom: 56px;
+  z-index: 26;
+}
+#sound.off {
+  color: var(--chrome-dark);
+}
+#pause-button {
+  position: fixed;
+  left: 12px;
+  bottom: 104px;
+  z-index: 20;
+  min-width: 44px;
+  letter-spacing: 0.2em;
+}
+#pause-button.hidden {
+  display: none;
+}
