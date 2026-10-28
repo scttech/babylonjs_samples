@@ -1006,6 +1006,33 @@ Now the style. The clock and the banner are a part of the page of their own, so 
 #banner p:empty {
   display: none;
 }
+
+/* A small screen: a phone, or a window made small. The camera keeps the marble in the middle, so a big
+   banner there hides the very thing the player is watching. Here it is small, and out of the way: along the
+   top of a phone held on its side, and just under the clock on one held upright. */
+@media (max-width: 640px), (max-height: 520px) {
+  #banner {
+    top: 8px;
+    padding: 4px 14px;
+    border-width: 4px;
+    border-image: repeating-linear-gradient(45deg, var(--yellow) 0 6px, var(--ink) 6px 12px) 4;
+    background: rgba(33, 30, 33, 0.85);
+  }
+  #banner h2 {
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+  }
+  #banner p {
+    margin-top: 2px;
+    font-size: 16px;
+  }
+}
+@media (max-width: 640px) and (min-height: 521px) {
+  #banner {
+    top: 150px;
+  }
+}
 ```
 
 and link it in `index.html`, **after** the other stylesheets (directly below the `levels.css` line):
@@ -1020,6 +1047,7 @@ Things to notice:
 - **The clock is under the name of the level**, top right, in Russo One, and turns orange (`.low`) when the time is nearly out.
 - **The banner is hidden by default** (`class="hidden"`), and shows a title and a line of detail. It has the hazard-stripe border of the buttons.
 - **Neither takes a touch** (`pointer-events: none`), so a thumb on the banner still steers.
+- **The banner is small on a small screen, and out of the way.** The camera keeps the marble in the middle of the screen, so a big banner in the middle hides the very thing the player is watching. On a phone, a `@media` rule at the bottom of the file makes it a few words in a small box: along the top edge of a phone held on its side, and just under the clock on one held upright. On a big screen it is the big, bold one. (This was found by playing the game on a phone, which is the only way to find it: a banner that looks fine in a desktop window can cover a whole phone.)
 - **The banner's detail line hides itself when it is empty** (`p:empty`), so *Time's up* is one line and *Goal!* is two.
 
 ---

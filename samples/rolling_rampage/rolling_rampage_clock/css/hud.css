@@ -49,3 +49,30 @@
 #banner p:empty {
   display: none;
 }
+
+/* A small screen: a phone, or a window made small. The camera keeps the marble in the middle, so a big
+   banner there hides the very thing the player is watching. Here it is small, and out of the way: along the
+   top of a phone held on its side, and just under the clock on one held upright. */
+@media (max-width: 640px), (max-height: 520px) {
+  #banner {
+    top: 8px;
+    padding: 4px 14px;
+    border-width: 4px;
+    border-image: repeating-linear-gradient(45deg, var(--yellow) 0 6px, var(--ink) 6px 12px) 4;
+    background: rgba(33, 30, 33, 0.85);
+  }
+  #banner h2 {
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+  }
+  #banner p {
+    margin-top: 2px;
+    font-size: 16px;
+  }
+}
+@media (max-width: 640px) and (min-height: 521px) {
+  #banner {
+    top: 150px;
+  }
+}

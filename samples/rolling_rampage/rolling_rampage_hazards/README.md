@@ -99,4 +99,4 @@ The logo was made for this project, and the fonts are Russo One, Barlow Condense
 
 ## Next up
 
-**Rolling Rampage Enemies** (coming next) adds marbles that chase you.
+[**Rolling Rampage Enemies**](../rolling_rampage_enemies/README.md) adds marbles that chase you.
