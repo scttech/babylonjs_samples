@@ -301,12 +301,12 @@ Create `tests.html`, so you can run tests as you go:
 <head>
   <meta charset="utf-8">
   <title>World tests - Babylon.js Samples</title>
-  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.22.0.css">
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.22.0.css" integrity="sha384-Gvip0iPXLBuTKlP0Fan1cxz2R4K8z+c4rnqVxXfz96ojkUDMp2HvFsByVGtBT30o" crossorigin="anonymous">
 </head>
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
-  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js"></script>
+  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js" integrity="sha384-DV6SS+E/t7VjqLYyoFfHRcjHiDgluMrKnNvW5ZwZMqDsQWUQs58s8aj5pXXkY2Gx" crossorigin="anonymous"></script>
   <script src="js/world.js"></script>
   <script src="tests/world.tests.js"></script>
 </body>
@@ -1683,7 +1683,7 @@ Serve the page (see "You need a web server" above) and open it.
 Your `tests.html` scripts should now look like this:
 
 ```html
-  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js"></script>
+  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js" integrity="sha384-DV6SS+E/t7VjqLYyoFfHRcjHiDgluMrKnNvW5ZwZMqDsQWUQs58s8aj5pXXkY2Gx" crossorigin="anonymous"></script>
   <script src="js/world.js"></script>
   <script src="js/models.js"></script>
   <script src="js/scout.js"></script>

@@ -210,7 +210,7 @@ QUnit.module("MyLevels", () => {
   });
 
   QUnit.test("a save that is not a list, or not JSON, is nothing", (assert) => {
-    assert.deepEqual(new MyLevels({ storage: memoryStorage({ [MY_LEVELS_KEY]: "{{{" }) }).levels, []);
+    assert.deepEqual(new MyLevels({ storage: memoryStorage({ [MY_LEVELS_KEY]: "[not json" }) }).levels, []);
     assert.deepEqual(new MyLevels({ storage: memoryStorage({ [MY_LEVELS_KEY]: '{"a":1}' }) }).levels, []);
   });
 

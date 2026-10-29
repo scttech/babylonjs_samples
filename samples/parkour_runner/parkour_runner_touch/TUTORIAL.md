@@ -1332,7 +1332,7 @@ If you have a phone and your computer is on the same network, `npx serve` prints
 Your `tests.html` scripts should now look like this:
 
 ```html
-  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js"></script>
+  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js" integrity="sha384-DV6SS+E/t7VjqLYyoFfHRcjHiDgluMrKnNvW5ZwZMqDsQWUQs58s8aj5pXXkY2Gx" crossorigin="anonymous"></script>
   <script src="js/world.js"></script>
   <script src="js/models.js"></script>
   <script src="js/pool.js"></script>

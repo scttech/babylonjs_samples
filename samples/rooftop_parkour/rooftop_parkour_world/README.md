@@ -96,4 +96,4 @@ The models and animations are CC0 (public domain), made by [Quaternius](https://
 
 ## Next up
 
-The runner walks through the air above a flat world, and doesn't jump. The next sample gives the runner a **character controller**: gravity, ground, slopes and steps, built from the same boxes and the same checks, and then the jump.
+[**Rooftop Parkour Run**](../rooftop_parkour_run/README.md) gives the runner a body: gravity, steps, walls, standing on a roof, falling off it and landing, as a character controller you write yourself, with the buildings as boxes.

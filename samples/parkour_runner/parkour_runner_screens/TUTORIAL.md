@@ -2282,7 +2282,7 @@ Serve the page and open it. After the splash you should see the title.
 Your `tests.html` scripts should now look like this:
 
 ```html
-  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js"></script>
+  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js" integrity="sha384-DV6SS+E/t7VjqLYyoFfHRcjHiDgluMrKnNvW5ZwZMqDsQWUQs58s8aj5pXXkY2Gx" crossorigin="anonymous"></script>
   <script src="js/world.js"></script>
   <script src="js/models.js"></script>
   <script src="js/pool.js"></script>

@@ -372,13 +372,13 @@ Create the tests page. Open the placeholder `tests.html` and replace its content
 <head>
   <meta charset="utf-8">
   <title>Rolling Rampage World tests - Babylon.js Samples</title>
-  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.22.0.css">
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.22.0.css" integrity="sha384-Gvip0iPXLBuTKlP0Fan1cxz2R4K8z+c4rnqVxXfz96ojkUDMp2HvFsByVGtBT30o" crossorigin="anonymous">
 </head>
 
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
-  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js"></script>
+  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js" integrity="sha384-DV6SS+E/t7VjqLYyoFfHRcjHiDgluMrKnNvW5ZwZMqDsQWUQs58s8aj5pXXkY2Gx" crossorigin="anonymous"></script>
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
   <script src="js/physics.js"></script>
@@ -1794,7 +1794,7 @@ Serve the page and open it. The marble drops onto the top of the ramp, rolls dow
 Your `tests.html` scripts should now look like this:
 
 ```html
-  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js"></script>
+  <script src="https://code.jquery.com/qunit/qunit-2.22.0.js" integrity="sha384-DV6SS+E/t7VjqLYyoFfHRcjHiDgluMrKnNvW5ZwZMqDsQWUQs58s8aj5pXXkY2Gx" crossorigin="anonymous"></script>
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
   <script src="js/physics.js"></script>

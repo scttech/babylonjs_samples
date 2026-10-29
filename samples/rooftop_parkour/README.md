@@ -13,7 +13,7 @@ The city, the runners and their animations are CC0 models by Quaternius; see the
 | # | Sample | What it teaches |
 |---|--------|-----------------|
 | 1 | [Rooftop Parkour World](rooftop_parkour_world/README.md) ([tutorial](rooftop_parkour_world/TUTORIAL.md)) | A loading screen with a real progress bar, a district as data and checks on it, loading once and instancing, the sun and sky for any time of day with cascaded shadows, a third-person camera with the pointer lock that stays out of walls, blended animation clips, walking with walls, and a developer panel |
-| 2 | Run | A kinematic character controller: gravity, the ground, slopes and steps, and collisions with the buildings as boxes in three dimensions |
+| 2 | [Rooftop Parkour Run](rooftop_parkour_run/README.md) ([tutorial](rooftop_parkour_run/TUTORIAL.md)) | A kinematic character controller: gravity, steps, falling and landing, standing on a roof, collisions with the buildings as boxes, and a landing animation |
 | 3 | Jump | Jumping that feels fair (coyote time, a jump buffer), landing animations, and a roll after a fall |
 | 4 | Ledges | Finding the ledges of the buildings, grabbing one, hanging, shimmying along it and pulling up |
 | 5 | Moves | Vaulting, mantling, a wall jump, and a little help for a grab that is nearly right |
