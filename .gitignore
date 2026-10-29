@@ -1,2 +1,5 @@
 .DS_Store
 Thumbs.db
+
+# Original asset downloads (large; the samples use trimmed copies in each sample's assets folder)
+source_assets/

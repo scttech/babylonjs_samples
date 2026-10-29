@@ -1,0 +1,56 @@
+/* The loading screen covers the page while the district loads, with a bar and a percentage that follow the real progress, then fades away. */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: radial-gradient(circle at 50% 40%, #2b303b, var(--asphalt) 75%);
+  color: var(--paper);
+  transition: opacity 0.6s ease;
+}
+#splash.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+#splash h1 {
+  margin: 0;
+  color: var(--orange);
+  font: 400 clamp(44px, 9vw, 96px) / 1 var(--title-font);
+  letter-spacing: 0.04em;
+  text-shadow: 0 4px 0 #000, 0 8px 24px rgba(0, 0, 0, 0.6);
+  transform: rotate(-3deg);
+}
+#splash-bar {
+  width: min(70vw, 460px);
+  height: 16px;
+  border: 3px solid var(--paper);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+#splash-fill {
+  width: 0;
+  height: 100%;
+  background: repeating-linear-gradient(-45deg, var(--orange) 0 12px, #ffb066 12px 24px);
+}
+#splash-status {
+  margin: 0;
+  min-height: 1.4em;
+  padding: 0 24px;
+  text-align: center;
+  font: 20px / 1.4 var(--small-font);
+  letter-spacing: 0.06em;
+}
+#splash.failed #splash-bar {
+  display: none;
+}
+#splash.failed #splash-status {
+  max-width: 34em;
+  color: #ffb4a0;
+  font: 16px / 1.5 system-ui, sans-serif;
+  letter-spacing: 0;
+}
