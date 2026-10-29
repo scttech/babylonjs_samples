@@ -27,10 +27,11 @@ rooftop_parkour_run/
 │   ├── plan.js             (changes -- Step 1)
 │   ├── character.js        (changes -- Step 4)
 │   ├── main.js             (changes -- Step 5)
+│   ├── debug.js            (changes -- Step 5)
 │   └── the rest            (from the World sample)
 └── tests/
     ├── collision.tests.js, controller.tests.js   (placeholders)
-    ├── plan.tests.js, character.tests.js grow   (Steps 1 and 4)
+    ├── plan.tests.js, character.tests.js, debug.tests.js grow   (Steps 1, 4 and 5)
     └── the rest            (from the World sample)
 ```
 
@@ -66,28 +67,35 @@ Rolling Rampage used Havok, a physics engine: the marble was a body that the eng
 
 ## Step 1: A roof to stand on
 
-The plan's boxes come from the heights of the buildings, and a building's height is the top of the **parapet**: the low wall that runs round its roof. The roof itself, where a runner stands, is about 20 centimetres lower. (It was measured from the files, as the sizes were.) A body that is made to stand on the top of the parapet would float in the air over the roof. So the plan gets a second height. Open `js/plan.js`. Find the comment above `BUILDINGS` (it starts `// The buildings of the kit`) and the table under it, and **delete the old ones**, and add this in their place:
+The plan's boxes come from the heights of the buildings, and a building's height is the top of the **parapet**: the low wall that runs round its roof. The roof itself, where a runner stands, is about 20 centimetres lower. (It was measured from the files, as the sizes were.) A body that is made to stand on the top of the parapet would float in the air over the roof. So the plan gets a second height, and a third: how high the parapet stands above the roof, which is its `rim`. And a footprint is not always all roof, so a building says where its roof is, too. Open `js/plan.js`. Find the comment above `BUILDINGS` (it starts `// The buildings of the kit`) and the table under it, and **delete the old ones**, and add this in their place:
 
 ```js
 // The buildings of the kit, and how big each is: the width and depth of its footprint, and its height, as measured from the files
 // (see assets/README.md). A building has a front, with the windows and the door, which is its +z side as it comes out of its file. `height`
 // is the top of the building, which is the top of the low wall (the parapet) that runs round its roof, and `roof` is the roof itself, where a
 // runner stands: 20 centimetres lower, which is lower than the step height of a runner, so the parapet is something to step over, not a wall.
-// (The roofs of the kit are not all flat: the back of the medium building is a little lower. Later in the series they are measured properly.)
+// `rim` is how high that raised edge stands above the roof, as measured (the large_2 has none). (The roofs of the kit are not all flat:
+// the back of the medium building is a little lower. Later in the series they are measured properly.)
+// A footprint is not always all roof. `deck` is how far the roof is in from the edge of the footprint on each side (as the building comes out
+// of its file, facing +z; a side that is not given is 0): the small_1 and large_1 have steps at the front that are not part of the roof, and
+// the medium_1 and large_3 are in two levels, a smaller roof on top, and a ledge round it, `ledge` metres lower (the ledge is not quite flat:
+// this is its middle).
 const BUILDINGS = {
-  small_1: { file: "Building_Small_1", width: 12.46, depth: 14.536, height: 17.014, roof: 16.8 },
-  small_2: { file: "Building_Small_2", width: 20, depth: 12.002, height: 18.999, roof: 18.8 },
-  medium_1: { file: "Building_Medium_1", width: 13.056, depth: 12.054, height: 27.915, roof: 27.72 },
-  medium_2: { file: "Building_Medium_2", width: 15.056, depth: 13.056, height: 24.998, roof: 24.8 },
-  large_1: { file: "Building_Large_1", width: 25.038, depth: 26.028, height: 41, roof: 40.74 },
-  large_2: { file: "Building_Large_2", width: 20.644, depth: 16.644, height: 28, roof: 27.8 },
-  large_3: { file: "Building_Large_3", width: 23.056, depth: 19.058, height: 34.945, roof: 34.8 },
+  small_1: { file: "Building_Small_1", width: 12.46, depth: 14.536, height: 17.014, roof: 16.8, rim: 0.2, deck: { maxZ: 2 } },
+  small_2: { file: "Building_Small_2", width: 20, depth: 12.002, height: 18.999, roof: 18.8, rim: 0.2 },
+  medium_1: { file: "Building_Medium_1", width: 13.056, depth: 12.054, height: 27.915, roof: 27.72, rim: 0.2, deck: { minX: 1.25, maxX: 1.3, minZ: 1.25, maxZ: 2.3 }, ledge: 2.5 },
+  medium_2: { file: "Building_Medium_2", width: 15.056, depth: 13.056, height: 24.998, roof: 24.8, rim: 0.2 },
+  large_1: { file: "Building_Large_1", width: 25.038, depth: 26.028, height: 41, roof: 40.74, rim: 0.26, deck: { maxZ: 1 } },
+  large_2: { file: "Building_Large_2", width: 20.644, depth: 16.644, height: 28, roof: 27.8, rim: 0 },
+  large_3: { file: "Building_Large_3", width: 23.056, depth: 19.058, height: 34.945, roof: 34.8, rim: 0.14, deck: { minX: 1.25, maxX: 1.3, minZ: 1.25, maxZ: 1.3 }, ledge: 2.5 },
 };
 ```
 
 Things to notice:
 
 - **`roof` is 20 centimetres under `height`.** That is lower than the step height of a runner (40 centimetres, in Step 3), so the parapet is something to step over, and not a wall.
+- **`rim` is how high the raised edge round the roof is**, as measured with rays pointing down at the roofs. It is 20 centimetres on most, 26 on the biggest building, 14 on another, and none on the `large_2`. It is **under 40 centimetres too**, which the next step will make something that is stepped onto.
+- **`deck` is how far the roof is in from the edge of the footprint**, on each side, seen from the front of the building. The small building has steps down to its door at the front that are not roof, and no runner should be able to stand on them, so its front 2 metres are left out. The two big ones are in **two levels**: a smaller roof on top, and a lower **ledge** round it. `ledge` is how far down the ledge is. (The ledge isn't quite flat. This is its middle.)
 - **The roofs of the kit are not all flat.** The back of the medium building is a little lower. They are treated as flat for now, and measured properly in Step 6 of the series, when the roofs are what the game is about.
 
 The placement of each building takes it from its building:
@@ -96,16 +104,73 @@ The placement of each building takes it from its building:
         roof: building.roof,
 ```
 
-Add that line to the object that `buildingPlacements` pushes, below `height: building.height,`.
-
-Then `buildingBoxes`. Find it (it starts with a comment: `// Every building as a solid box`) and **delete it**, and add this, which also has the new `roofSpot`, a place to put the runner on a roof:
+And the same for the rim:
 
 ```js
-// Every building as a solid box: its footprint, from the ground up to its roof (not to the top of the parapet: the box is what a runner
-// stands on). Each is { name, minX, maxX, minY, maxY, minZ, maxZ },
+        rim: building.rim,
+```
+
+And the roof's place in the footprint, and the ledge:
+
+```js
+        deck: deckInsets(building, entry.facing),
+        ledge: building.ledge || 0,
+```
+
+Add all four lines to the object that `buildingPlacements` pushes, below `height: building.height,`.
+
+Then `buildingBoxes`. Find it (it starts with a comment: `// Every building as a solid box`) and **delete it**, and add this. It has the new `deckInsets`, which turns a building's `deck` the way the building faces, a new `buildingBoxes` that is the **roofs**, `ledgeBoxes`, `rimBoxes`, the raised edges, and `roofSpot`, a place to put the runner on a roof:
+
+```js
+// How far the upper roof of a building is in from each side of its footprint, as seen from above (minX is the west side), for the way the
+// building faces. The sides are given for a building facing +z, so a building that faces another way has them turned with it.
+function deckInsets(building, facing) {
+  const none = { minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+  const d = { ...none, ...building.deck };
+  if (facing === "south") return { minX: d.maxX, maxX: d.minX, minZ: d.maxZ, maxZ: d.minZ };
+  if (facing === "east") return { minX: d.minZ, maxX: d.maxZ, minZ: d.maxX, maxZ: d.minX };
+  if (facing === "west") return { minX: d.maxZ, maxX: d.minZ, minZ: d.minX, maxZ: d.maxX };
+  return d;
+}
+
+// The top roof of a building, as a box: where a runner stands. It is the footprint less the ledge, if the building has one, from the
+// ground up to the roof (not to the top of the parapet). Each is { name, minX, maxX, minY, maxY, minZ, maxZ },
 // which is what the walls of the scout, the camera and (later) the runner's collisions are made from.
 function buildingBoxes(grid = GRID, layouts = LAYOUTS) {
-  return buildingPlacements(grid, layouts).map((placement) => ({ name: placement.name, ...footprint(placement), minY: 0, maxY: placement.roof }));
+  return buildingPlacements(grid, layouts).map((placement) => {
+    const { minX, maxX, minZ, maxZ } = footprint(placement);
+    const inset = placement.deck;
+    return { name: placement.name, minX: minX + inset.minX, maxX: maxX - inset.maxX, minZ: minZ + inset.minZ, maxZ: maxZ - inset.maxZ, minY: 0, maxY: placement.roof };
+  });
+}
+
+// The ledge round the upper roof of the buildings that have one: the whole footprint, from the ground up to the ledge.
+function ledgeBoxes(grid = GRID, layouts = LAYOUTS) {
+  return buildingPlacements(grid, layouts)
+    .filter((placement) => placement.ledge > 0)
+    .map((placement) => ({ name: `${placement.name} ledge`, ...footprint(placement), minY: 0, maxY: placement.roof - placement.ledge }));
+}
+
+// How wide the raised edge round a roof is, in metres.
+const RIM_WIDTH = 1;
+
+// The raised edge round each roof, as four boxes a building (the same kind of box as above, named "<building> rim"), from the ground up to
+// the top of the edge. A runner steps onto it, which is lower than a step, and so their feet are on the edge and not sunk into it.
+function rimBoxes(grid = GRID, layouts = LAYOUTS) {
+  const boxes = [];
+  const roofs = buildingBoxes(grid, layouts);
+  for (const [i, placement] of buildingPlacements(grid, layouts).entries()) {
+    if (!placement.rim) continue;
+    const { minX, maxX, minZ, maxZ } = roofs[i];
+    const rim = { name: `${placement.name} rim`, minY: 0, maxY: placement.roof + placement.rim };
+    boxes.push(
+      { ...rim, minX, maxX, minZ, maxZ: minZ + RIM_WIDTH },
+      { ...rim, minX, maxX, minZ: maxZ - RIM_WIDTH, maxZ },
+      { ...rim, minX, maxX: minX + RIM_WIDTH, minZ: minZ + RIM_WIDTH, maxZ: maxZ - RIM_WIDTH },
+      { ...rim, minX: maxX - RIM_WIDTH, maxX, minZ: minZ + RIM_WIDTH, maxZ: maxZ - RIM_WIDTH }
+    );
+  }
+  return boxes;
 }
 
 // Where to stand on the roof of a building: the middle of the roof, at the height of its top. It is for putting the runner on a roof
@@ -117,14 +182,17 @@ function roofSpot(box) {
 
 Things to notice:
 
-- **A box is as high as the roof, not as the parapet.** It is what a body stands on, and what it walks into.
+- **A box is as high as the roof, not as the parapet.** It is what a body stands on, and what it walks into. It is the roof and not the whole footprint, so that a runner who walks off the front of the small building is in the air, and not walking on air.
+- **`deckInsets` turns a building's sides with the building.** They are given for a building that faces +z, and a building that faces south has its front on the other side. The east and west turns are the quarter turns of the same idea.
+- **`ledgeBoxes` are the lower level.** The whole footprint, from the ground up to the ledge. A runner at the edge of the upper roof who walks off falls two and a half metres, and lands on the ledge, and not on the street.
+- **`rimBoxes` are the raised edges, as boxes.** A box that stopped at the roof would let the runner's feet stay at the roof while the edge stood 20 centimetres above them, and the feet would sink into it. Each building with a rim gets four thin boxes (a metre wide) along its four sides, from the ground to the top of the edge. The runner will step onto them, and their feet will be on the edge. They are only for the body: the camera uses the roof boxes.
 - **`roofSpot(box)` is the middle of a roof**, at the height of its top. The developer panel will take the runner there.
 
-Add `roofSpot` to the two export lists at the bottom of `plan.js` (the `module.exports` and the `Object.assign(window, ...)`), next to `groundHeight`.
+Add `roofSpot`, `deckInsets`, `ledgeBoxes`, `RIM_WIDTH` and `rimBoxes` to the two export lists at the bottom of `plan.js` (the `module.exports` and the `Object.assign(window, ...)`): `roofSpot` next to `groundHeight`, `deckInsets` before `buildingBoxes`, and `ledgeBoxes`, `RIM_WIDTH` and `rimBoxes` after it.
 
 ### Tests
 
-In `tests/plan.tests.js`, find the test *"buildingBoxes are the footprints"*. Its last assertion compared the top of the box with `placed[i].height`. **Change it** to the roof, so the whole test reads:
+In `tests/plan.tests.js`, find the test *"buildingBoxes are the footprints"*. It compared the box with the footprint and with `placed[i].height`. **Delete it**, since a box is now the roof, which is inside the footprint and as high as the roof, and add the tests below in its place:
 
 ```js
   QUnit.test("the roof of a building is a little under its top: lower than a runner can step, so the parapet round it is stepped over", (assert) => {
@@ -133,20 +201,112 @@ In `tests/plan.tests.js`, find the test *"buildingBoxes are the footprints"*. It
     }
   });
 
-  QUnit.test("buildingBoxes are the footprints, from the ground up to the roof (not to the top of the parapet)", (assert) => {
+  QUnit.test("buildingBoxes are the roofs, from the ground up to the roof (not to the top of the parapet), inside the footprints", (assert) => {
     const boxes = buildingBoxes(GRID, LAYOUTS);
     const placed = buildingPlacements(GRID, LAYOUTS);
     assert.strictEqual(boxes.length, placed.length);
     boxes.forEach((box, i) => {
+      const inside = footprint(placed[i]);
       assert.deepEqual([box.minY, box.maxY], [0, placed[i].roof]);
-      assert.deepEqual([box.minX, box.maxX], [footprint(placed[i]).minX, footprint(placed[i]).maxX]);
+      assert.true(box.minX >= inside.minX && box.maxX <= inside.maxX && box.minZ >= inside.minZ && box.maxZ <= inside.maxZ, box.name);
+      assert.true(box.maxX > box.minX && box.maxZ > box.minZ, box.name);
     });
+  });
+
+  QUnit.test("a building with no deck is a roof as wide as its footprint", (assert) => {
+    const boxes = buildingBoxes(GRID, LAYOUTS);
+    buildingPlacements(GRID, LAYOUTS).forEach((placement, i) => {
+      if (BUILDINGS[placement.name].deck) return;
+      const inside = footprint(placement);
+      assert.deepEqual([boxes[i].minX, boxes[i].maxX, boxes[i].minZ, boxes[i].maxZ], [inside.minX, inside.maxX, inside.minZ, inside.maxZ]);
+    });
+  });
+
+  QUnit.test("the roof of a building with steps at the front stops before them, whichever way the building faces", (assert) => {
+    const boxes = buildingBoxes(GRID, LAYOUTS);
+    buildingPlacements(GRID, LAYOUTS).forEach((placement, i) => {
+      if (placement.name !== "small_1") return;
+      const inside = footprint(placement);
+      const missing = placement.facing === "north" ? inside.maxZ - boxes[i].maxZ : boxes[i].minZ - inside.minZ;
+      assert.true(Math.abs(missing - BUILDINGS.small_1.deck.maxZ) < 1e-9, placement.facing);
+    });
+  });
+
+  QUnit.test("ledgeBoxes are the footprints of the buildings in two levels, from the ground up to the ledge", (assert) => {
+    const ledges = ledgeBoxes(GRID, LAYOUTS);
+    const placed = buildingPlacements(GRID, LAYOUTS).filter((placement) => placement.ledge > 0);
+    assert.true(placed.length > 0);
+    assert.strictEqual(ledges.length, placed.length);
+    placed.forEach((placement, i) => {
+      assert.strictEqual(ledges[i].name, `${placement.name} ledge`);
+      assert.true(Math.abs(ledges[i].maxY - (placement.roof - placement.ledge)) < 1e-9);
+      assert.deepEqual([ledges[i].minX, ledges[i].maxX], [footprint(placement).minX, footprint(placement).maxX]);
+    });
+  });
+
+  QUnit.test("a ledge is lower than the roof by more than a runner can step, or it would not be a ledge", (assert) => {
+    for (const building of Object.values(BUILDINGS)) {
+      if (building.ledge) assert.true(building.ledge > 0.4, building.file);
+    }
+  });
+
+  QUnit.test("rimBoxes are four boxes round the roof of each building that has a raised edge, as high as the edge", (assert) => {
+    const rims = rimBoxes(GRID, LAYOUTS);
+    const placed = buildingPlacements(GRID, LAYOUTS).filter((placement) => placement.rim > 0);
+    assert.strictEqual(rims.length, placed.length * 4);
+    placed.forEach((placement, i) => {
+      const inside = footprint(placement);
+      for (const rim of rims.slice(i * 4, i * 4 + 4)) {
+        assert.strictEqual(rim.name, `${placement.name} rim`);
+        assert.true(Math.abs(rim.maxY - (placement.roof + placement.rim)) < 1e-9);
+        assert.true(rim.minX >= inside.minX - 1e-9 && rim.maxX <= inside.maxX + 1e-9 && rim.minZ >= inside.minZ - 1e-9 && rim.maxZ <= inside.maxZ + 1e-9);
+        assert.true(rim.maxX - rim.minX > 0 && rim.maxZ - rim.minZ > 0);
+      }
+    });
+  });
+
+  QUnit.test("the raised edge of a roof is lower than a runner can step, so it is stepped onto and not a wall", (assert) => {
+    for (const building of Object.values(BUILDINGS)) {
+      assert.true(building.rim >= 0 && building.rim < 0.4, building.file);
+    }
   });
 ```
 
-(That includes a new test just above it, about the roofs, and the changed one. Keep the other tests in the module as they were.) And add a new module, directly **above** the module `piecesUsed`:
+(That includes new tests, about the roofs, the ledges and the raised edges, and the changed one. Keep the other tests in the module as they were.) And add two new modules, directly **above** the module `piecesUsed`:
 
 ```js
+QUnit.module("deckInsets", () => {
+  const building = { deck: { minX: 1, maxX: 2, minZ: 3, maxZ: 4 } };
+
+  QUnit.test("a building with no deck has none to leave out", (assert) => {
+    assert.deepEqual(deckInsets({}, "north"), { minX: 0, maxX: 0, minZ: 0, maxZ: 0 });
+  });
+
+  QUnit.test("a side that is not given is 0", (assert) => {
+    assert.deepEqual(deckInsets({ deck: { maxZ: 2 } }, "north"), { minX: 0, maxX: 0, minZ: 0, maxZ: 2 });
+  });
+
+  QUnit.test("a building that faces north has them as they are", (assert) => {
+    assert.deepEqual(deckInsets(building, "north"), { minX: 1, maxX: 2, minZ: 3, maxZ: 4 });
+  });
+
+  QUnit.test("a building that faces south has them turned half way round", (assert) => {
+    assert.deepEqual(deckInsets(building, "south"), { minX: 2, maxX: 1, minZ: 4, maxZ: 3 });
+  });
+
+  QUnit.test("a building that faces east has its front on the east side, and one that faces west on the west side", (assert) => {
+    assert.strictEqual(deckInsets(building, "east").maxX, 4);
+    assert.strictEqual(deckInsets(building, "west").minX, 4);
+  });
+
+  QUnit.test("turned all the way round, they add up to the same", (assert) => {
+    for (const facing of ["north", "east", "south", "west"]) {
+      const d = deckInsets(building, facing);
+      assert.strictEqual(d.minX + d.maxX + d.minZ + d.maxZ, 10, facing);
+    }
+  });
+});
+
 QUnit.module("roofSpot", () => {
   QUnit.test("is the middle of the roof, at the height of the roof", (assert) => {
     assert.deepEqual(roofSpot({ minX: 2, maxX: 8, minY: 0, maxY: 17, minZ: -10, maxZ: -4 }), { x: 5, y: 17, z: -7 });
@@ -161,7 +321,7 @@ QUnit.module("roofSpot", () => {
 });
 ```
 
-Open `tests.html`. You should see **209 passing tests**: 3 more.
+Open `tests.html`. You should see **221 passing tests**: 15 more.
 
 ---
 
@@ -353,7 +513,7 @@ Things to notice:
 - **`supportAt` is tested for what it should *not* find**: a box beside the place, a box whose top is above the feet, a box a little too far from the edge. They are the cases that would put a runner in the air, or in a wall.
 - **`wallsAt` is tested with a curb, a tower and a bridge**: a tall box is a wall, a curb isn't, a bridge over your head isn't (until you are as high as it).
 
-Open `tests.html`. You should see **227 passing tests**: 18 more.
+Open `tests.html`. You should see **239 passing tests**: 18 more.
 
 ---
 
@@ -774,7 +934,7 @@ QUnit.module("Controller reset and placeAt", () => {
 });
 
 QUnit.module("Controller in the district", () => {
-  const world = new World({ boxes: buildingBoxes(), ground: (x, z) => groundHeight(x, z) });
+  const world = new World({ boxes: [...buildingBoxes(), ...ledgeBoxes(), ...rimBoxes()], ground: (x, z) => groundHeight(x, z) });
   const bounds = districtBounds();
 
   QUnit.test("it can stand on every roof, and the roof is as high as the building", (assert) => {
@@ -786,6 +946,38 @@ QUnit.module("Controller in the district", () => {
       for (let i = 0; i < 10; i++) body.update(null, false, 1 / 60);
       if (!body.grounded || Math.abs(body.y - box.maxY) > 1e-6) problems.push(box.name);
     }
+    assert.deepEqual(problems, []);
+  });
+
+  QUnit.test("walking across a roof to its edge, the feet go up onto the raised edge and do not sink into it", (assert) => {
+    const problems = [];
+    for (const placement of buildingPlacements().filter((placed) => placed.rim > 0)) {
+      const body = new Controller({ world, bounds });
+      const spot = roofSpot({ ...footprint(placement), maxY: placement.roof });
+      body.placeAt(spot.x, spot.y + 0.05, spot.z);
+      for (let i = 0; i < 30; i++) body.update(null, false, 1 / 60);
+      let highest = body.y;
+      for (let i = 0; i < 400; i++) {
+        body.update({ x: 1, z: 0 }, false, 1 / 60);
+        highest = Math.max(highest, body.y);
+        if (!body.grounded) break;
+      }
+      if (Math.abs(highest - (placement.roof + placement.rim)) > 0.02) problems.push(placement.name + " landed " + landed + " wanted " + (placement.roof - placement.ledge) + " y " + body.y);
+    }
+    assert.deepEqual(problems, []);
+  });
+
+  QUnit.test("beside the upper roof of a building in two levels, what is under the feet is the ledge, and not the air or the ground", (assert) => {
+    const roofs = buildingBoxes();
+    const problems = [];
+    buildingPlacements().forEach((placement, i) => {
+      if (!placement.ledge) return;
+      const roof = roofs[i];
+      const z = (roof.minZ + roof.maxZ) / 2;
+      const beside = world.supportAt(roof.maxX + 0.6, z, BODY.supportReach, Infinity);
+      const on = world.supportAt(roof.maxX - 3, z, BODY.supportReach, Infinity);
+      if (Math.abs(beside - (placement.roof - placement.ledge)) > 1e-9 || Math.abs(on - placement.roof) > 1e-9) problems.push(placement.name);
+    });
     assert.deepEqual(problems, []);
   });
 
@@ -814,10 +1006,10 @@ Things to notice:
 
 - **The body is walked about in worlds the tests build**: a wall, a step of 30 centimetres, a step of 60, a roof, a thin plate. Each test is a small story. *It walks up a low step, and stands on it. A step higher than the step height is a wall. The step height can be changed, and then it isn't.*
 - **A fall is tested against the formula**: the time a body takes to fall from 4.5 metres is about the square root of twice the height over gravity. A test that agrees with a formula is a test that can't be wrong in the same way as the code.
-- **The two tests at the end use the real district.** Every roof can be stood on, at the height of its building, and from every roof the runner can walk off each of the four sides and ends up on the ground. A building added to the plan that a runner can't stand on, or can get stuck on, is a failing test.
+- **The four tests at the end use the real district**, with the ledges and the raised edges in it. Every roof can be stood on, at the height of its building. A runner who walks to the edge of a roof goes up onto the raised edge, to exactly its top, and doesn't sink into it. Beside the upper roof of a building in two levels, what is under the feet is the ledge. And from every roof the runner can walk off each of the four sides and ends up on the ground. A building added to the plan that a runner can't stand on, or can get stuck on, is a failing test.
 - **A fast fall onto a thin plate** (a gravity of 3000, a plate 10 centimetres thick) is the test for tunnelling, and it is the one that fails first if `_fall` is ever changed to look at where the feet *are* and not where they *went*.
 
-Open `tests.html`. You should see **260 passing tests**: 33 more.
+Open `tests.html`. You should see **274 passing tests**: 35 more.
 
 ---
 
@@ -924,13 +1116,13 @@ and, inside the module `ClipPlayer`, a new test directly **above** the test *"as
   });
 ```
 
-Open `tests.html`. You should see **265 passing tests**: 5 more.
+Open `tests.html`. You should see **279 passing tests**: 5 more.
 
 ---
 
 ## Step 5: Putting it in the game
 
-`main.js` loses its scout and gets a body. There are three changes, each a block to **delete** and a block to add in its place.
+`main.js` loses its scout and gets a body. There are three changes to it, each a block to **delete** and a block to add in its place, and `debug.js` gets names for the buildings, in between.
 
 ### The world and the body
 
@@ -938,16 +1130,18 @@ Find the comment that starts `// The walls: every building as a box` and the fou
 
 ```js
   // The world the body lives in: every building as a box, to keep out of, to stand on the roof of, and for the camera to keep out of too,
-  // and the ground. The body is a Controller: it runs, steps, falls and lands in that world.
+  // the raised edges of the roofs, and the ground. The body is a Controller: it runs, steps, falls and lands in that world.
   const boxes = buildingBoxes();
-  orbit.boxes = boxes;
-  const world = new World({ boxes, ground: (x, z) => groundHeight(x, z) });
+  const ledges = ledgeBoxes();
+  const rims = rimBoxes();
+  orbit.boxes = [...boxes, ...ledges];
+  const world = new World({ boxes: [...boxes, ...ledges, ...rims], ground: (x, z) => groundHeight(x, z) });
   const body = new Controller({ ...START, world, bounds: districtBounds() });
 ```
 
 Things to notice:
 
-- **The world is the plan's boxes and the plan's ground.** The camera uses the same boxes, so a camera behind a wall and a runner at a wall agree about where the wall is.
+- **The world is the plan's boxes, the ledges, the raised edges of the roofs, and the plan's ground.** The camera uses the roofs and the ledges, so a camera behind a wall and a runner at a wall agree about where the wall is.
 - **The body is a `Controller`.** It takes the place of the scout, and starts where it started.
 
 ### The keys and the frame
@@ -991,8 +1185,148 @@ Things to notice:
 - **The frame is the same five lines**, with a body in place of the scout: the mouse turns the camera, the keys move the body, the runner goes where the body is, the clip follows what the body is doing (`clipForBody`, with its loop), and the camera follows the runner.
 - **The runner stands at the body's height**, `body.y`, which is on the roof, on the road, in the air.
 
-### The developer panel
+### Names for the buildings
 
+When the boxes don't match a building, the first question is *which building is it?* Open `js/debug.js`. At the top is a comment that starts `// Drawing what the game knows`. **Delete it**, and add this in its place:
+
+```js
+// Drawing what the game knows but doesn't show: the boxes it uses for walls, and the names of the buildings. In developer mode they can
+// be drawn over the buildings, to see that they are where the buildings are, and which building is which. The size and place of the mesh
+// for a box is plain arithmetic (boxMeshSpec), so it is tested; DebugBoxes and DebugLabels make them in a scene. See ../tests/debug.tests.js.
+```
+
+Above `class DebugBoxes`, add the function that says what a label says and where it hangs:
+
+```js
+// What a label for a box says, and where it hangs: above the middle of the box, so that it can be seen from the street.
+function labelSpec(box, lift = 4) {
+  const spec = boxMeshSpec(box);
+  return { text: box.name || "", x: spec.x, y: box.maxY + lift, z: spec.z };
+}
+```
+
+Above the comment `// Plain <script> include`, add the class that makes the labels:
+
+```js
+// A name over each box, that always faces the camera: for knowing which building is which.
+class DebugLabels {
+  constructor(scene, boxes) {
+    this.root = new BABYLON.TransformNode("debug-labels", scene);
+    for (const box of boxes) {
+      const spec = labelSpec(box);
+      const texture = new BABYLON.DynamicTexture(`debug-label-${spec.text}`, { width: 512, height: 96 }, scene, false);
+      texture.hasAlpha = true;
+      texture.drawText(spec.text, null, 66, "bold 56px monospace", "#ffffff", "rgba(0, 0, 0, 0.75)", true);
+      const material = new BABYLON.StandardMaterial(`debug-label-${spec.text}`, scene);
+      material.diffuseTexture = texture;
+      material.opacityTexture = texture;
+      material.emissiveColor = BABYLON.Color3.White();
+      material.disableLighting = true;
+      material.fogEnabled = false;
+      material.disableDepthWrite = true;
+      const mesh = BABYLON.MeshBuilder.CreatePlane(`debug-label-${spec.text}`, { width: 9, height: 1.7 }, scene);
+      mesh.position.set(spec.x, spec.y, spec.z);
+      mesh.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+      mesh.material = material;
+      mesh.isPickable = false;
+      mesh.renderingGroupId = 1;
+      mesh.parent = this.root;
+    }
+    this.root.setEnabled(false);
+  }
+
+  get visible() {
+    return this.root.isEnabled();
+  }
+
+  setVisible(visible) {
+    this.root.setEnabled(visible);
+  }
+
+  dispose() {
+    for (const mesh of this.root.getChildMeshes()) {
+      mesh.material.diffuseTexture.dispose();
+      mesh.material.dispose();
+    }
+    this.root.dispose(false, true);
+  }
+}
+```
+
+And add `labelSpec` and `DebugLabels` to the two export lists at the bottom.
+
+Things to notice:
+
+- **A label is a plane with a name written on it**, that always faces the camera (`BILLBOARDMODE_ALL`), and is drawn over what is in front of it, so it can be read through a building. Where it hangs is plain arithmetic (`labelSpec`), so it is tested.
+- **It says the name of the file** (`Building_Medium_1`), which is what to look for in `assets/`.
+
+The tests are in `tests/debug.tests.js`. Add a module **above** the module `DebugBoxes`:
+
+```js
+QUnit.module("labelSpec", () => {
+  QUnit.test("hangs the name above the middle of the box", (assert) => {
+    const spec = labelSpec({ name: "Building_Small_1", minX: 2, maxX: 8, minY: 0, maxY: 30, minZ: -10, maxZ: -4 });
+    assert.deepEqual(spec, { text: "Building_Small_1", x: 5, y: 34, z: -7 });
+  });
+
+  QUnit.test("how high it hangs can be chosen", (assert) => {
+    assert.strictEqual(labelSpec({ name: "a", minX: 0, maxX: 1, minY: 0, maxY: 10, minZ: 0, maxZ: 1 }, 10).y, 20);
+  });
+});
+```
+
+And this one at the **end** of the file:
+
+```js
+QUnit.module("DebugLabels", (hooks) => {
+  let engine;
+  let scene;
+
+  hooks.beforeEach(() => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  const boxes = [
+    { name: "a", minX: 0, maxX: 4, minY: 0, maxY: 10, minZ: 0, maxZ: 6 },
+    { name: "b", minX: 10, maxX: 12, minY: 0, maxY: 5, minZ: 0, maxZ: 2 },
+  ];
+
+  QUnit.test("makes a label for each box, above it, that faces the camera, and starts hidden", (assert) => {
+    const labels = new DebugLabels(scene, boxes);
+    const meshes = labels.root.getChildMeshes();
+    assert.strictEqual(meshes.length, 2);
+    assert.deepEqual([meshes[0].position.x, meshes[0].position.y, meshes[0].position.z], [2, 14, 3]);
+    assert.strictEqual(meshes[0].billboardMode, BABYLON.Mesh.BILLBOARDMODE_ALL);
+    assert.false(labels.visible);
+  });
+
+  QUnit.test("setVisible shows and hides them all", (assert) => {
+    const labels = new DebugLabels(scene, boxes);
+    labels.setVisible(true);
+    assert.true(labels.visible);
+    labels.setVisible(false);
+    assert.false(labels.visible);
+  });
+
+  QUnit.test("dispose takes them all away", (assert) => {
+    const before = scene.meshes.length;
+    const labels = new DebugLabels(scene, boxes);
+    assert.strictEqual(scene.meshes.length, before + 2);
+    labels.dispose();
+    assert.strictEqual(scene.meshes.length, before);
+  });
+});
+```
+
+Open `tests.html`. You should see **284 passing tests**: 5 more than the last time.
+
+### The developer panel
 Find the comment `// Developer mode, with ?dev` and the whole block under it, down to the comment `// The last step of loading`, and **delete it**. Add this:
 
 ```js
@@ -1001,7 +1335,8 @@ Find the comment `// Developer mode, with ?dev` and the whole block under it, do
   let panel = null;
   if (devEnabled(location.search)) {
     let roofNumber = 0; // which roof the button takes the runner to next
-    const debugBoxes = new DebugBoxes(scene, boxes);
+    const debugBoxes = new DebugBoxes(scene, [...boxes, ...ledges, ...rims]);
+    const debugLabels = new DebugLabels(scene, boxes.map((box) => ({ ...box, name: BUILDINGS[box.name].file })));
     panel = new DevPanel(
       document,
       [
@@ -1045,6 +1380,7 @@ Find the comment `// Developer mode, with ?dev` and the whole block under it, do
           rows: [
             toggle("window glass", () => glass[0].alpha > 0, (value) => glass.forEach((material) => { material.alpha = value ? 1 : GLASS_ALPHA; })),
             toggle("building boxes", () => debugBoxes.visible, (value) => debugBoxes.setVisible(value)),
+            toggle("building names", () => debugLabels.visible, (value) => debugLabels.setVisible(value)),
             readout("position", () => `${body.x.toFixed(1)}, ${body.z.toFixed(1)}`),
             readout("height", () => `${body.y.toFixed(2)} m`),
             readout("speed", () => `${body.speed.toFixed(1)} m/s`),
@@ -1068,6 +1404,7 @@ Find the comment `// Developer mode, with ?dev` and the whole block under it, do
 
 Things to notice:
 
+- **A new switch, `building names`, next to `building boxes`.** Switch both on and look at a building that is wrong.
 - **Four new things in the panel**: **gravity** (turn it down to 5 and the runner floats like an astronaut, and at 0 they don't fall at all), **step height** (a runner who can step 1.5 metres climbs a wall that was in their way), **Go to a roof** (each press takes the runner to the roof of the next building) and read-outs of the **height** and whether the body is **on the ground**, and if not, how fast it is falling.
 - **The panel is how you test falling**, since there is no way up to a roof yet.
 
@@ -1080,19 +1417,19 @@ Serve the page and open it **with `?dev`**.
 - [ ] Running about the streets is as before: the body gets up to speed, stops, turns, and **can't walk into a building**
 - [ ] **The runner steps up** onto the sidewalk and down onto the road at the curbs, without a jump, and **can't climb** a wall (stand in front of a building and keep running)
 - [ ] **Go to a roof** takes the runner to the **middle of a roof**, standing on it, not above or in it. Press it again for the next building
-- [ ] On a roof, run in any direction: the runner **runs along the roof, steps over the parapet**, and then **falls**, with the **falling clip**, and the **read-out** says *no* and a falling speed that grows
+- [ ] On a roof, run in any direction: the runner **runs along the roof, steps up onto the parapet** (the feet are on top of it, not sunk in it), and then **falls**, with the **falling clip**, and the **read-out** says *no* and a falling speed that grows
 - [ ] The runner **lands on the ground** and plays the **landing clip**, and a moment later is free to run again. (A fall from a tall building is much harder than from a short one)
 - [ ] The runner can fall off a low roof onto the roof of **another** building, if one is below, and stands on that
 - [ ] **Gravity** to 5: the fall is slow and long. To 0: the runner **floats** where they were put
 - [ ] **Step height** to 1.2: the runner walks up onto things that were walls (the parapet is no longer in the way of anything), and back to 0.4 puts it back
-- [ ] **Building boxes** shows pink wire boxes whose tops are at the **roofs**, a little under the parapet
+- [ ] **Building boxes** shows pink wire boxes whose tops are at the **roofs**, and thin ones along the edges, at the top of the **parapet**
 - [ ] **R** and **Back to the start** put the runner back on the road at the start
 - [ ] **Switch runner**: the other character does the same things, including the falling clip
 
 **If something's wrong**
 
 - **`ReferenceError: World is not defined` or `Controller is not defined`:** a script tag is missing, or the file is still the placeholder. `index.html` of this sample already lists them, so check the file.
-- **The runner floats above a roof, or sinks into it:** `roof` and `height` in `BUILDINGS`, and that `buildingBoxes` uses `placement.roof`.
+- **The runner floats above a roof, or sinks into it:** `roof` and `height` in `BUILDINGS`, and that `buildingBoxes` uses `placement.roof`. **Sunk into the raised edge:** `rimBoxes` must be in the world, as `boxes: [...boxes, ...rims]`.
 - **The runner falls through the ground at the start:** `groundHeight` is the ground of the world, and must be given as `ground: (x, z) => groundHeight(x, z)`.
 - **The runner never lands:** `supportAt` must be asked with a height above the feet (`before + o.stepHeight`), and `placeAt` puts the body *in the air*, so the first frame lands it.
 - **The runner can climb walls:** `wallsAt` must compare the top of a box with `y + stepHeight`.
@@ -1143,7 +1480,7 @@ Your `tests.html` scripts should now look like this:
   <script src="tests/devpanel.tests.js"></script>
 ```
 
-Open it. You should see **265 passing tests**: the 206 you started with, plus 3 for the roofs, 18 for the world, 33 for the body and 5 for the clips.
+Open it. You should see **284 passing tests**: the 206 you started with, plus 15 for the roofs, 18 for the world, 35 for the body, 5 for the clips and 5 for the building names.
 
 > **What these tests don't cover.** The *feel* of a fall (is 30 the right gravity?), and how a landing looks. The numbers in `BODY` are a first try, and the developer panel is how you find better ones. And `main.js`, the glue, is checked by playing.
 
@@ -1162,6 +1499,9 @@ Open it. You should see **265 passing tests**: the 206 you started with, plus 3 
 | Landing on what was passed through | `_fall`, `supportAt(..., before + stepHeight)` |
 | A drop that is walked, and one that is fallen | `snapDown`, `_walk` |
 | Standing on a roof | the buildings' boxes, `roof` |
+| Standing on a raised edge | `rim`, `rimBoxes` |
+| A roof that is only part of a footprint, and a ledge | `deck`, `ledge`, `deckInsets`, `ledgeBoxes` |
+| Knowing which building is which | `labelSpec`, `DebugLabels`, the `building names` switch |
 | Hard and soft landings | `impact`, `landing`, `hardLanding` |
 | A clip chosen from the whole body | `clipForBody` |
 | A clip that plays once | `ClipPlayer.play(name, rate, loop)` |

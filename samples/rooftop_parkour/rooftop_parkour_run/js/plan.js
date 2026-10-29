@@ -20,15 +20,23 @@ const ROAD_DEPTH = 0.15;
 const MIN_ALLEY = 1.5;
 
 // The buildings of the kit, and how big each is: the width and depth of its footprint, and its height, as measured from the files
-// (see assets/README.md). A building has a front, with the windows and the door, which is its +z side as it comes out of its file.
+// (see assets/README.md). A building has a front, with the windows and the door, which is its +z side as it comes out of its file. `height`
+// is the top of the building, which is the top of the low wall (the parapet) that runs round its roof, and `roof` is the roof itself, where a
+// runner stands: 20 centimetres lower, which is lower than the step height of a runner, so the parapet is something to step over, not a wall.
+// `rim` is how high that raised edge stands above the roof, as measured (the large_2 has none). (The roofs of the kit are not all flat:
+// the back of the medium building is a little lower. Later in the series they are measured properly.)
+// A footprint is not always all roof. `deck` is how far the roof is in from the edge of the footprint on each side (as the building comes out
+// of its file, facing +z; a side that is not given is 0): the small_1 and large_1 have steps at the front that are not part of the roof, and
+// the medium_1 and large_3 are in two levels, a smaller roof on top, and a ledge round it, `ledge` metres lower (the ledge is not quite flat:
+// this is its middle).
 const BUILDINGS = {
-  small_1: { file: "Building_Small_1", width: 12.46, depth: 14.536, height: 17.014 },
-  small_2: { file: "Building_Small_2", width: 20, depth: 12.002, height: 18.999 },
-  medium_1: { file: "Building_Medium_1", width: 13.056, depth: 12.054, height: 27.915 },
-  medium_2: { file: "Building_Medium_2", width: 15.056, depth: 13.056, height: 24.998 },
-  large_1: { file: "Building_Large_1", width: 25.038, depth: 26.028, height: 41 },
-  large_2: { file: "Building_Large_2", width: 20.644, depth: 16.644, height: 28 },
-  large_3: { file: "Building_Large_3", width: 23.056, depth: 19.058, height: 34.945 },
+  small_1: { file: "Building_Small_1", width: 12.46, depth: 14.536, height: 17.014, roof: 16.8, rim: 0.2, deck: { maxZ: 2 } },
+  small_2: { file: "Building_Small_2", width: 20, depth: 12.002, height: 18.999, roof: 18.8, rim: 0.2 },
+  medium_1: { file: "Building_Medium_1", width: 13.056, depth: 12.054, height: 27.915, roof: 27.72, rim: 0.2, deck: { minX: 1.25, maxX: 1.3, minZ: 1.25, maxZ: 2.3 }, ledge: 2.5 },
+  medium_2: { file: "Building_Medium_2", width: 15.056, depth: 13.056, height: 24.998, roof: 24.8, rim: 0.2 },
+  large_1: { file: "Building_Large_1", width: 25.038, depth: 26.028, height: 41, roof: 40.74, rim: 0.26, deck: { maxZ: 1 } },
+  large_2: { file: "Building_Large_2", width: 20.644, depth: 16.644, height: 28, roof: 27.8, rim: 0 },
+  large_3: { file: "Building_Large_3", width: 23.056, depth: 19.058, height: 34.945, roof: 34.8, rim: 0.14, deck: { minX: 1.25, maxX: 1.3, minZ: 1.25, maxZ: 1.3 }, ledge: 2.5 },
 };
 
 // Which way a building's front faces, and how far it is turned from the way it comes out of its file (facing north).
@@ -155,6 +163,10 @@ function buildingPlacements(grid = GRID, layouts = LAYOUTS) {
         width,
         depth,
         height: building.height,
+        roof: building.roof,
+        rim: building.rim,
+        deck: deckInsets(building, entry.facing),
+        ledge: building.ledge || 0,
       });
     }
   }
@@ -171,10 +183,61 @@ function footprint(placement) {
   };
 }
 
-// Every building as a solid box: its footprint, from the ground up to its roof. Each is { name, minX, maxX, minY, maxY, minZ, maxZ },
+// How far the upper roof of a building is in from each side of its footprint, as seen from above (minX is the west side), for the way the
+// building faces. The sides are given for a building facing +z, so a building that faces another way has them turned with it.
+function deckInsets(building, facing) {
+  const none = { minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+  const d = { ...none, ...building.deck };
+  if (facing === "south") return { minX: d.maxX, maxX: d.minX, minZ: d.maxZ, maxZ: d.minZ };
+  if (facing === "east") return { minX: d.minZ, maxX: d.maxZ, minZ: d.maxX, maxZ: d.minX };
+  if (facing === "west") return { minX: d.maxZ, maxX: d.minZ, minZ: d.minX, maxZ: d.maxX };
+  return d;
+}
+
+// The top roof of a building, as a box: where a runner stands. It is the footprint less the ledge, if the building has one, from the
+// ground up to the roof (not to the top of the parapet). Each is { name, minX, maxX, minY, maxY, minZ, maxZ },
 // which is what the walls of the scout, the camera and (later) the runner's collisions are made from.
 function buildingBoxes(grid = GRID, layouts = LAYOUTS) {
-  return buildingPlacements(grid, layouts).map((placement) => ({ name: placement.name, ...footprint(placement), minY: 0, maxY: placement.height }));
+  return buildingPlacements(grid, layouts).map((placement) => {
+    const { minX, maxX, minZ, maxZ } = footprint(placement);
+    const inset = placement.deck;
+    return { name: placement.name, minX: minX + inset.minX, maxX: maxX - inset.maxX, minZ: minZ + inset.minZ, maxZ: maxZ - inset.maxZ, minY: 0, maxY: placement.roof };
+  });
+}
+
+// The ledge round the upper roof of the buildings that have one: the whole footprint, from the ground up to the ledge.
+function ledgeBoxes(grid = GRID, layouts = LAYOUTS) {
+  return buildingPlacements(grid, layouts)
+    .filter((placement) => placement.ledge > 0)
+    .map((placement) => ({ name: `${placement.name} ledge`, ...footprint(placement), minY: 0, maxY: placement.roof - placement.ledge }));
+}
+
+// How wide the raised edge round a roof is, in metres.
+const RIM_WIDTH = 1;
+
+// The raised edge round each roof, as four boxes a building (the same kind of box as above, named "<building> rim"), from the ground up to
+// the top of the edge. A runner steps onto it, which is lower than a step, and so their feet are on the edge and not sunk into it.
+function rimBoxes(grid = GRID, layouts = LAYOUTS) {
+  const boxes = [];
+  const roofs = buildingBoxes(grid, layouts);
+  for (const [i, placement] of buildingPlacements(grid, layouts).entries()) {
+    if (!placement.rim) continue;
+    const { minX, maxX, minZ, maxZ } = roofs[i];
+    const rim = { name: `${placement.name} rim`, minY: 0, maxY: placement.roof + placement.rim };
+    boxes.push(
+      { ...rim, minX, maxX, minZ, maxZ: minZ + RIM_WIDTH },
+      { ...rim, minX, maxX, minZ: maxZ - RIM_WIDTH, maxZ },
+      { ...rim, minX, maxX: minX + RIM_WIDTH, minZ: minZ + RIM_WIDTH, maxZ: maxZ - RIM_WIDTH },
+      { ...rim, minX: maxX - RIM_WIDTH, maxX, minZ: minZ + RIM_WIDTH, maxZ: maxZ - RIM_WIDTH }
+    );
+  }
+  return boxes;
+}
+
+// Where to stand on the roof of a building: the middle of the roof, at the height of its top. It is for putting the runner on a roof
+// (from the developer panel), until there is a way to climb up.
+function roofSpot(box) {
+  return { x: (box.minX + box.maxX) / 2, y: box.maxY, z: (box.minZ + box.maxZ) / 2 };
 }
 
 // The space between two boxes: { overlap, gap }. `gap` is the distance between their nearest edges or corners (0 if they touch),
@@ -243,7 +306,7 @@ function piecesUsed(grid = GRID, layouts = LAYOUTS) {
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { STREET, GRID, ROAD_DEPTH, MIN_ALLEY, BUILDINGS, FACINGS, LAYOUTS, spacing, blockSize, junctionCenter, blockCenter, groundHeight, streetPlacements, footprintSize, buildingPlacements, footprint, boxGap, buildingBoxes, blockBoxes, districtBounds, planProblems, piecesUsed };
+  module.exports = { STREET, GRID, ROAD_DEPTH, MIN_ALLEY, BUILDINGS, FACINGS, LAYOUTS, spacing, blockSize, junctionCenter, blockCenter, groundHeight, roofSpot, streetPlacements, footprintSize, buildingPlacements, footprint, boxGap, deckInsets, buildingBoxes, ledgeBoxes, RIM_WIDTH, rimBoxes, blockBoxes, districtBounds, planProblems, piecesUsed };
 } else {
-  Object.assign(window, { STREET, GRID, ROAD_DEPTH, MIN_ALLEY, BUILDINGS, FACINGS, LAYOUTS, spacing, blockSize, junctionCenter, blockCenter, groundHeight, streetPlacements, footprintSize, buildingPlacements, footprint, boxGap, buildingBoxes, blockBoxes, districtBounds, planProblems, piecesUsed });
+  Object.assign(window, { STREET, GRID, ROAD_DEPTH, MIN_ALLEY, BUILDINGS, FACINGS, LAYOUTS, spacing, blockSize, junctionCenter, blockCenter, groundHeight, roofSpot, streetPlacements, footprintSize, buildingPlacements, footprint, boxGap, deckInsets, buildingBoxes, ledgeBoxes, RIM_WIDTH, rimBoxes, blockBoxes, districtBounds, planProblems, piecesUsed });
 }

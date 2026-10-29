@@ -10,7 +10,7 @@ const RUNNERS = {
 };
 
 // The clips this part of the game uses. (The files have more, for the parts to come: see assets/README.md.)
-const CLIPS = { idle: "Idle_Loop", walk: "Walk_Loop", jog: "Jog_Fwd_Loop", sprint: "Sprint_Loop" };
+const CLIPS = { idle: "Idle_Loop", walk: "Walk_Loop", jog: "Jog_Fwd_Loop", sprint: "Sprint_Loop", fall: "Jump_Loop", land: "Jump_Land" };
 
 // How fast the runner is going, in metres a second, for each gait. Below `walk` they are standing still; from there to `jog` they
 // walk; to `sprint` they jog; and from there on they sprint. `pace` is how fast each clip's feet go when it is played as it was
@@ -29,6 +29,17 @@ function clipForSpeed(speed) {
   return { name: CLIPS.sprint, rate: rate(PACE.sprint) };
 }
 
+// How fast the landing clip plays: it is a little over a second as it was recorded, and a hard landing is over in less than half of one.
+const LAND_RATE = 2.5;
+
+// The clip for a body (a Controller): { name, rate, loop }. In the air, the falling clip, which goes on for as long as the fall; just after a
+// hard landing, the landing clip, once; and otherwise the one for the speed.
+function clipForBody(body) {
+  if (!body.grounded) return { name: CLIPS.fall, rate: 1, loop: true };
+  if (body.landing > 0) return { name: CLIPS.land, rate: LAND_RATE, loop: false };
+  return { ...clipForSpeed(body.speed), loop: true };
+}
+
 const FADE_TIME = 0.2; // how long, in seconds, one clip takes to give way to the next
 
 class ClipPlayer {
@@ -40,9 +51,9 @@ class ClipPlayer {
     this.weight = 1; // how much the current clip is showing, from 0 (just started) to 1
   }
 
-  // Plays the named clip, looping, at a rate (1 is as recorded). The clip that was playing fades out while this one fades in. Asking
+  // Plays the named clip at a rate (1 is as recorded), looping, or once if `loop` is false (it then stays at its last pose). The clip that was playing fades out while this one fades in. Asking
   // for the clip that is already playing only follows a change of rate, so it is safe to call every frame.
-  play(name, rate = 1) {
+  play(name, rate = 1, loop = true) {
     const next = this.clips.get(name);
     if (!next) throw new Error(`The character has no clip called "${name}"`);
     if (name === this.current) {
@@ -51,7 +62,7 @@ class ClipPlayer {
     }
     if (this.current) this.fading.push(this.current);
     this.fading = this.fading.filter((fading) => fading !== name); // one that is coming back is no longer on its way out
-    next.start(true, rate);
+    next.start(loop, rate);
     next.setWeightForAllAnimatables(0);
     this.current = name;
     this.weight = 0;
@@ -95,7 +106,7 @@ async function loadRunner(scene, baseUrl, kind, onProgress) {
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { RUNNERS, CLIPS, GAITS, PACE, MIN_RATE, MAX_RATE, FADE_TIME, clipForSpeed, ClipPlayer, loadRunner };
+  module.exports = { RUNNERS, CLIPS, GAITS, PACE, MIN_RATE, MAX_RATE, LAND_RATE, FADE_TIME, clipForSpeed, clipForBody, ClipPlayer, loadRunner };
 } else {
-  Object.assign(window, { RUNNERS, CLIPS, GAITS, PACE, MIN_RATE, MAX_RATE, FADE_TIME, clipForSpeed, ClipPlayer, loadRunner });
+  Object.assign(window, { RUNNERS, CLIPS, GAITS, PACE, MIN_RATE, MAX_RATE, LAND_RATE, FADE_TIME, clipForSpeed, clipForBody, ClipPlayer, loadRunner });
 }

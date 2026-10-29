@@ -34,7 +34,33 @@ QUnit.module("clipForSpeed", () => {
   QUnit.test("the clips are all clips the character file has, and the runners are both there", (assert) => {
     assert.deepEqual(Object.keys(RUNNERS).sort(), ["female", "male"]);
     assert.true(Object.values(RUNNERS).every((runner) => runner.file.endsWith(".glb") && runner.label.length > 0));
-    assert.deepEqual(Object.values(CLIPS), ["Idle_Loop", "Walk_Loop", "Jog_Fwd_Loop", "Sprint_Loop"]);
+    assert.deepEqual(Object.values(CLIPS), ["Idle_Loop", "Walk_Loop", "Jog_Fwd_Loop", "Sprint_Loop", "Jump_Loop", "Jump_Land"]);
+  });
+});
+
+QUnit.module("clipForBody", () => {
+  const body = (changes) => ({ grounded: true, landing: 0, speed: 0, ...changes });
+
+  QUnit.test("on the ground, it is the clip for the speed, looping", (assert) => {
+    assert.deepEqual(clipForBody(body({ speed: 0 })), { name: CLIPS.idle, rate: 1, loop: true });
+    assert.strictEqual(clipForBody(body({ speed: 4.5 })).name, CLIPS.jog);
+    assert.strictEqual(clipForBody(body({ speed: 7.5 })).name, CLIPS.sprint);
+    assert.true(clipForBody(body({ speed: 4.5 })).loop);
+  });
+
+  QUnit.test("in the air, it is the falling clip, whatever the speed", (assert) => {
+    for (const speed of [0, 4.5, 7.5]) assert.deepEqual(clipForBody(body({ grounded: false, speed })), { name: CLIPS.fall, rate: 1, loop: true });
+  });
+
+  QUnit.test("just after a hard landing, it is the landing clip, played once", (assert) => {
+    const clip = clipForBody(body({ landing: 0.2, speed: 4.5 }));
+    assert.strictEqual(clip.name, CLIPS.land);
+    assert.strictEqual(clip.rate, LAND_RATE);
+    assert.false(clip.loop);
+  });
+
+  QUnit.test("in the air wins over a landing, since it is falling again", (assert) => {
+    assert.strictEqual(clipForBody(body({ grounded: false, landing: 0.2 })).name, CLIPS.fall);
   });
 });
 
@@ -74,6 +100,12 @@ QUnit.module("ClipPlayer", () => {
     assert.true(clips.get("Walk_Loop").loop);
     assert.strictEqual(clips.get("Walk_Loop").speedRatio, 1.2);
     assert.strictEqual(player.current, "Walk_Loop");
+  });
+
+  QUnit.test("a clip can be played once, and not looping", (assert) => {
+    const { clips, player } = make();
+    player.play("Walk_Loop", 1, false);
+    assert.false(clips.get("Walk_Loop").loop);
   });
 
   QUnit.test("asking for the clip that is playing doesn't start it again, and only follows the rate", (assert) => {

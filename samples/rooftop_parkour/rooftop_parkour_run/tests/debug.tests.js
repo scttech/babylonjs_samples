@@ -17,6 +17,17 @@ QUnit.module("boxMeshSpec", () => {
   });
 });
 
+QUnit.module("labelSpec", () => {
+  QUnit.test("hangs the name above the middle of the box", (assert) => {
+    const spec = labelSpec({ name: "Building_Small_1", minX: 2, maxX: 8, minY: 0, maxY: 30, minZ: -10, maxZ: -4 });
+    assert.deepEqual(spec, { text: "Building_Small_1", x: 5, y: 34, z: -7 });
+  });
+
+  QUnit.test("how high it hangs can be chosen", (assert) => {
+    assert.strictEqual(labelSpec({ name: "a", minX: 0, maxX: 1, minY: 0, maxY: 10, minZ: 0, maxZ: 1 }, 10).y, 20);
+  });
+});
+
 QUnit.module("DebugBoxes", (hooks) => {
   let engine;
   let scene;
@@ -66,6 +77,51 @@ QUnit.module("DebugBoxes", (hooks) => {
     const debug = new DebugBoxes(scene, boxes);
     assert.strictEqual(scene.meshes.length, before + 2);
     debug.dispose();
+    assert.strictEqual(scene.meshes.length, before);
+  });
+});
+
+QUnit.module("DebugLabels", (hooks) => {
+  let engine;
+  let scene;
+
+  hooks.beforeEach(() => {
+    engine = new BABYLON.NullEngine();
+    scene = new BABYLON.Scene(engine);
+  });
+
+  hooks.afterEach(() => {
+    scene.dispose();
+    engine.dispose();
+  });
+
+  const boxes = [
+    { name: "a", minX: 0, maxX: 4, minY: 0, maxY: 10, minZ: 0, maxZ: 6 },
+    { name: "b", minX: 10, maxX: 12, minY: 0, maxY: 5, minZ: 0, maxZ: 2 },
+  ];
+
+  QUnit.test("makes a label for each box, above it, that faces the camera, and starts hidden", (assert) => {
+    const labels = new DebugLabels(scene, boxes);
+    const meshes = labels.root.getChildMeshes();
+    assert.strictEqual(meshes.length, 2);
+    assert.deepEqual([meshes[0].position.x, meshes[0].position.y, meshes[0].position.z], [2, 14, 3]);
+    assert.strictEqual(meshes[0].billboardMode, BABYLON.Mesh.BILLBOARDMODE_ALL);
+    assert.false(labels.visible);
+  });
+
+  QUnit.test("setVisible shows and hides them all", (assert) => {
+    const labels = new DebugLabels(scene, boxes);
+    labels.setVisible(true);
+    assert.true(labels.visible);
+    labels.setVisible(false);
+    assert.false(labels.visible);
+  });
+
+  QUnit.test("dispose takes them all away", (assert) => {
+    const before = scene.meshes.length;
+    const labels = new DebugLabels(scene, boxes);
+    assert.strictEqual(scene.meshes.length, before + 2);
+    labels.dispose();
     assert.strictEqual(scene.meshes.length, before);
   });
 });

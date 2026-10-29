@@ -103,10 +103,14 @@ const createScene = async (progress) => {
   placeAll(streetPlacements(), false);
   placeAll(buildingPlacements(), true);
 
-  // The walls: every building as a box, for the scout and the camera to keep out of.
+  // The world the body lives in: every building as a box, to keep out of, to stand on the roof of, and for the camera to keep out of too,
+  // the raised edges of the roofs, and the ground. The body is a Controller: it runs, steps, falls and lands in that world.
   const boxes = buildingBoxes();
-  orbit.boxes = boxes;
-  const scout = new Scout({ ...START, boxes, bounds: districtBounds(), ground: (x, z) => groundHeight(x, z) });
+  const ledges = ledgeBoxes();
+  const rims = rimBoxes();
+  orbit.boxes = [...boxes, ...ledges];
+  const world = new World({ boxes: [...boxes, ...ledges, ...rims], ground: (x, z) => groundHeight(x, z) });
+  const body = new Controller({ ...START, world, bounds: districtBounds() });
 
   // The runner. Both characters can be loaded; the one in use is the one that is shown.
   const runners = {};
@@ -129,11 +133,11 @@ const createScene = async (progress) => {
   });
   progress.complete("runner");
 
-  // The keys. Arrow keys would scroll the page, so the ones the scout uses are taken for the game.
+  // The keys. Arrow keys would scroll the page, so the ones the runner uses are taken for the game.
   const heldKeys = new Set();
   const look = new PointerLook(canvas, document, (locked) => document.body.classList.toggle("looking", locked));
   window.addEventListener("keydown", (event) => {
-    if (event.code === "KeyR") scout.reset();
+    if (event.code === "KeyR") body.reset();
     if (!ALL_MOVE_KEYS.has(event.code) || typesText(event)) return;
     event.preventDefault();
     heldKeys.add(event.code);
@@ -141,7 +145,7 @@ const createScene = async (progress) => {
   window.addEventListener("keyup", (event) => heldKeys.delete(event.code));
   window.addEventListener("blur", () => heldKeys.clear()); // don't get stuck running after alt-tab
 
-  // Each frame: the mouse turns the camera, the keys move the scout, and the runner and the camera go where the scout is.
+  // Each frame: the mouse turns the camera, the keys move the body, and the runner and the camera go where the body is.
   scene.onBeforeRenderObservable.add(() => {
     // Clamp dt so a backgrounded tab doesn't launch the runner across the district.
     const dt = started ? Math.min(engine.getDeltaTime() / 1000, 0.05) : 0;
@@ -149,21 +153,23 @@ const createScene = async (progress) => {
     if (started) orbit.look(turned.dx, turned.dy);
 
     const input = moveInput(heldKeys);
-    scout.update(started ? moveDirection(input, orbit.yaw) : null, input.sprint, dt);
+    body.update(started ? moveDirection(input, orbit.yaw) : null, input.sprint, dt);
 
-    runner.root.position.set(scout.x, scout.y, scout.z);
-    runner.root.rotation.y = scout.heading + RUNNER_TURN;
-    const clip = clipForSpeed(scout.speed);
-    player.play(clip.name, clip.rate);
+    runner.root.position.set(body.x, body.y, body.z);
+    runner.root.rotation.y = body.heading + RUNNER_TURN;
+    const clip = clipForBody(body);
+    player.play(clip.name, clip.rate, clip.loop);
     player.update(dt);
-    orbit.follow({ x: scout.x, y: scout.y, z: scout.z });
+    orbit.follow({ x: body.x, y: body.y, z: body.z });
   });
 
   // Developer mode, with ?dev on the end of the address: a panel to watch and change things while the game runs. The key under Esc
   // hides it, and its title bar folds it up (it starts folded up on a small screen).
   let panel = null;
   if (devEnabled(location.search)) {
-    const debugBoxes = new DebugBoxes(scene, boxes);
+    let roofNumber = 0; // which roof the button takes the runner to next
+    const debugBoxes = new DebugBoxes(scene, [...boxes, ...ledges, ...rims]);
+    const debugLabels = new DebugLabels(scene, boxes.map((box) => ({ ...box, name: BUILDINGS[box.name].file })));
     panel = new DevPanel(
       document,
       [
@@ -190,10 +196,16 @@ const createScene = async (progress) => {
         {
           title: "Runner",
           rows: [
-            slider("jog speed", scout.options, "jogSpeed", 1, 10, 0.1),
-            slider("sprint speed", scout.options, "sprintSpeed", 2, 14, 0.1),
+            slider("jog speed", body.options, "jogSpeed", 1, 10, 0.1),
+            slider("sprint speed", body.options, "sprintSpeed", 2, 14, 0.1),
+            slider("gravity", body.options, "gravity", 0, 80, 1),
+            slider("step height", body.options, "stepHeight", 0.1, 1.5, 0.05),
+            action("Go to a roof", () => {
+              const spot = roofSpot(boxes[roofNumber++ % boxes.length]);
+              body.placeAt(spot.x, spot.y + 0.05, spot.z);
+            }),
             action("Switch runner", () => useRunner(runner === runners.male ? "female" : "male")),
-            action("Back to the start", () => scout.reset()),
+            action("Back to the start", () => body.reset()),
           ],
         },
         {
@@ -201,8 +213,11 @@ const createScene = async (progress) => {
           rows: [
             toggle("window glass", () => glass[0].alpha > 0, (value) => glass.forEach((material) => { material.alpha = value ? 1 : GLASS_ALPHA; })),
             toggle("building boxes", () => debugBoxes.visible, (value) => debugBoxes.setVisible(value)),
-            readout("position", () => `${scout.x.toFixed(1)}, ${scout.z.toFixed(1)}`),
-            readout("speed", () => `${scout.speed.toFixed(1)} m/s`),
+            toggle("building names", () => debugLabels.visible, (value) => debugLabels.setVisible(value)),
+            readout("position", () => `${body.x.toFixed(1)}, ${body.z.toFixed(1)}`),
+            readout("height", () => `${body.y.toFixed(2)} m`),
+            readout("speed", () => `${body.speed.toFixed(1)} m/s`),
+            readout("on the ground", () => (body.grounded ? "yes" : `no (${body.vy.toFixed(1)} m/s)`)),
             readout("clip", () => player.current),
             readout("mouse", () => (look.locked ? "locked" : "free")),
             readout("frames", () => `${engine.getFps().toFixed(0)} fps`),
@@ -216,7 +231,7 @@ const createScene = async (progress) => {
       if (event.code === DEV_KEY && !event.repeat && !typesText(event)) panel.toggleShown();
     });
     scene.onAfterRenderObservable.add(() => panel.refreshReadouts());
-    window.dev = { scene, scout, sky, orbit, panel, look, shadows }; // for poking at from the console
+    window.dev = { scene, body, world, sky, orbit, panel, look, shadows }; // for poking at from the console
   }
 
   // The last step of loading: the graphics card gets the shaders and textures ready.

@@ -171,14 +171,80 @@ QUnit.module("footprints, boxes and gaps", () => {
     assert.deepEqual(result, { overlap: false, gap: 0 });
   });
 
-  QUnit.test("buildingBoxes are the footprints, from the ground up to the roof", (assert) => {
+  QUnit.test("the roof of a building is a little under its top: lower than a runner can step, so the parapet round it is stepped over", (assert) => {
+    for (const building of Object.values(BUILDINGS)) {
+      assert.true(building.roof < building.height && building.height - building.roof < 0.4, building.file);
+    }
+  });
+
+  QUnit.test("buildingBoxes are the roofs, from the ground up to the roof (not to the top of the parapet), inside the footprints", (assert) => {
     const boxes = buildingBoxes(GRID, LAYOUTS);
     const placed = buildingPlacements(GRID, LAYOUTS);
     assert.strictEqual(boxes.length, placed.length);
     boxes.forEach((box, i) => {
-      assert.deepEqual([box.minY, box.maxY], [0, placed[i].height]);
-      assert.deepEqual([box.minX, box.maxX], [footprint(placed[i]).minX, footprint(placed[i]).maxX]);
+      const inside = footprint(placed[i]);
+      assert.deepEqual([box.minY, box.maxY], [0, placed[i].roof]);
+      assert.true(box.minX >= inside.minX && box.maxX <= inside.maxX && box.minZ >= inside.minZ && box.maxZ <= inside.maxZ, box.name);
+      assert.true(box.maxX > box.minX && box.maxZ > box.minZ, box.name);
     });
+  });
+
+  QUnit.test("a building with no deck is a roof as wide as its footprint", (assert) => {
+    const boxes = buildingBoxes(GRID, LAYOUTS);
+    buildingPlacements(GRID, LAYOUTS).forEach((placement, i) => {
+      if (BUILDINGS[placement.name].deck) return;
+      const inside = footprint(placement);
+      assert.deepEqual([boxes[i].minX, boxes[i].maxX, boxes[i].minZ, boxes[i].maxZ], [inside.minX, inside.maxX, inside.minZ, inside.maxZ]);
+    });
+  });
+
+  QUnit.test("the roof of a building with steps at the front stops before them, whichever way the building faces", (assert) => {
+    const boxes = buildingBoxes(GRID, LAYOUTS);
+    buildingPlacements(GRID, LAYOUTS).forEach((placement, i) => {
+      if (placement.name !== "small_1") return;
+      const inside = footprint(placement);
+      const missing = placement.facing === "north" ? inside.maxZ - boxes[i].maxZ : boxes[i].minZ - inside.minZ;
+      assert.true(Math.abs(missing - BUILDINGS.small_1.deck.maxZ) < 1e-9, placement.facing);
+    });
+  });
+
+  QUnit.test("ledgeBoxes are the footprints of the buildings in two levels, from the ground up to the ledge", (assert) => {
+    const ledges = ledgeBoxes(GRID, LAYOUTS);
+    const placed = buildingPlacements(GRID, LAYOUTS).filter((placement) => placement.ledge > 0);
+    assert.true(placed.length > 0);
+    assert.strictEqual(ledges.length, placed.length);
+    placed.forEach((placement, i) => {
+      assert.strictEqual(ledges[i].name, `${placement.name} ledge`);
+      assert.true(Math.abs(ledges[i].maxY - (placement.roof - placement.ledge)) < 1e-9);
+      assert.deepEqual([ledges[i].minX, ledges[i].maxX], [footprint(placement).minX, footprint(placement).maxX]);
+    });
+  });
+
+  QUnit.test("a ledge is lower than the roof by more than a runner can step, or it would not be a ledge", (assert) => {
+    for (const building of Object.values(BUILDINGS)) {
+      if (building.ledge) assert.true(building.ledge > 0.4, building.file);
+    }
+  });
+
+  QUnit.test("rimBoxes are four boxes round the roof of each building that has a raised edge, as high as the edge", (assert) => {
+    const rims = rimBoxes(GRID, LAYOUTS);
+    const placed = buildingPlacements(GRID, LAYOUTS).filter((placement) => placement.rim > 0);
+    assert.strictEqual(rims.length, placed.length * 4);
+    placed.forEach((placement, i) => {
+      const inside = footprint(placement);
+      for (const rim of rims.slice(i * 4, i * 4 + 4)) {
+        assert.strictEqual(rim.name, `${placement.name} rim`);
+        assert.true(Math.abs(rim.maxY - (placement.roof + placement.rim)) < 1e-9);
+        assert.true(rim.minX >= inside.minX - 1e-9 && rim.maxX <= inside.maxX + 1e-9 && rim.minZ >= inside.minZ - 1e-9 && rim.maxZ <= inside.maxZ + 1e-9);
+        assert.true(rim.maxX - rim.minX > 0 && rim.maxZ - rim.minZ > 0);
+      }
+    });
+  });
+
+  QUnit.test("the raised edge of a roof is lower than a runner can step, so it is stepped onto and not a wall", (assert) => {
+    for (const building of Object.values(BUILDINGS)) {
+      assert.true(building.rim >= 0 && building.rim < 0.4, building.file);
+    }
   });
 
   QUnit.test("blockBoxes are the blocks, one each, all the same size", (assert) => {
@@ -216,6 +282,51 @@ QUnit.module("groundHeight", () => {
     const at = junctionCenter(small, 1, 1);
     assert.strictEqual(groundHeight(at.x, at.z, small), -ROAD_DEPTH);
     assert.strictEqual(groundHeight(at.x + 100, at.z + 100, small), 0);
+  });
+});
+
+QUnit.module("deckInsets", () => {
+  const building = { deck: { minX: 1, maxX: 2, minZ: 3, maxZ: 4 } };
+
+  QUnit.test("a building with no deck has none to leave out", (assert) => {
+    assert.deepEqual(deckInsets({}, "north"), { minX: 0, maxX: 0, minZ: 0, maxZ: 0 });
+  });
+
+  QUnit.test("a side that is not given is 0", (assert) => {
+    assert.deepEqual(deckInsets({ deck: { maxZ: 2 } }, "north"), { minX: 0, maxX: 0, minZ: 0, maxZ: 2 });
+  });
+
+  QUnit.test("a building that faces north has them as they are", (assert) => {
+    assert.deepEqual(deckInsets(building, "north"), { minX: 1, maxX: 2, minZ: 3, maxZ: 4 });
+  });
+
+  QUnit.test("a building that faces south has them turned half way round", (assert) => {
+    assert.deepEqual(deckInsets(building, "south"), { minX: 2, maxX: 1, minZ: 4, maxZ: 3 });
+  });
+
+  QUnit.test("a building that faces east has its front on the east side, and one that faces west on the west side", (assert) => {
+    assert.strictEqual(deckInsets(building, "east").maxX, 4);
+    assert.strictEqual(deckInsets(building, "west").minX, 4);
+  });
+
+  QUnit.test("turned all the way round, they add up to the same", (assert) => {
+    for (const facing of ["north", "east", "south", "west"]) {
+      const d = deckInsets(building, facing);
+      assert.strictEqual(d.minX + d.maxX + d.minZ + d.maxZ, 10, facing);
+    }
+  });
+});
+
+QUnit.module("roofSpot", () => {
+  QUnit.test("is the middle of the roof, at the height of the roof", (assert) => {
+    assert.deepEqual(roofSpot({ minX: 2, maxX: 8, minY: 0, maxY: 17, minZ: -10, maxZ: -4 }), { x: 5, y: 17, z: -7 });
+  });
+
+  QUnit.test("is inside the box of every building, at its top", (assert) => {
+    for (const box of buildingBoxes()) {
+      const spot = roofSpot(box);
+      assert.true(spot.x > box.minX && spot.x < box.maxX && spot.z > box.minZ && spot.z < box.maxZ && spot.y === box.maxY, box.name);
+    }
   });
 });
 
