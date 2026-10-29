@@ -1,6 +1,6 @@
 # Rooftop Parkour World
 
-<img src="../assets/images/rooftop_parkour_logo_small.jpg" alt="The runner on the road at a junction of the district" width="560">
+<img src="../assets/images/rooftop_parkour_screenshot.jpg" alt="The runner on the road at a junction of the district" width="560">
 
 Step 1 of the Rooftop Parkour series. A free-roaming game in a city district: run through the streets, climb the buildings by their ledges, and run across the rooftops. This first step is the **world**: a district of streets and tall buildings made from a real 3D kit, a sun you can move across the sky, a runner you walk about with the keyboard, a third-person camera you steer with the mouse, a loading screen with a real progress bar, and a developer panel to look at it all.
 

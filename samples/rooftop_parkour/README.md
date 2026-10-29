@@ -1,6 +1,10 @@
-# Rooftop Parkour
+# Parkour Runner Free Run
 
-<img src="assets/images/rooftop_parkour_logo_small.jpg" alt="The runner on the road at a junction of the district" width="560">
+<img src="assets/images/parkour_runner_freerun_logo_small.webp" alt="Parkour Runner Free Run" width="460">
+
+(The folders of this series are called `rooftop_parkour`: that was the working name.)
+
+<img src="assets/images/rooftop_parkour_screenshot.jpg" alt="The runner on the road at a junction of the district" width="560">
 
 A free-roaming parkour game in a city district, in real 3D: run through the streets, climb the buildings by grabbing their ledges, and cross the rooftops, with a third-person camera and a developer mode throughout so that every move can be watched and tuned. The city is a real 3D kit at real scale, and the runner has a whole library of animations. It follows the [Parkour Runner](../parkour_runner/README.md) series, which ran down an endless street; this one is a world you explore.
 
@@ -14,7 +18,7 @@ The city, the runners and their animations are CC0 models by Quaternius; see the
 |---|--------|-----------------|
 | 1 | [Rooftop Parkour World](rooftop_parkour_world/README.md) ([tutorial](rooftop_parkour_world/TUTORIAL.md)) | A loading screen with a real progress bar, a district as data and checks on it, loading once and instancing, the sun and sky for any time of day with cascaded shadows, a third-person camera with the pointer lock that stays out of walls, blended animation clips, walking with walls, and a developer panel |
 | 2 | [Rooftop Parkour Run](rooftop_parkour_run/README.md) ([tutorial](rooftop_parkour_run/TUTORIAL.md)) | A kinematic character controller: gravity, steps, falling and landing, standing on a roof, collisions with the buildings as boxes, and a landing animation |
-| 3 | Jump | Jumping that feels fair (coyote time, a jump buffer), landing animations, and a roll after a fall |
+| 3 | [Rooftop Parkour Jump](rooftop_parkour_jump/README.md) ([tutorial](rooftop_parkour_jump/TUTORIAL.md)) | Jumping that feels fair (a tap is a hop, coyote time, a jump buffer), a roll after a long fall, the arithmetic of a jump, and a test that a gap can or can't be jumped |
 | 4 | Ledges | Finding the ledges of the buildings, grabbing one, hanging, shimmying along it and pulling up |
 | 5 | Moves | Vaulting, mantling, a wall jump, and a little help for a grab that is nearly right |
 | 6 | Rooftops | Gaps, fire escapes and rooftop features, and a checker that proves every jump can be made |

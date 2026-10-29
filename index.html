@@ -263,7 +263,8 @@
     // in this order on the roadmap, so each one should build on the last.
     // Each step lives at samples/<series.id>/<step.slug>/. A step with no
     // `slug` is shown as "coming soon" (planned, not yet built). Set
-    // `tutorial: true` on a step that ships a TUTORIAL.md to link it too.
+    // `tutorial: true` on a step that ships a TUTORIAL.md to link it too, and
+    // `dev: true` on a step that has a developer panel (?dev) to link that too.
     const series = [
       {
         id: "introduction",
@@ -345,20 +346,20 @@
           { slug: "rolling_rampage_hazards", tutorial: true, title: "Rolling Rampage Hazards", description: "A moving platform, a piston and slime: motion as a function of time, animated physics bodies, and carrying a rolling marble." },
           { slug: "rolling_rampage_enemies", tutorial: true, title: "Rolling Rampage Enemies", description: "Marbles that chase you: a class reused with options, a chase as a state machine, collision events, and a hit with a cooldown." },
           { slug: "rolling_rampage_screens", tutorial: true, title: "Rolling Rampage Screens", description: "A title, a pause, a score and a leaderboard, sound made in code, and a shiny chrome pinball marble." },
-          { slug: "rolling_rampage_polish", tutorial: true, title: "Rolling Rampage Polish", description: "Seven more levels (ten in all), sparks, a firework and a trail, a camera shake, and a ?dev panel of sliders to tune the game while you play." },
-          { slug: "rolling_rampage_editor", tutorial: true, title: "Rolling Rampage Editor", description: "A level editor inside the game: draw the floor, ramp it, place things, get told what is wrong as you draw, then test, save, play and share your own levels." },
+          { slug: "rolling_rampage_polish", tutorial: true, dev: true, title: "Rolling Rampage Polish", description: "Seven more levels (ten in all), sparks, a firework and a trail, a camera shake, and a ?dev panel of sliders to tune the game while you play." },
+          { slug: "rolling_rampage_editor", tutorial: true, dev: true, title: "Rolling Rampage Editor", description: "A level editor inside the game: draw the floor, ramp it, place things, get told what is wrong as you draw, then test, save, play and share your own levels." },
         ],
       },
       {
         id: "rooftop_parkour",
-        logo: "samples/rooftop_parkour/assets/images/rooftop_parkour_logo_small.jpg",
-        title: "Rooftop Parkour",
+        logo: "samples/rooftop_parkour/assets/images/parkour_runner_freerun_logo_small.webp",
+        title: "Parkour Runner Free Run",
         description: "A free-roaming parkour game in a city district, in real 3D: run the streets, climb the buildings by their ledges, and cross the rooftops, with a developer mode to watch and tune every move.",
         teaches: "Loading screens with real progress, worlds as data, instancing, the sun and shadows, third-person cameras and the pointer lock, character controllers, animation blending, ledge grabbing, and checking that a jump can be made",
         steps: [
-          { slug: "rooftop_parkour_world", tutorial: true, title: "Rooftop Parkour World", description: "A district of real buildings in the sun at any time of day, a runner and a third-person camera, a loading screen with a progress bar, and a developer panel." },
-          { slug: "rooftop_parkour_run", tutorial: true, title: "Rooftop Parkour Run", description: "A body that falls, steps and lands: a character controller you write yourself, standing on rooftops, with a landing animation and gravity and step height to tune." },
-          { title: "Rooftop Parkour Jump", description: "Jumps that feel fair, landing animations, and a roll after a fall." },
+          { slug: "rooftop_parkour_world", tutorial: true, dev: true, title: "Rooftop Parkour World", description: "A district of real buildings in the sun at any time of day, a runner and a third-person camera, a loading screen with a progress bar, and a developer panel." },
+          { slug: "rooftop_parkour_run", tutorial: true, dev: true, title: "Rooftop Parkour Run", description: "A body that falls, steps and lands: a character controller you write yourself, standing on rooftops, with a landing animation and gravity and step height to tune." },
+          { slug: "rooftop_parkour_jump", tutorial: true, dev: true, title: "Rooftop Parkour Jump", description: "Jumps that feel fair: a tap is a hop, a moment of grace after running off an edge, a press just before landing that isn't lost, and a roll after a fall." },
           { title: "Rooftop Parkour Ledges", description: "Grab a ledge, hang, shimmy along it and pull up onto the roof." },
           { title: "Rooftop Parkour Moves", description: "Vaults, mantles, wall jumps, and a little help for a grab that is nearly right." },
           { title: "Rooftop Parkour Rooftops", description: "Gaps, fire escapes and rooftop features, and a checker that proves every jump can be made." },
@@ -437,6 +438,7 @@
             ${step.slug ? `
               <div class="step-links">
                 <a href="${base}/index.html">Run the sample</a>
+                ${step.dev ? `<a href="${base}/index.html?dev">Run dev mode</a>` : ""}
                 <a class="secondary" href="${REPO}/${base}/README.md">README</a>
                 ${step.tutorial ? `<a class="secondary" href="${REPO}/${base}/TUTORIAL.md">Tutorial</a>` : ""}
               </div>` : ""}

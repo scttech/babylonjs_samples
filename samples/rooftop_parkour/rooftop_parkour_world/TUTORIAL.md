@@ -158,11 +158,15 @@ And `css/splash.css`, for the loading screen:
 }
 #splash h1 {
   margin: 0;
-  color: var(--orange);
-  font: 400 clamp(44px, 9vw, 96px) / 1 var(--title-font);
-  letter-spacing: 0.04em;
-  text-shadow: 0 4px 0 #000, 0 8px 24px rgba(0, 0, 0, 0.6);
-  transform: rotate(-3deg);
+  line-height: 0;
+}
+#splash h1 img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(80vw, 520px);
+  max-height: 46vh;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.6));
 }
 #splash-bar {
   width: min(70vw, 460px);
@@ -200,7 +204,7 @@ Things to notice:
 
 - **The fonts are the graffiti and comic faces of the Parkour Runner series**, from the series' shared `assets/fonts`. The path in `url(...)` is relative to the **CSS file**, which is why it goes up two folders.
 - **Each part of the page has its own small style file**: the page, the splash, and (later) the mouse prompt and the developer panel. A new part of the page is a new file and a new `<link>`.
-- **The bar is a box with a fill in it** (`#splash-fill`), and the code sets the fill's width. The stripes are a `repeating-linear-gradient`, so there is no picture to load before the loading screen can be shown.
+- **The bar is a box with a fill in it** (`#splash-fill`), and the code sets the fill's width. The stripes are a `repeating-linear-gradient`, so the bar itself is no picture. The one picture on the loading screen is the game's logo, `assets/images/parkour_runner_freerun_splash.webp` (about 180 kilobytes, with a see-through background), in an `<h1>` that has the game's name as its `alt` text, so a page where the picture fails still has a title.
 - **`#splash.failed`** hides the bar and shows the words as a message, for when something goes wrong.
 
 ### 1b. The page
@@ -234,7 +238,7 @@ Things to notice:
   <a class="back-button" href="../../../index.html#rooftop_parkour">&larr; Samples</a>
   <div class="hint">WASD run &middot; Shift sprint &middot; mouse look (click first, Esc lets go) &middot; R restart &middot; C screenshot &middot; <a href="tests.html">Run tests</a></div>
   <div id="splash">
-    <h1>Rooftop Parkour</h1>
+    <h1><img src="../assets/images/parkour_runner_freerun_splash.webp" alt="Parkour Runner Free Run" width="960" height="625"></h1>
     <div id="splash-bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="splash-fill"></div></div>
     <p id="splash-status">Loading the district&hellip;</p>
   </div>

@@ -1,5 +1,8 @@
 .DS_Store
 Thumbs.db
 
+# Ignore game ideas scratch pad
+PROJECT_IDEAS.md
+
 # Original asset downloads (large; the samples use trimmed copies in each sample's assets folder)
 source_assets/

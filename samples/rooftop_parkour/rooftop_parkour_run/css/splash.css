@@ -18,11 +18,15 @@
 }
 #splash h1 {
   margin: 0;
-  color: var(--orange);
-  font: 400 clamp(44px, 9vw, 96px) / 1 var(--title-font);
-  letter-spacing: 0.04em;
-  text-shadow: 0 4px 0 #000, 0 8px 24px rgba(0, 0, 0, 0.6);
-  transform: rotate(-3deg);
+  line-height: 0;
+}
+#splash h1 img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(80vw, 520px);
+  max-height: 46vh;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.6));
 }
 #splash-bar {
   width: min(70vw, 460px);

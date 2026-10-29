@@ -16,7 +16,7 @@ The models can't be loaded from a page opened from a file, so run a web server: 
 
 **Hard landings.** `impact` says how fast the fall was when it landed, and a hard one holds the runner for a moment (`landing`), which is the time for the landing clip, played once. A small drop isn't felt.
 
-**The real roofs.** A building's height is the top of the low wall round its roof (the parapet), and the roof is 20 centimetres lower. The plan has both, and the walkable box is as high as the roof.
+**The real roofs.** A building's height is the top of the low wall round its roof (the parapet), and the roof is 20 centimetres lower. The plan has both, and the walkable box is as high as the roof. The raised edge of a roof is a set of thin boxes of its own (the runner steps onto it, and does not sink into it), the two buildings in two levels have a lower ledge round the upper roof, and a front with steps is not roof. A developer switch, **building names**, labels each building with the name of its model, to find out which one is wrong.
 
 ## Key code
 
@@ -75,4 +75,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The runner can fall, but can't jump up. The next sample adds the **jump**: one that feels fair (a moment of grace after running off an edge, and a press just before landing that isn't lost), and a roll to take the sting out of a long fall.
+The runner can fall, but can't jump up. The next sample, [Rooftop Parkour Jump](../rooftop_parkour_jump/README.md), adds the **jump**: one that feels fair (a moment of grace after running off an edge, and a press just before landing that isn't lost), and a roll to take the sting out of a long fall.
