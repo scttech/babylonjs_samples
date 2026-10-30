@@ -369,6 +369,25 @@
           { title: "Rooftop Parkour Generator", description: "A city made from a seed that follows the same rules for what can be jumped." },
         ],
       },
+      {
+        id: "ghost_hunter",
+        logo: "samples/ghost_hunter/assets/images/ghost_hunter_logo_small.webp",
+        title: "Ghost Hunter",
+        description: "An augmented reality ghost hunt for your phone: the camera shows your room, and the dead turn up in it. Creepy on purpose, so play it where you feel safe.",
+        teaches: "The camera and motion sensors of a phone, WebXR augmented reality with a fallback, transparent canvases, shaders for ghosts, spawning and scares, audio in 3D, and testing a game that needs a phone",
+        steps: [
+          { slug: "ghost_hunter_room", tutorial: true, dev: true, title: "Ghost Hunter Room", description: "The camera behind a see-through 3D scene, looking around with the phone's motion sensors (or by dragging), and a start screen with a content warning." },
+          { title: "Ghost Hunter Real AR", description: "WebXR: surfaces found by the phone, a reticle on the floor, and anchors, with the camera version as the fallback." },
+          { title: "Ghost Hunter Apparitions", description: "A ghost made in code: a see-through shader, a wispy trail, flicker, and mist." },
+          { title: "Ghost Hunter Creatures", description: "Spiders, ghouls and skeletons from models, with crawls and lunges." },
+          { title: "Ghost Hunter The Hunt", description: "A director that decides what appears, where and when." },
+          { title: "Ghost Hunter Jump Scares", description: "Build-up, silence and the lunge, with 3D sound, vibration and a scare-level setting." },
+          { title: "Ghost Hunter Tools", description: "A flashlight that reveals and a capture beam that traps, and the weakness of each creature." },
+          { title: "Ghost Hunter Detectors", description: "An EMF meter, a radar, a spirit box and thermal vision." },
+          { title: "Ghost Hunter Rounds", description: "Rounds, health and sanity, a ghost journal and saved scores." },
+          { title: "Ghost Hunter Polish", description: "Calm mode, install as an app, and testing on real phones." },
+        ],
+      },
     ];
 
     const main = document.getElementById("main");
