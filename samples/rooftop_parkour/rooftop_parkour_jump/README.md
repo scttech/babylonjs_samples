@@ -69,4 +69,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The runner can cross an alley, but can only go up what it can jump. The next sample adds the **ledges**: jump at a wall, grab its ledge, hang there, shimmy along it and pull up.
+The runner can cross an alley, but can only go up what it can jump. The next sample, [Rooftop Parkour Ledges](../rooftop_parkour_ledges/README.md), adds the **ledges**: jump at a wall, grab its ledge, hang there, shimmy along it and pull up.

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Rooftop Parkour Ledges - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/page.css">
+  <link rel="stylesheet" href="css/splash.css">
+  <link rel="stylesheet" href="css/look.css">
+  <link rel="stylesheet" href="css/devpanel.css">
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+  <script>
+    // Rooftop Parkour will use Space to jump, so move the shared screenshot shortcut to C for this series.
+    window.SCREENSHOT_KEY = "KeyC";
+  </script>
+</head>
+
+<body>
+  <a class="back-button" href="../../../index.html#rooftop_parkour">&larr; Samples</a>
+  <div class="hint">WASD run &middot; Shift sprint &middot; Space jump (and climb a ledge) &middot; mouse look (click first, Esc lets go) &middot; R restart &middot; C screenshot &middot; <a href="tests.html">Run tests</a></div>
+  <div id="splash">
+    <h1><img src="../assets/images/parkour_runner_freerun_splash.webp" alt="Parkour Runner Free Run" width="960" height="625"></h1>
+    <div id="splash-bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="splash-fill"></div></div>
+    <p id="splash-status">Loading the district&hellip;</p>
+  </div>
+  <p id="look-prompt">Click to look around</p>
+  <div id="crosshair"></div>
+  <canvas id="renderCanvas"></canvas>
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/splash.js"></script>
+  <script src="js/plan.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/sky.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/character.js"></script>
+  <script src="js/scout.js"></script>
+  <script src="js/collision.js"></script>
+  <script src="js/ledges.js"></script>
+  <script src="js/controller.js"></script>
+  <script src="js/debug.js"></script>
+  <script src="js/devpanel.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
