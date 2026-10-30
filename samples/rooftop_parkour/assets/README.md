@@ -7,6 +7,7 @@ The 3D models used by the Rooftop Parkour samples. All of them are CC0 (public d
 | `character/runner.glb`, `runner_f.glb` | The male and the female mannequin, each with the same 46 animation clips | The player (chosen on the title screen) |
 | `city/` | Seven whole buildings (small, medium and large), streets, sidewalks, fire escapes, awnings, AC units, planters and a few other props | The district: streets to run in, buildings to climb, rooftops to cross |
 | `city/textures/` | The textures of those models, shared between them | The look of the city |
+| `images/` | The logo and the splash picture, a screenshot, and the Sick Combo banner (from the Parkour Runner series, 640 pixels wide, with a transparent background) | The loading screen, the pages of the series, and the banner that pops up when a chain of moves reaches a milestone |
 
 ## The runner's clips
 

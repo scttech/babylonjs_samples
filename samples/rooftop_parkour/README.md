@@ -22,7 +22,7 @@ The city, the runners and their animations are CC0 models by Quaternius; see the
 | 4 | [Rooftop Parkour Ledges](rooftop_parkour_ledges/README.md) ([tutorial](rooftop_parkour_ledges/TUTORIAL.md)) | Finding the ledges of the world from its boxes, deciding whether a hand can catch one, hanging, shimmying along it and climbing up, with the keys read against the wall |
 | 5 | [Rooftop Parkour Moves](rooftop_parkour_moves/README.md) ([tutorial](rooftop_parkour_moves/TUTORIAL.md)) | Vaulting a low wall (a line through a box), mantling as catching a ledge with other numbers, a wall kick, a little help for a grab that is nearly right, and a training yard to try them in |
 | 6 | [Rooftop Parkour Rooftops](rooftop_parkour_rooftops/README.md) ([tutorial](rooftop_parkour_rooftops/TUTORIAL.md)) | Walls measured from the models, fire escapes from the street to every roof, sills and rooftop things, designed gaps between roofs, and a bot that plays the game to prove each climb and jump can be made |
-| 7 | Goals | Things to collect, time trials with checkpoints, a flow score, and shortcuts |
+| 7 | [Rooftop Parkour Goals](rooftop_parkour_goals/README.md) ([tutorial](rooftop_parkour_goals/TUTORIAL.md)) | Tokens to collect, a flow score that rewards chained moves, a time trial with checkpoints, par and medals, and a bot that proves every goal can be reached and what a shortcut saves |
 | 8 | Screens | A title with a choice of runner, a pause, best times kept in the browser, sounds and effects |
 | 9 | Touch | A phone version: a thumb stick, buttons and a drag-to-look camera |
 | 10 | Generator | A city made from a seed, that follows the same rules for what can be jumped |

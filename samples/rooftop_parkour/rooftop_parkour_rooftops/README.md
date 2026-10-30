@@ -60,4 +60,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The runner can get anywhere in the district and cross the roofs. The next sample is **goals**: things to collect, time trials with checkpoints, a flow score and shortcuts, to give all that a reason.
+The runner can get anywhere in the district and cross the roofs. The next sample, [Rooftop Parkour Goals](../rooftop_parkour_goals/README.md), gives all that a reason: tokens to collect, a flow score, and a time trial with checkpoints and a shortcut.
