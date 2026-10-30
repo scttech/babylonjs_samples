@@ -20,7 +20,7 @@ The city, the runners and their animations are CC0 models by Quaternius; see the
 | 2 | [Rooftop Parkour Run](rooftop_parkour_run/README.md) ([tutorial](rooftop_parkour_run/TUTORIAL.md)) | A kinematic character controller: gravity, steps, falling and landing, standing on a roof, collisions with the buildings as boxes, and a landing animation |
 | 3 | [Rooftop Parkour Jump](rooftop_parkour_jump/README.md) ([tutorial](rooftop_parkour_jump/TUTORIAL.md)) | Jumping that feels fair (a tap is a hop, coyote time, a jump buffer), a roll after a long fall, the arithmetic of a jump, and a test that a gap can or can't be jumped |
 | 4 | [Rooftop Parkour Ledges](rooftop_parkour_ledges/README.md) ([tutorial](rooftop_parkour_ledges/TUTORIAL.md)) | Finding the ledges of the world from its boxes, deciding whether a hand can catch one, hanging, shimmying along it and climbing up, with the keys read against the wall |
-| 5 | Moves | Vaulting, mantling, a wall jump, and a little help for a grab that is nearly right |
+| 5 | [Rooftop Parkour Moves](rooftop_parkour_moves/README.md) ([tutorial](rooftop_parkour_moves/TUTORIAL.md)) | Vaulting a low wall (a line through a box), mantling as catching a ledge with other numbers, a wall kick, a little help for a grab that is nearly right, and a training yard to try them in |
 | 6 | Rooftops | Gaps, fire escapes and rooftop features, and a checker that proves every jump can be made |
 | 7 | Goals | Things to collect, time trials with checkpoints, a flow score, and shortcuts |
 | 8 | Screens | A title with a choice of runner, a pause, best times kept in the browser, sounds and effects |

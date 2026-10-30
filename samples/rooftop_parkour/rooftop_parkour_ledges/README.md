@@ -66,4 +66,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The runner can climb what has a ledge, but a district of roofs 17 metres up has none that can be reached from the street. The next sample adds the **moves between**: vaulting a low wall, mantling a ledge without hanging, a wall jump, and a little help for a grab that is nearly right.
+The runner can climb what has a ledge, but a district of roofs 17 metres up has none that can be reached from the street. The next sample, [Rooftop Parkour Moves](../rooftop_parkour_moves/README.md), adds the **moves between**: vaulting a low wall, mantling a ledge without hanging, a wall jump, and a little help for a grab that is nearly right.
