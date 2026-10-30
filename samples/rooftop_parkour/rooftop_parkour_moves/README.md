@@ -62,4 +62,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The runner can go over, up and off what is in its way, but the only things in the street to try it on are in the yard. The next sample is the **rooftops**: window sills, pipes and fire escapes to climb from the street, and the roofs measured properly, so that the whole district is a place to run.
+The runner can go over, up and off what is in its way, but the only things in the street to try it on are in the yard. The next sample, [Rooftop Parkour Rooftops](../rooftop_parkour_rooftops/README.md), takes the yard away and makes the whole district a place to run: the walls measured, fire escapes up the front of every building, and the gaps between roofs checked by a bot.
