@@ -299,31 +299,3 @@ QUnit.module("a ghost that creeps", () => {
     assert.true(GHOST.watchedDepth > GHOST.flickerDepth, "more unsteady when it is looked at than ever");
   });
 });
-
-QUnit.module("a ghost keeps its distance", () => {
-  const player = [0, 1.4, 0];
-
-  QUnit.test("a ghost the player walks up to is moved straight back out to the personal space", (assert) => {
-    const g = new Apparition({ id: 1, home: [0, 0, 1], delay: 0 });
-    g.update(GHOST.fadeIn + 0.5, player, true);
-    g.update(0.05, player, true);
-    const p = g.position();
-    assert.true(Math.hypot(p[0] - player[0], p[2] - player[2]) >= GHOST.personalSpace - 0.05);
-  });
-
-  QUnit.test("however it wanders it is never nearer than the space, over a long time", (assert) => {
-    for (const seed of [1, 2, 3, 4, 5]) {
-      const g = new Apparition({ id: seed, home: [0.5, 0, 3], delay: 0 });
-      g.update(GHOST.fadeIn + 0.5, player, true);
-      for (let i = 0; i < 1500; i++) {
-        g.update(0.1, player, i % 40 < 20);
-        const p = g.position();
-        assert.true(Math.hypot(p[0] - player[0], p[2] - player[2]) >= GHOST.personalSpace - 0.2, `ghost ${seed} at step ${i}`);
-      }
-    }
-  });
-
-  QUnit.test("the space is less than the nearest it creeps to, and more than a person's reach", (assert) => {
-    assert.true(GHOST.personalSpace < GHOST.closest && GHOST.personalSpace > 1.2);
-  });
-});

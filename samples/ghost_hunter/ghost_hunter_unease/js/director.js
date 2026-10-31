@@ -26,9 +26,9 @@ const HUNT = {
     { kind: "spider", weight: [4, 2], from: 0 }, // weight at no tension and at full tension; from: the intensity it begins at
     { kind: "skeleton", weight: [1, 3], from: 0.8 },
     { kind: "ghoul", weight: [0, 3], from: 1 },
-    { kind: "mummy", weight: [1, 3], from: 1 },
-    { kind: "ghoul_girl", weight: [1, 2], from: 0.8 },
-    { kind: "doll", weight: [2, 2], from: 0.6 },
+    { kind: "doll", weight: [0, 2], from: 0.8 },
+    { kind: "floater", weight: [0, 2], from: 1.2 },
+    { kind: "horde", weight: [0, 1], from: 1.8 },
   ],
   dropHeight: 2.3, // a spider that comes down from the ceiling starts this high
   dropChance: 0.4, // how often a spider does

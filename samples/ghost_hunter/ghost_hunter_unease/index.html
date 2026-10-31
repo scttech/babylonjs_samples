@@ -19,7 +19,7 @@
 
 <body>
   <a class="back-button" href="../../../index.html#ghost_hunter">&larr; Samples</a>
-  <div class="hint">Turn your phone, or drag, to look &middot; tap to mark the floor and call a ghost &middot; 1 to 5 and 8 spawn a creature, 6 a peek, 7 a pop, M marks a peek spot, J a jump scare, 0 clears, F light, hold B for the beam, H the hunt on and off &middot; R recentre &middot; P placeholders &middot; <a href="tests.html">Run tests</a></div>
+  <div class="hint">Turn your phone, or drag, to look &middot; tap to mark the floor and call a ghost &middot; 1 to 6 spawn a creature, 0 clears, F light, hold B for the beam, H the hunt on and off &middot; R recentre &middot; P placeholders &middot; <a href="tests.html">Run tests</a></div>
   <div id="stage">
     <video id="feed" playsinline muted autoplay></video>
     <canvas id="renderCanvas"></canvas>
@@ -31,10 +31,10 @@
   <div id="grip-bar"><div id="grip"></div></div>
   <div id="tools">
     <div class="tool"><button id="tool-light" type="button">LIGHT</button><div class="meter"><i id="meter-light"></i></div></div>
-    <div class="tool stack"><button id="tool-scan" type="button">SCAN</button><button id="tool-mark" type="button">MARK</button></div>
     <div class="tool"><button id="tool-beam" type="button">BEAM</button><div class="meter heat"><i id="meter-beam"></i></div></div>
   </div>
   <div id="notice"></div>
+  <div id="compass"></div>
   <div id="start">
     <h1><img src="../assets/images/ghost_hunter_logo.webp" alt="Ghost Hunter" width="600" height="600"></h1>
     <p id="start-status"></p>
@@ -62,8 +62,6 @@
   <script src="js/staticbody.js"></script>
   <script src="js/creaturemesh.js"></script>
   <script src="js/director.js"></script>
-  <script src="js/peeks.js"></script>
-  <script src="js/doorscan.js"></script>
   <script src="js/scare.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/music.js"></script>

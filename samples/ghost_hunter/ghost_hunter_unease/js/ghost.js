@@ -20,11 +20,11 @@ const GHOST = {
   unlit: 0.3, // how much of a ghost is there when no light is on it (1 would be all of it): the flashlight shows the rest
   creepSpeed: 0.35, // metres a second it comes towards you while you are not looking at it
   closest: 2.3, // and the nearest it comes: it stops here, and waits for you to look
-  personalSpace: 1.8, // and the nearest it is ever, however it got there (you walked up to it, or it wandered): it is moved straight back out to here
   farReach: 7, // metres: it begins to reach for you inside this distance (the mouth and the arms follow `near`)
   watchedDepth: 0.65, // how far it dims when it is looked at: it stutters, as if it were not quite there
   watchedHz: 2.5, // and how fast
   max: 4, // how many at once
+  modelChance: 0.5, // how many of them are a model, when there are models (the rest are made in code)
 };
 
 const TAU = Math.PI * 2;
@@ -139,12 +139,7 @@ class Apparition {
     const here = this.position();
     const distance = Math.hypot(playerPosition[0] - here[0], playerPosition[2] - here[2]);
     this.near = Math.max(0, Math.min(1, (this.table.farReach - distance) / (this.table.farReach - this.table.closest)));
-    if (distance < this.table.personalSpace) {
-      const push = this.table.personalSpace - distance; // too near, whatever the reason: it is moved straight back out
-      const away = distance > 1e-6 ? [(here[0] - playerPosition[0]) / distance, (here[2] - playerPosition[2]) / distance] : [0, 1];
-      this.offset[0] += away[0] * push;
-      this.offset[1] += away[1] * push;
-    } else if (!watched && this.stage === "present" && distance > this.table.closest) {
+    if (!watched && this.stage === "present" && distance > this.table.closest) {
       const step = Math.min(this.table.creepSpeed * seconds, distance - this.table.closest);
       this.offset[0] += ((playerPosition[0] - here[0]) / distance) * step;
       this.offset[1] += ((playerPosition[2] - here[2]) / distance) * step;

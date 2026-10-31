@@ -77,10 +77,24 @@ body:xr-overlay #stage {
 .hint a {
   color: var(--ghost);
 }
+/* What the phone is looking at, in words, so that a person can see that it works. */
+#compass {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  z-index: 5;
+  text-align: center;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: var(--ghost);
+  text-shadow: 0 0 8px var(--ghost);
+  pointer-events: none;
+}
 #notice {
   position: fixed;
   left: 50%;
-  bottom: 200px; /* above the buttons of the tools (SCAN and MARK are stacked in the middle) */
+  bottom: 44px;
   z-index: 6;
   max-width: min(520px, 86vw);
   transform: translateX(-50%);

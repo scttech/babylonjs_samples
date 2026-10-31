@@ -154,13 +154,13 @@ QUnit.module("Creature", () => {
   });
 
   QUnit.test("it stalks at its own speed, towards the player", (assert) => {
-    const creature = make("ghoul", [0, 0, 8]);
+    const creature = make("skeleton", [0, 0, 8]);
     creature.state = "stalk";
     creature.yaw = Math.PI; // already facing the player (along -z)
     const before = creature.distanceTo(player.position);
     run(creature, 2);
     const walked = before - creature.distanceTo(player.position);
-    assert.true(Math.abs(walked - CREATURES.ghoul.speed * 2) < 0.2, `walked ${walked.toFixed(2)}`);
+    assert.true(Math.abs(walked - CREATURES.skeleton.speed * 2) < 0.2, `walked ${walked.toFixed(2)}`);
   });
 
   QUnit.test("it turns before it walks: one that faces away does not go towards you at first", (assert) => {
@@ -332,7 +332,7 @@ QUnit.module("creeping", () => {
   });
 
   QUnit.test("it circles while it loiters, and keeps its distance as it does", (assert) => {
-    const creature = quick("ghoul", 1000);
+    const creature = quick("skeleton", 1000);
     creature.state = "stalk";
     creature.yaw = Math.PI;
     run(creature, 20);
@@ -439,12 +439,12 @@ QUnit.module("keeping their distance", () => {
         nearest = Math.min(nearest, creature.distanceTo(player.position));
       }
       assert.true(nearest > 0.8, `${kind} came to ${nearest.toFixed(2)} m`);
-      assert.true(nearest <= (table.fallAt || table.touchRange) + 0.05, `${kind} still touched, at ${nearest.toFixed(2)} m`);
+      assert.true(nearest <= table.touchRange + 0.05, `${kind} still touched, at ${nearest.toFixed(2)} m`);
     }
   });
 
   QUnit.test("a person-sized creature is never nearer than a metre and a quarter, so that it fits in the view", (assert) => {
-    for (const kind of ["ghoul", "skeleton"]) assert.true(CREATURES[kind].touchRange >= 1.2, kind);
+    for (const kind of ["ghoul", "skeleton", "doll", "floater", "horde"]) assert.true(CREATURES[kind].touchRange >= 1.2, kind);
   });
 
   QUnit.test("they loiter further away than they touch, and rush from further than that", (assert) => {
@@ -452,206 +452,5 @@ QUnit.module("keeping their distance", () => {
       assert.true(table.lungeRange > table.touchRange, kind);
       assert.true(CREEP.distance[0] > table.lungeRange, kind);
     }
-  });
-});
-
-QUnit.module("the mummy: it staggers, then it runs", () => {
-  const player = { position: [0, 1.4, 0] };
-  const make = (position = [0, 0, 14], random = () => 0.5) => {
-    const mummy = new Creature({ id: 1, kind: "mummy", position, random });
-    mummy.state = "stalk";
-    mummy.yaw = Math.PI;
-    return mummy;
-  };
-  const speedOf = (creature, seconds) => {
-    const before = creature.distanceTo(player.position);
-    for (let t = 0; t < seconds; t += 0.05) creature.update(0.05, player);
-    return (before - creature.distanceTo(player.position)) / seconds;
-  };
-
-  QUnit.test("it staggers at first, at the slow speed of the table", (assert) => {
-    const mummy = make();
-    const speed = speedOf(mummy, 1.5);
-    assert.true(Math.abs(speed - CREATURES.mummy.charge.staggerSpeed) < 0.12, `${speed.toFixed(2)} m/s`);
-    assert.strictEqual(mummy.state, "stalk");
-  });
-
-  QUnit.test("after its stagger time it runs, at the fast speed, and does not loiter", (assert) => {
-    const mummy = make([0, 0, 40]);
-    mummy.staggerFor = 2;
-    for (let t = 0; t < 2.2; t += 0.05) mummy.update(0.05, player);
-    assert.strictEqual(mummy.state, "charge");
-    const speed = speedOf(mummy, 1.5);
-    assert.true(Math.abs(speed - CREATURES.mummy.charge.runSpeed) < 0.3, `${speed.toFixed(2)} m/s`);
-    assert.true(speed > CREATURES.mummy.charge.staggerSpeed * 3, "much faster than the stagger");
-  });
-
-  QUnit.test("it picks how long it staggers from the range, so that two mummies are not alike", (assert) => {
-    const [low, high] = CREATURES.mummy.charge.staggerTime;
-    const a = make([0, 0, 14], () => 0), b = make([0, 0, 14], () => 0.999);
-    assert.true(Math.abs(a.staggerFor - low) < 1e-9 && Math.abs(b.staggerFor - high) < 0.01);
-  });
-
-  QUnit.test("a charge ends in a rush, a touch, and a retreat, like the others, at arm's length", (assert) => {
-    const mummy = make([0, 0, 9]);
-    const events = [];
-    let nearest = Infinity;
-    for (let t = 0; t < 30; t += 0.02) {
-      mummy.update(0.02, player);
-      events.push(...mummy.events);
-      mummy.events = [];
-      nearest = Math.min(nearest, mummy.distanceTo(player.position));
-    }
-    assert.true(events.includes("lunge") && events.includes("touch"));
-    assert.true(nearest > 1.1, `came to ${nearest.toFixed(2)} m`);
-    assert.true(mummy.done, "and then it was gone");
-  });
-
-  QUnit.test("it has a model of its own, with a clip for the stagger and one for the run", (assert) => {
-    assert.deepEqual(CREATURES.mummy.models, ["mummy"]);
-    assert.strictEqual(ModelBody.clipFor("stalk", CREATURE_MODELS.mummy.clips), "Mummy_Stagger");
-    assert.strictEqual(ModelBody.clipFor("charge", CREATURE_MODELS.mummy.clips), "Running");
-    assert.strictEqual(ModelBody.clipFor("lunge", CREATURE_MODELS.mummy.clips), "Running");
-  });
-
-  QUnit.test("a model with a lunge clip and no run clip runs with the lunge one", (assert) => {
-    assert.strictEqual(ModelBody.clipFor("charge", { lunge: "Attack", idle: "Idle" }), "Attack");
-    assert.strictEqual(ModelBody.clipFor("charge", { idle: "Idle" }), "Idle");
-  });
-});
-
-QUnit.module("personal space", () => {
-  QUnit.test("a point that is far enough is where it was, one that is too near is moved straight out, and one on top is moved along", (assert) => {
-    assert.deepEqual(keepAway([0, 0, 3], [0, 1.4, 0], 2), [0, 3]);
-    const [x, z] = keepAway([0, 0, 1], [0, 1.4, 0], 2);
-    assert.true(Math.abs(x) < 1e-9 && Math.abs(z - 2) < 1e-9);
-    const [x2, z2] = keepAway([1, 0, 1], [0, 1.4, 0], 2);
-    assert.true(Math.abs(Math.hypot(x2, z2) - 2) < 1e-9 && Math.abs(x2 - z2) < 1e-9, "and in the same direction");
-    assert.deepEqual(keepAway([0, 0, 0], [0, 1.4, 0], 2), [0, 2]);
-  });
-
-  QUnit.test("a creature that the player walks up to is moved out of the way, whatever it was doing", (assert) => {
-    for (const state of ["lurk", "stalk", "creep", "recover", "retreat", "charge"]) {
-      const kind = state === "charge" ? "mummy" : "ghoul"; // only a creature that charges has a charge
-      const creature = new Creature({ id: 1, kind, position: [0, 0, 0.3], random: () => 0.5 });
-      creature.state = state;
-      creature.update(0.02, { position: [0, 1.4, 0] });
-      assert.true(creature.distanceTo([0, 1.4, 0]) >= CREATURES[kind].touchRange * PERSONAL_SPACE - 1e-9, state);
-    }
-  });
-
-  QUnit.test("a stunned creature is moved out too, and a dying one is left alone", (assert) => {
-    const stunned = new Creature({ id: 1, kind: "ghoul", position: [0, 0, 0.3], random: () => 0.5 });
-    stunned.stun(1);
-    stunned.update(0.02, { position: [0, 1.4, 0] });
-    assert.true(stunned.distanceTo([0, 1.4, 0]) >= CREATURES.ghoul.touchRange * PERSONAL_SPACE - 1e-9);
-    const dying = new Creature({ id: 2, kind: "ghoul", position: [0, 0, 0.3], random: () => 0.5 });
-    dying.hit(100);
-    dying.update(0.02, { position: [0, 1.4, 0] });
-    assert.true(dying.distanceTo([0, 1.4, 0]) < 0.5);
-  });
-
-  QUnit.test("the space is inside the touch range, so that a rush still touches", (assert) => {
-    assert.true(PERSONAL_SPACE < 0.9);
-    for (const [kind, table] of Object.entries(CREATURES)) assert.true(table.touchRange * PERSONAL_SPACE < table.touchRange * 0.9, kind);
-  });
-});
-
-QUnit.module("the skeleton behaves like the mummy", () => {
-  const player = { position: [0, 1.4, 0] };
-
-  QUnit.test("it walks at the player and then runs, and does not circle", (assert) => {
-    const skeleton = new Creature({ id: 1, kind: "skeleton", position: [0, 0, 40], random: () => 0.5 });
-    skeleton.state = "stalk";
-    skeleton.yaw = Math.PI;
-    skeleton.staggerFor = 2;
-    const speed = (seconds) => {
-      const before = skeleton.distanceTo(player.position);
-      for (let t = 0; t < seconds; t += 0.05) skeleton.update(0.05, player);
-      return (before - skeleton.distanceTo(player.position)) / seconds;
-    };
-    assert.true(Math.abs(speed(1.5) - CREATURES.skeleton.charge.staggerSpeed) < 0.15);
-    for (let t = 0; t < 0.8; t += 0.05) skeleton.update(0.05, player);
-    assert.strictEqual(skeleton.state, "charge");
-    assert.true(speed(1.5) > CREATURES.skeleton.charge.staggerSpeed * 3);
-  });
-
-  QUnit.test("the creatures that charge are the mummy and the skeleton, and the rest creep", (assert) => {
-    assert.deepEqual(Object.keys(CREATURES).filter((kind) => CREATURES[kind].charge).sort(), ["mummy", "skeleton"]);
-  });
-
-  QUnit.test("its model has a run clip for the charge", (assert) => {
-    assert.strictEqual(ModelBody.clipFor("charge", CREATURE_MODELS.skeleton.clips), "Running");
-    assert.strictEqual(ModelBody.clipFor("stalk", CREATURE_MODELS.skeleton.clips), "Walking");
-  });
-});
-
-QUnit.module("the ghoul girl: she rises, walks at you, and falls", () => {
-  const player = { position: [0, 1.4, 0] };
-  const make = (position = [0, 0, 9]) => new Creature({ id: 1, kind: "ghoul_girl", position, random: () => 0.5 });
-  const run = (creature, seconds, step = 0.05) => {
-    const events = [];
-    for (let t = 0; t < seconds; t += step) {
-      creature.update(step, player);
-      events.push(...creature.events);
-      creature.events = [];
-    }
-    return events;
-  };
-
-  QUnit.test("she begins by rising, and does nothing else while she does", (assert) => {
-    const girl = make();
-    assert.strictEqual(girl.state, "arise");
-    const start = girl.position.slice();
-    run(girl, CREATURES.ghoul_girl.arise - 0.3);
-    assert.deepEqual(girl.position, start, "she has not moved");
-    assert.strictEqual(girl.state, "arise");
-    run(girl, 0.5);
-    assert.strictEqual(girl.state, "stalk");
-  });
-
-  QUnit.test("then she walks straight at the player at the table's speed, and does not run or loiter", (assert) => {
-    const girl = make([0, 0, 30]);
-    girl.state = "stalk";
-    girl.yaw = Math.PI;
-    const before = girl.distanceTo(player.position);
-    run(girl, 3);
-    const speed = (before - girl.distanceTo(player.position)) / 3;
-    assert.true(Math.abs(speed - CREATURES.ghoul_girl.speed) < 0.15, `${speed.toFixed(2)} m/s`);
-    assert.strictEqual(girl.state, "stalk");
-  });
-
-  QUnit.test("when she gets to arm's length she touches (the scare) and falls, and is gone when she has finished", (assert) => {
-    const girl = make([0, 0, 6]);
-    const events = run(girl, 30);
-    assert.strictEqual(events.filter((e) => e === "touch").length, 1);
-    assert.false(events.includes("lunge"), "she does not rush");
-    assert.true(girl.done);
-  });
-
-  QUnit.test("she falls well short of arm's length, never nearer", (assert) => {
-    const girl = make([0, 0, 6]);
-    let nearest = Infinity;
-    for (let t = 0; t < 30; t += 0.02) {
-      girl.update(0.02, player);
-      girl.events = [];
-      nearest = Math.min(nearest, girl.distanceTo(player.position));
-    }
-    assert.true(nearest > CREATURES.ghoul_girl.fallAt * 0.9, `${nearest.toFixed(2)} m`);
-  });
-
-  QUnit.test("her fall takes as long as the animation of it", (assert) => {
-    const girl = make([0, 0, 2.6]);
-    girl.state = "stalk";
-    girl.update(0.05, player);
-    assert.strictEqual(girl.state, "dying");
-    assert.strictEqual(girl.timer, CREATURES.ghoul_girl.deathTime);
-  });
-
-  QUnit.test("she can be hurt or captured while she rises and walks, and then she falls the same way", (assert) => {
-    const girl = make();
-    assert.true(girl.alive);
-    assert.true(girl.capture());
-    assert.strictEqual(girl.state, "dying");
   });
 });

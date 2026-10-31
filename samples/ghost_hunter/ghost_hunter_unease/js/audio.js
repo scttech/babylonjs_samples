@@ -22,7 +22,7 @@ function toAudioSpace(v) {
 // What a voice is, from the kind of creature and what it is doing: how loud, how often it sounds, and what it sounds like.
 function voiceParams(kind, state, distance, table = AUDIO) {
   const near = Math.max(0, 1 - distance / table.voiceDistance);
-  const active = state === "stalk" ? 1 : state === "lunge" || state === "charge" ? 1.6 : state === "creep" ? 0.6 : state === "retreat" ? 0.35 : state === "lurk" ? 0.3 : state === "recover" ? 0.4 : 0;
+  const active = state === "stalk" ? 1 : state === "lunge" ? 1.6 : state === "creep" ? 0.6 : state === "retreat" ? 0.35 : state === "lurk" ? 0.3 : state === "recover" ? 0.4 : 0;
   const base = {
     spider: { every: 0.11, pitch: 3400, wave: "noise", length: 0.03, loud: 0.5 }, // a tick-tick-tick of feet
     ghoul: { every: 1.7, pitch: 70, wave: "sawtooth", length: 0.9, loud: 0.8 }, // a long low groan
