@@ -1,0 +1,39 @@
+/* The scare: the choice of how much of it on the start screen, and the two layers over the picture (see scareui.js): a flash that comes
+   with a strike, and a dark edge that closes in as something comes near. Neither takes a touch. */
+#start-level {
+  display: flex;
+  gap: 8px;
+}
+#start-level button {
+  padding: 6px 14px;
+  border: 1px solid var(--bone);
+  background: transparent;
+  color: var(--bone);
+  font: 15px var(--small-font);
+  cursor: pointer;
+}
+#start-level button.selected {
+  border-color: var(--blood);
+  background: var(--blood);
+  color: var(--bone);
+}
+#start-level-note {
+  margin: 0;
+  min-height: 1.3em;
+  font-size: 13px;
+  color: var(--bone);
+}
+#flash, #vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  opacity: 0;
+}
+#flash {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.95), rgba(196, 22, 31, 0.8));
+  z-index: 9;
+}
+#vignette {
+  background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.85) 100%);
+}

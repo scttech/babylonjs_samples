@@ -27,9 +27,10 @@ Like the other series in this repo, each sample is also a step-by-step tutorial:
 | 7 | [Ghost Hunter Models](ghost_hunter_models/README.md) ([tutorial](ghost_hunter_models/TUTORIAL.md)) | Art that is the wrong size and has no animation: models made phone-sized with a script, measured and fitted to a height, moved from outside with a rock, a lean and a topple, three new kinds of creature, ghosts that are models, and tests that load the real files |
 | 8 | [Ghost Hunter Music](ghost_hunter_music/README.md) ([tutorial](ghost_hunter_music/TUTORIAL.md)) | A score that listens: two recorded tracks mixed by the dread (a bed, then tension, then both out for the silence before a strike), streamed through the sound graph, started in the tap, and eased so that it never jumps |
 | 9 | [Ghost Hunter Tools](ghost_hunter_tools/README.md) ([tutorial](ghost_hunter_tools/TUTORIAL.md)) | A flashlight and a capture beam as rays and cones, a battery and a heat that make the player choose, a weakness table for every kind, creatures that can be stunned and captured, ghosts that are faint until lit, and held buttons for a phone |
-| 10 | Detectors | An EMF meter, a radar, a spirit box you tune, and thermal vision, all made from the same numbers about where things are |
-| 11 | Rounds | Rounds and difficulty, health and a sanity meter that makes the screen go wrong, a ghost journal of everything caught, and scores kept in the browser |
-| 12 | Polish | Calm mode, install as an app, a photo of the scare, and testing on real phones |
+| 10 | [Ghost Hunter Creeping](ghost_hunter_creeping/README.md) ([tutorial](ghost_hunter_creeping/TUTORIAL.md)) | Fixing a feel from playtest feedback: creatures that creep, loiter and circle with a patience of their own, rush once and withdraw, a director that comes a third as often, and tests that said the old rules changed to say the new |
+| 11 | Detectors | An EMF meter, a radar, a spirit box you tune, and thermal vision, all made from the same numbers about where things are |
+| 12 | Rounds | Rounds and difficulty, health and a sanity meter that makes the screen go wrong, a ghost journal of everything caught, and scores kept in the browser |
+| 13 | Polish | Calm mode, install as an app, a photo of the scare, and testing on real phones |
 
 The plan may shift as each step teaches something unexpected.
 

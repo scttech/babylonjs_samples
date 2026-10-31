@@ -60,4 +60,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The tenth sample is **Detectors**: an EMF meter, a radar, a spirit box you tune, and thermal vision, to find what you cannot see.
+The tenth sample is **Creeping**: a change made after a playtest, so that creatures creep and loiter and rush once instead of attacking all the time.
