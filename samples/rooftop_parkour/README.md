@@ -23,9 +23,9 @@ The city, the runners and their animations are CC0 models by Quaternius; see the
 | 5 | [Rooftop Parkour Moves](rooftop_parkour_moves/README.md) ([tutorial](rooftop_parkour_moves/TUTORIAL.md)) | Vaulting a low wall (a line through a box), mantling as catching a ledge with other numbers, a wall kick, a little help for a grab that is nearly right, and a training yard to try them in |
 | 6 | [Rooftop Parkour Rooftops](rooftop_parkour_rooftops/README.md) ([tutorial](rooftop_parkour_rooftops/TUTORIAL.md)) | Walls measured from the models, fire escapes from the street to every roof, sills and rooftop things, designed gaps between roofs, and a bot that plays the game to prove each climb and jump can be made |
 | 7 | [Rooftop Parkour Goals](rooftop_parkour_goals/README.md) ([tutorial](rooftop_parkour_goals/TUTORIAL.md)) | Tokens to collect, a flow score that rewards chained moves, a time trial with checkpoints, par and medals, and a bot that proves every goal can be reached and what a shortcut saves |
-| 8 | Screens | A title with a choice of runner, a pause, best times kept in the browser, sounds and effects |
-| 9 | Touch | A phone version: a thumb stick, buttons and a drag-to-look camera |
-| 10 | Generator | A city made from a seed, that follows the same rules for what can be jumped |
+| 8 | [Rooftop Parkour Screens](rooftop_parkour_screens/README.md) ([tutorial](rooftop_parkour_screens/TUTORIAL.md)) | A title with a choice of runner, a pause, records kept in a browser that may refuse them, sound made in code, and dust where you land |
+| 9 | [Rooftop Parkour Touch](rooftop_parkour_touch/README.md) ([tutorial](rooftop_parkour_touch/TUTORIAL.md)) | A phone version: a thumb stick with a dead zone that measures from where the thumb went down, a drag to look, a jump button, fingers told apart by id, and touch tested with made-up events |
+| 10 | [Rooftop Parkour Generator](rooftop_parkour_generator/README.md) ([tutorial](rooftop_parkour_generator/TUTORIAL.md)) | A city made from a seed by rules, checked against the plan and by a bot that plays the game: every building can be reached and every jump is made |
 
 The plan may shift as each step teaches something unexpected.
 

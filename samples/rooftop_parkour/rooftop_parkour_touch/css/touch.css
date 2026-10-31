@@ -1,0 +1,107 @@
+/* Touch controls (see touch.js). Nothing of them is there unless the page is in touch mode (the body has the class `touch`): then the jump and pause buttons are drawn,
+   the ring of the stick comes up where a thumb goes down, and the words that are for a mouse go away. Everything lets touches through to the picture except the buttons. */
+.touch-ui,
+.touch-turn {
+  display: none;
+}
+body.touch .touch-ui {
+  display: block;
+}
+body.touch #renderCanvas,
+body.touch .touch-ui {
+  touch-action: none; /* a drag is the game's, not the page's: no scrolling, no zooming */
+}
+body.touch .hint,
+body.touch #look-prompt,
+body.touch #crosshair {
+  display: none;
+}
+.touch-ui {
+  position: fixed;
+  inset: 0;
+  z-index: 21;
+  pointer-events: none;
+}
+.touch-ring {
+  position: fixed;
+  width: 128px;
+  height: 128px;
+  margin: -64px 0 0 -64px;
+  border: 4px solid rgba(244, 239, 230, 0.55);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+.touch-ring.hidden,
+.touch-turn.hidden {
+  display: none;
+}
+.touch-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  border-radius: 50%;
+  background: rgba(255, 122, 26, 0.75);
+  border: 3px solid var(--paper);
+}
+.touch-button {
+  position: absolute;
+  pointer-events: auto;
+  touch-action: none;
+  border: 4px solid var(--paper);
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--paper);
+  font: 22px var(--small-font);
+  letter-spacing: 0.08em;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.touch-jump {
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(26px, env(safe-area-inset-bottom));
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+}
+.touch-jump.pressed {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--asphalt);
+}
+.touch-pause {
+  left: 50%;
+  margin-left: -23px;
+  top: 14px;
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  font-size: 18px;
+}
+body.touch .touch-turn {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(14, 16, 20, 0.94);
+  color: var(--paper);
+  font: 30px / 1.3 var(--small-font);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+body.touch .touch-turn.hidden {
+  display: none;
+}
+/* The hud is smaller and the corner is taken by the pause button's neighbour, on a phone held sideways. */
+body.touch .hud {
+  top: 14px;
+  right: max(10px, env(safe-area-inset-right));
+  width: 190px;
+  transform: scale(0.85);
+  transform-origin: top right;
+}

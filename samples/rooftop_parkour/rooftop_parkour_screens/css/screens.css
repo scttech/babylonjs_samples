@@ -1,0 +1,119 @@
+/* The title and the pause: a dark sheet over the game with a column of things to press, in the colours of the series (see theme.css). They are above the
+   hud and the hint, and below nothing. `hidden` takes them away. */
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: rgba(14, 16, 20, 0.82);
+  color: var(--paper);
+  font-family: var(--small-font);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+.screen.hidden {
+  display: none;
+}
+.screen-logo {
+  width: min(560px, 86vw);
+  height: auto;
+}
+.screen-heading {
+  margin: 0;
+  font: 64px / 1 var(--title-font);
+  color: var(--orange);
+}
+.screen-label {
+  margin: 4px 0 0;
+  font-size: 20px;
+  color: var(--sky);
+}
+.screen-choice {
+  display: flex;
+  gap: 12px;
+}
+.screen button {
+  min-width: 150px;
+  padding: 10px 22px;
+  border: 3px solid var(--paper);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--paper);
+  font: 22px var(--small-font);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+.screen button:hover,
+.screen button:focus-visible {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+.screen button.chosen {
+  border-color: var(--orange);
+  background: rgba(255, 122, 26, 0.25);
+  color: var(--orange);
+}
+.screen button.primary {
+  min-width: 220px;
+  padding: 12px 30px;
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--asphalt);
+  font-size: 30px;
+}
+.screen button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.screen-bests {
+  min-height: 24px;
+  margin: 6px 0;
+}
+.screen-best {
+  margin: 2px 0;
+  font-size: 18px;
+}
+.screen-status {
+  min-height: 22px;
+  margin: 0;
+  font-size: 16px;
+  color: var(--good);
+}
+.screen-slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(360px, 86vw);
+  justify-content: space-between;
+  font-size: 18px;
+}
+.screen-slider input {
+  flex: 1;
+  accent-color: var(--orange);
+}
+@media (max-height: 520px), (max-width: 640px) {
+  .screen {
+    gap: 8px;
+  }
+  .screen-logo {
+    width: min(320px, 60vw);
+  }
+  .screen-heading {
+    font-size: 40px;
+  }
+  .screen button {
+    min-width: 120px;
+    padding: 8px 14px;
+    font-size: 18px;
+  }
+  .screen button.primary {
+    font-size: 24px;
+  }
+}

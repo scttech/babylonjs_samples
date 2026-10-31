@@ -1,0 +1,23 @@
+/* The look of Rooftop Parkour: asphalt grey, a safety orange, a warm white, and graffiti lettering. The colours and the fonts are named
+   once here, and everything else uses the names. */
+@font-face {
+  font-family: "Sedgwick Ave Display";
+  src: url("../../assets/fonts/SedgwickAveDisplay-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Bangers";
+  src: url("../../assets/fonts/Bangers-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+:root {
+  --title-font: "Sedgwick Ave Display", "Bangers", system-ui, sans-serif; /* graffiti handwriting, for the title and the headings */
+  --small-font: "Bangers", system-ui, sans-serif; /* a comic face, for the small words that must be read */
+
+  --asphalt: #1d2027; /* dark, behind everything */
+  --concrete: #4a4f5a;
+  --paper: #f4efe6;
+  --orange: #ff7a1a; /* the accent: spray paint, warnings, the thing to look at */
+  --sky: #7fb4ee;
+  --good: #7ee081;
+}

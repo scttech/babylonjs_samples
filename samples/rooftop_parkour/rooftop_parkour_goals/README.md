@@ -62,4 +62,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-There is a game to play now. The next sample is the **screens**: a title with a choice of runner, a pause, best times kept in the browser, and sounds and effects.
+There is a game to play now. The next sample, [Rooftop Parkour Screens](../rooftop_parkour_screens/README.md), wraps the game: a title with a choice of runner, a pause, best times kept in the browser, and sounds and effects.
