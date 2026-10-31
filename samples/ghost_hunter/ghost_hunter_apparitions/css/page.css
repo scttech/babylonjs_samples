@@ -10,6 +10,16 @@ html, body {
   overflow: hidden;
   background: radial-gradient(ellipse at 50% 40%, var(--night-lift), var(--night) 70%);
 }
+/* In real augmented reality (WebXR) the phone draws its own camera picture, and the page is drawn over it as an overlay. The overlay must be
+   see-through, or the page's dark background hides the room: the page's own background and the layers of the camera view (the video, the
+   canvas) are taken away while the overlay is up. (:xr-overlay is the browser's name for the page while that is so.) */
+body:xr-overlay,
+body:xr-overlay #stage {
+  background: transparent;
+}
+body:xr-overlay #stage {
+  visibility: hidden;
+}
 #feed {
   position: absolute;
   inset: 0;

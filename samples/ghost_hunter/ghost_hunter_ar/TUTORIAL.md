@@ -825,6 +825,7 @@ Things to notice:
 - **Anchors are optional.** `enableFeature` throws on a phone that does not have them, and the session carries on without: `anchors` is `null`, and `anchorHere` says `null`.
 - **The select is the phone's tap.** In a session the page does not get ordinary pointer events from the screen; the session sends a `select` event, and `onSelect` passes it on.
 - **`latest` is the newest hit.** Hit testing runs every frame and reports a list; the first is the nearest. No hit is `null`, and so is no surface.
+- **The page must be see-through, or the room is hidden.** In a session the phone draws its camera picture itself and the page is an overlay on it (`dom-overlay`). The rule `body:xr-overlay` in `css/page.css` (from the first sample) takes the page's dark background away, and hides the camera's `<video>` and the canvas of the camera view, while the overlay is up. Without it the overlay is an opaque black sheet and the player sees nothing at all.
 - **`api` is a parameter.** The class takes Babylon.js as an argument for the names of its features, and the scene as another, so that a test can give plain objects.
 
 ### Tests

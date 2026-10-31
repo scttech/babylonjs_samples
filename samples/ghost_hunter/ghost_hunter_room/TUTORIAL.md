@@ -125,6 +125,16 @@ html, body {
   overflow: hidden;
   background: radial-gradient(ellipse at 50% 40%, var(--night-lift), var(--night) 70%);
 }
+/* In real augmented reality (WebXR) the phone draws its own camera picture, and the page is drawn over it as an overlay. The overlay must be
+   see-through, or the page's dark background hides the room: the page's own background and the layers of the camera view (the video, the
+   canvas) are taken away while the overlay is up. (:xr-overlay is the browser's name for the page while that is so.) */
+body:xr-overlay,
+body:xr-overlay #stage {
+  background: transparent;
+}
+body:xr-overlay #stage {
+  visibility: hidden;
+}
 #feed {
   position: absolute;
   inset: 0;
@@ -220,6 +230,7 @@ Things to notice:
 - **`object-fit: cover`** is what makes the camera's picture fill the screen the way the real view would: it is cut off at the edges, and not squeezed.
 - **The canvas is a layer like the others** (`position: absolute`, a higher `z-index` than the video), and there is nothing to make it see-through in the CSS: that is done in the code, in Step 9, where the engine is told that its canvas has an alpha channel.
 - **The reticle is four borders and a cross**, drawn with CSS: no picture. They are the corners of the viewfinder in the logo. It starts see-through and is shown when the game does.
+- **`:xr-overlay` is for the next sample.** In real augmented reality the phone draws its own camera picture and the page is only an overlay on it, so the page's dark background would hide the room. This rule makes the background see-through while that is so. In an ordinary browser it never matches.
 - **The background of `#stage` is a dark glow.** When there is no camera, that is what is behind the scene, and it should look like a dark room, not like a page.
 
 Now the page itself. Open `index.html` and **replace the TODO line** with:
