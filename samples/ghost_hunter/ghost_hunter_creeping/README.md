@@ -43,4 +43,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The eleventh sample is **Detectors**: an EMF meter, a radar, a spirit box you tune, and thermal vision, to find what you cannot see.
+The eleventh sample is **Unease**: more playtest feedback, so that the scares are unsettling and not startling (no red flash, no blare), creatures keep their distance, and the ghost is much creepier.

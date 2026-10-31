@@ -1,0 +1,93 @@
+/* The tools: two buttons and what they have left, a bar for the hold of the beam, and a glow when the light is on (see toolsui.js). */
+#tools {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  z-index: 7;
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  pointer-events: none; /* only the buttons take a touch */
+}
+#tools .tool {
+  width: 92px;
+  text-align: center;
+}
+#tools button {
+  width: 100%;
+  padding: 10px 0;
+  border: 2px solid var(--bone);
+  background: rgba(5, 8, 13, 0.6);
+  color: var(--bone);
+  font: 18px var(--small-font);
+  letter-spacing: 0.1em;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+#tools button.on {
+  border-color: var(--ghost);
+  color: var(--ghost);
+  background: rgba(57, 255, 20, 0.16);
+  box-shadow: 0 0 12px rgba(57, 255, 20, 0.5);
+}
+#tools button.low {
+  border-color: var(--blood);
+  color: var(--blood);
+}
+#tools #tool-beam.on {
+  border-color: var(--ecto);
+  color: var(--ecto);
+  background: rgba(60, 230, 255, 0.16);
+  box-shadow: 0 0 12px rgba(60, 230, 255, 0.5);
+}
+#tools #tool-beam.hot {
+  border-color: var(--blood);
+  color: var(--blood);
+  background: rgba(196, 22, 31, 0.2);
+}
+#tools .meter {
+  height: 5px;
+  margin-top: 4px;
+  background: rgba(242, 243, 238, 0.2);
+}
+#tools .meter i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--ghost);
+}
+#tools .meter.heat i {
+  width: 0;
+  background: var(--ecto);
+}
+#grip-bar {
+  position: fixed;
+  left: 50%;
+  top: calc(50% + 34px);
+  z-index: 7;
+  width: 90px;
+  height: 6px;
+  margin-left: -45px;
+  background: rgba(242, 243, 238, 0.2);
+  pointer-events: none;
+}
+#grip {
+  height: 100%;
+  width: 0;
+  background: var(--ecto);
+  box-shadow: 0 0 8px var(--ecto);
+  opacity: 0;
+}
+#torch {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 246, 214, 0.9), rgba(255, 246, 214, 0.35) 22%, rgba(255, 246, 214, 0) 48%);
+  mix-blend-mode: screen;
+}
