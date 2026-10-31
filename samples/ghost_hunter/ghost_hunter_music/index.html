@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Ghost Hunter Music - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/page.css">
+  <link rel="stylesheet" href="css/start.css">
+  <link rel="stylesheet" href="css/scare.css">
+  <link rel="stylesheet" href="css/devpanel.css">
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+</head>
+
+<body>
+  <a class="back-button" href="../../../index.html#ghost_hunter">&larr; Samples</a>
+  <div class="hint">Turn your phone, or drag, to look &middot; tap to mark the floor and call a ghost &middot; 1 to 6 spawn a creature, 0 clears, H the hunt on and off &middot; R recentre &middot; P placeholders &middot; <a href="tests.html">Run tests</a></div>
+  <div id="stage">
+    <video id="feed" playsinline muted autoplay></video>
+    <canvas id="renderCanvas"></canvas>
+  </div>
+  <div id="reticle"><i></i><i></i><i></i><i></i><b></b></div>
+  <div id="vignette"></div>
+  <div id="flash"></div>
+  <div id="notice"></div>
+  <div id="compass"></div>
+  <div id="start">
+    <h1><img src="../assets/images/ghost_hunter_logo.webp" alt="Ghost Hunter" width="600" height="600"></h1>
+    <p id="start-status"></p>
+    <p id="start-warning"></p>
+    <div id="start-level"></div>
+    <p id="start-level-note"></p>
+    <button id="start-button" type="button">Enter the dark</button>
+    <button id="start-alternative" class="hidden" type="button"></button>
+  </div>
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/support.js"></script>
+  <script src="js/look.js"></script>
+  <script src="js/camerafeed.js"></script>
+  <script src="js/start.js"></script>
+  <script src="js/placeholders.js"></script>
+  <script src="js/surface.js"></script>
+  <script src="js/placements.js"></script>
+  <script src="js/xr.js"></script>
+  <script src="js/ghost.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/ghostmesh.js"></script>
+  <script src="js/creatures.js"></script>
+  <script src="js/staticbody.js"></script>
+  <script src="js/creaturemesh.js"></script>
+  <script src="js/director.js"></script>
+  <script src="js/scare.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/music.js"></script>
+  <script src="js/scareui.js"></script>
+  <script src="js/devpanel.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
