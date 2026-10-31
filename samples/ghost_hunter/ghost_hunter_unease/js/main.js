@@ -5,7 +5,6 @@ engine.setHardwareScalingLevel(1 / Math.min(window.devicePixelRatio || 1, 2));
 const feedVideo = document.getElementById("feed");
 const reticle = document.getElementById("reticle");
 const notice = document.getElementById("notice");
-const compass = document.getElementById("compass");
 
 const device = describeDevice();
 const support = detectSupport(device);
@@ -65,10 +64,7 @@ let clock = 0; // seconds since the game began: the shader moves with it
 
 haunting.onChange(({ type, item }) => {
   if (type === "added") {
-    // A ghost is made in code, or (if there are models of ghosts, and its own number says so) it is a model.
-    const ghostModels = [...creatureModels.keys()].filter((name) => STATIC_MODELS[name] && STATIC_MODELS[name].ghost);
-    const chosen = ghostModelFor(item.id, ghostModels, GHOST.modelChance);
-    bodies.set(item.id, chosen ? new GhostModelBody(scene, item, creatureModels.get(chosen)) : new GhostBody(scene, item, puff));
+    bodies.set(item.id, new GhostBody(scene, item, puff));
     item.reveal = 0; // a ghost is half there until the light is on it
     if (audio.ready) audio.cue("whisper", item.home, 0.8, audio.context.currentTime + GHOST.summonDelay); // a whisper, as it comes
     return;
@@ -105,7 +101,7 @@ let creaturesActive = true; // developer mode can freeze them where they stand
 creatures.onChange(({ type, item }) => {
   if (type === "added") {
     creatureBodies.set(item.id, makeCreatureBody(scene, item, looks, placeholders, creatureModels));
-    audio.cue("creak", item.position, 1); // the tell: a creak from where it is, before it is anywhere to be seen
+    if (!(item.peek && item.peek.pop)) audio.cue("creak", item.position, 1); // the tell: a creak from where it is, before it is anywhere to be seen (a pop has none: that is the point)
   } else if (type === "removed") {
     const body = creatureBodies.get(item.id);
     if (body) body.dispose(placeholders);
@@ -113,8 +109,9 @@ creatures.onChange(({ type, item }) => {
     audio.forget(item.id);
   } else {
     lastCreatureEvent = `${item.kind} ${type}`; // a lunge, a touch, a death
-    if (type === "touch") director.noteScare(); // it got to the player: the dread drops, and there is a rest
+    if (type === "touch" || type === "pop") director.noteScare(); // it got to the player (or popped up at the edge): the dread drops, and there is a rest
     if (type === "lunge" || type === "touch") scare.trigger(type); // and it is a scare
+    if (type === "pop") scare.trigger("lunge"); // a pop is a strike with no warning
     if (type === "landed") audio.cue("thud", item.position, 0.7);
   }
 });
@@ -141,6 +138,119 @@ systems.push((seconds, player) => {
     if (creatures.spawn(order.kind, order.point)) lastOrder = `${order.kind} from ${order.zone}${order.point[1] > 0 ? ", dropping" : ""}`;
   }
 });
+
+// The peeks. A creature leans out from the edge of the view, or from a spot the player has marked, for a second or two and goes back; a pop is
+// the same thing in an instant, with a strike (see peeks.js). The spots are marked with the PEEK SPOT button, on the floor under the reticle.
+const peeker = new Peeker();
+const peekSpots = []; // the marked points, [x, y, z]
+const peekMarks = []; // and the little rings that show them (placeholders)
+
+systems.push((seconds, player) => {
+  const active = creatures.items.filter((creature) => creature.alive).length;
+  const order = peeker.update(seconds, { player, halfFov: currentHalfFov(), spots: peekSpots, active, playing });
+  if (order) spawnPeek(order);
+});
+
+function spawnPeek(order) {
+  const start = order.peek.pop ? order.peek.to : order.peek.from;
+  const creature = creatures.spawn(order.kind, [start[0], 0, start[1]], order.peek);
+  if (creature) lastOrder = peeker.last;
+}
+
+// A peek (or a pop) now, whether one is due or not.
+function peekNow(pop) {
+  spawnPeek(peeker.order({ player, halfFov: currentHalfFov(), spots: peekSpots }, pop));
+}
+
+// A place to peek from, at a point on the floor: it is kept, and shown with a ring (a placeholder).
+function addPeekSpot(point) {
+  peekSpots.push(point.slice());
+  const ring = BABYLON.MeshBuilder.CreateTorus(`peek-spot-${peekSpots.length}`, { diameter: 0.5, thickness: 0.015, tessellation: 32 }, scene);
+  ring.position.set(point[0], point[1] + 0.01, point[2]);
+  ring.material = cyan;
+  placeholders.add(ring, "marker");
+  peekMarks.push(ring);
+}
+
+// Marks the floor under the reticle as a place to peek from. Says so if there is no floor there.
+function markPeekSpot() {
+  if (!surface || !isFloor(surface)) {
+    notice.textContent = "Look at the foot of a doorway or a corner to mark it.";
+    return;
+  }
+  notice.textContent = "Peek spot marked.";
+  addPeekSpot(surface.point);
+}
+
+// Scanning for doors: the picture the camera shows is given to a model that finds the doors and the stairs in it (doorscan.js), and the foot of each
+// one that is new becomes a place to peek from. The model and the library that runs it (about 4 MB and 1 MB) are fetched the first time, and kept by the
+// browser after that. It needs the camera's picture, so it is for the camera view and not real augmented reality, where the page is not given one.
+let scanner = null;
+let scanning = false;
+const scanButton = document.getElementById("tool-scan");
+
+function loadScript(url) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = url;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error("The scanner would not download."));
+    document.head.appendChild(script);
+  });
+}
+
+async function scanForDoors() {
+  if (scanning) return;
+  if (mode === "xr") {
+    notice.textContent = "Scanning needs the camera view. Use the camera view instead of real AR.";
+    return;
+  }
+  if (!feed.live || !feedVideo.videoWidth) {
+    notice.textContent = "There is no camera picture to scan. Mark the foot of a doorway with MARK instead.";
+    return;
+  }
+  scanning = true;
+  scanButton.textContent = "...";
+  try {
+    if (!scanner) {
+      notice.textContent = "Loading the scanner...";
+      if (!window.ort) await loadScript(SCAN.runtimeUrl);
+      scanner = await new DoorScanner(window.ort).load();
+    }
+    notice.textContent = "Scanning...";
+    const view = { position: player.position.slice(), forward: player.forward.slice(), up: player.up.slice() }; // where the phone was looking when the picture was taken
+    const aspect = canvas.clientWidth / canvas.clientHeight;
+    const crop = coverCrop(feedVideo.videoWidth, feedVideo.videoHeight, aspect); // the part of the picture that is on the screen
+    const work = document.createElement("canvas");
+    work.width = Math.min(crop.sw, 640);
+    work.height = Math.round(work.width / aspect);
+    const context = work.getContext("2d", { willReadFrequently: true });
+    context.drawImage(feedVideo, crop.sx, crop.sy, crop.sw, crop.sh, 0, 0, work.width, work.height);
+    const result = await scanner.scan(context.getImageData(0, 0, work.width, work.height).data, work.width, work.height);
+    const found = candidatesFrom(result.blobs, view, LOOK.fovDegrees, aspect);
+    const fresh = newSpots(found, peekSpots);
+    for (const candidate of fresh) addPeekSpot(candidate.point);
+    lastScan = `${result.blobs.length} blobs, ${found.length} in range, ${fresh.length} new, ${scanner.lastMilliseconds.toFixed(0)} ms`;
+    notice.textContent = fresh.length ? `Found ${fresh.length} place${fresh.length === 1 ? "" : "s"} to hide.` : found.length ? "Nothing new here." : "No doors found. Try another part of the room.";
+  } catch (error) {
+    console.warn("The door scan failed.", error);
+    notice.textContent = "The scan did not work. Mark doorways with MARK instead.";
+    lastScan = String(error && error.message ? error.message : error);
+  } finally {
+    scanning = false;
+    scanButton.textContent = "SCAN";
+  }
+}
+let lastScan = "none";
+scanButton.addEventListener("click", () => scanForDoors());
+
+function clearPeekSpots() {
+  peekSpots.length = 0;
+  for (const ring of peekMarks.splice(0)) {
+    placeholders.remove(ring);
+    ring.dispose();
+  }
+}
 
 // Sends one now, from a zone (or from any of them), as the director would.
 function strikeNow(zone) {
@@ -196,6 +306,7 @@ torchLight.diffuse = new BABYLON.Color3(1, 0.95, 0.8);
 const beamBody = new BeamBody(scene);
 const toolsUi = new ToolsUi(document, { onLight: () => tools.toggleLight(), onBeam: (on) => { beamHeld = on; } });
 let lastCapture = "none";
+document.getElementById("tool-mark").addEventListener("click", () => markPeekSpot());
 
 // Everything that can be aimed at, as the tools want it: a thing with a key, a kind, where its feet are, and how thick and tall it is.
 function aimTargets() {
@@ -239,6 +350,16 @@ systems.push((seconds, player) => {
   beamBody.update(from, [0, 1, 2].map((i) => player.position[i] + player.forward[i] * reach), frame.firing, clock);
   toolsUi.apply(frame);
 });
+
+// A jump scare on demand, for testing: a creature that charges (the mummy or the skeleton) is made five metres behind the player, and begins to
+// run after a second, so the whole of it happens: the creak from behind, the dread and the quiet, the rush, the blackout and the breath.
+function jumpScare(kind) {
+  const names = ["mummy", "skeleton"];
+  const creature = creatures.spawn(kind || names[Math.floor(Math.random() * names.length)], pointAt(player, 180, 5));
+  if (!creature) return;
+  creature.state = "stalk";
+  creature.staggerFor = 1;
+}
 
 // A creature six metres ahead of the player, on the floor.
 function spawnCreature(kind) {
@@ -421,7 +542,6 @@ function aim() {
 scene.onBeforeRenderObservable.add(() => {
   const view = mode === "xr" ? null : aim();
   updatePlayer(view);
-  compass.textContent = bearingText(bearingOf(player.forward), pitchOf(player.forward));
   const seconds = Math.min(engine.getDeltaTime() / 1000, 0.1);
   for (const system of systems) system(seconds, player);
   if (panel) panel.refreshReadouts();
@@ -468,10 +588,15 @@ window.addEventListener("keydown", (event) => {
   if (event.code === "Digit1") spawnCreature("spider");
   if (event.code === "Digit2") spawnCreature("ghoul");
   if (event.code === "Digit3") spawnCreature("skeleton");
-  if (event.code === "Digit4") spawnCreature("doll");
-  if (event.code === "Digit5") spawnCreature("floater");
-  if (event.code === "Digit6") spawnCreature("horde");
+  if (event.code === "Digit4") spawnCreature("mummy");
+  if (event.code === "Digit5") spawnCreature("ghoul_girl");
+  if (event.code === "Digit8") spawnCreature("doll");
+  if (event.code === "Digit6") peekNow(false);
+  if (event.code === "Digit7") peekNow(true);
+  if (event.code === "KeyM") markPeekSpot();
+  if (event.code === "KeyK") scanForDoors();
   if (event.code === "Digit0") creatures.clear();
+  if (event.code === "KeyJ") jumpScare();
   if (event.code === "KeyH") HUNT.enabled = !HUNT.enabled;
   if (event.code === "KeyF" && !event.repeat) tools.toggleLight();
   if (event.code === "KeyB") beamHeld = true;
@@ -556,6 +681,8 @@ if (devEnabled(location.search)) {
         rows: [
           readout("look source", () => source),
           readout("camera picture", () => (feed.live ? "live" : "none")),
+          readout("last door scan", () => lastScan),
+          readout("peek spots", () => String(peekSpots.length)),
           readout("sensor readings", () => gyro.readings),
           readout("alpha / beta / gamma", () => (gyro.reading ? `${gyro.reading.alpha.toFixed(0)} / ${gyro.reading.beta.toFixed(0)} / ${gyro.reading.gamma.toFixed(0)}` : "-")),
           slider("field of view", LOOK, "fovDegrees", 30, 100, 1),
@@ -580,7 +707,6 @@ if (devEnabled(location.search)) {
           readout("ghosts", () => `${haunting.items.length} (${haunting.items.filter((ghost) => ghost.stage === "present").length} showing)`),
           readout("nearest", () => { const near = haunting.nearest(player.position); return near ? `${near.distance.toFixed(1)} m, ${near.item.stage}` : "none"; }),
           slider("brightness", GHOST, "opacity", 0.1, 1, 0.05),
-          slider("how many are models", GHOST, "modelChance", 0, 1, 0.1),
           slider("flicker depth", GHOST, "flickerDepth", 0, 1, 0.05),
           slider("flicker speed (Hz)", GHOST, "flickerHz", 0, 20, 0.5),
           slider("fade in (s)", GHOST, "fadeIn", 0.2, 6, 0.1),
@@ -626,6 +752,14 @@ if (devEnabled(location.search)) {
           slider("when the room goes quiet (m)", SCARE, "tellDistance", 3, 14, 0.5),
           slider("how hard the camera shakes", SCARE, "shakeRadians", 0, 0.15, 0.005),
           slider("master volume", AUDIO, "master", 0, 1, 0.05),
+          action("Peek now (6)", () => peekNow(false)),
+          action("Pop now (7)", () => peekNow(true)),
+          action("Mark a peek spot (M)", () => markPeekSpot()),
+          action("Scan for doors (K)", () => scanForDoors()),
+          action("Clear the peek spots", () => clearPeekSpots()),
+          action("Jump scare now (J)", () => jumpScare()),
+          action("Jump scare: the mummy", () => jumpScare("mummy")),
+          action("Jump scare: the skeleton", () => jumpScare("skeleton")),
           action("Strike: a lunge", () => scare.trigger("lunge")),
           action("Strike: a touch", () => scare.trigger("touch")),
           action("A creak behind you", () => audio.cue("creak", [-player.forward[0] * 3, 1, -player.forward[2] * 3], 1)),
@@ -662,7 +796,7 @@ if (devEnabled(location.search)) {
           readout("nearest", () => { const near = creatures.nearest(player.position); return near ? `${near.creature.kind} ${near.creature.state}, ${near.distance.toFixed(1)} m` : "none"; }),
           readout("last thing it did", () => lastCreatureEvent),
           readout("models loaded", () => (creatureModels.size ? `${creatureModels.size} of ${Object.values(CREATURE_MODELS).filter(Boolean).length}` : "none: shapes")),
-          slider("zombie height (m)", STATIC_MODELS.zombie, "height", 1, 3, 0.05),
+          slider("skeleton height (m)", CREATURE_MODELS.skeleton, "height", 1, 3, 0.05),
           toggle("they move", () => creaturesActive, (value) => { creaturesActive = value; }),
           control("loiter: patience, least (s)", () => CREEP.patience[0], (value) => { CREEP.patience[0] = Math.min(value, CREEP.patience[1]); }, 1, 40, 1),
           control("loiter: patience, most (s)", () => CREEP.patience[1], (value) => { CREEP.patience[1] = Math.max(value, CREEP.patience[0]); }, 2, 60, 1),
@@ -678,9 +812,9 @@ if (devEnabled(location.search)) {
           action("Spider (1)", () => spawnCreature("spider")),
           action("Ghoul (2)", () => spawnCreature("ghoul")),
           action("Skeleton (3)", () => spawnCreature("skeleton")),
-          action("Doll (4)", () => spawnCreature("doll")),
-          action("Floater (5)", () => spawnCreature("floater")),
-          action("Horde (6)", () => spawnCreature("horde")),
+          action("Mummy (4)", () => spawnCreature("mummy")),
+          action("Ghoul girl (5)", () => spawnCreature("ghoul_girl")),
+          action("Doll (8)", () => spawnCreature("doll")),
           action("Hurt the nearest", () => { const near = creatures.nearest(player.position); if (near) near.creature.hit(1); }),
           action("Clear them (0)", () => creatures.clear()),
         ],

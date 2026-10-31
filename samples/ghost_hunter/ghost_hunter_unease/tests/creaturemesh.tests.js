@@ -102,8 +102,7 @@ QUnit.module("models", () => {
   QUnit.test("the spider has no model yet, and is shapes; the skeleton has one with clips of its own; the others are moved from outside", (assert) => {
     assert.strictEqual(CREATURE_MODELS.spider, null);
     assert.true(CREATURE_MODELS.skeleton.url.endsWith("skeleton.glb"));
-    assert.deepEqual(Object.keys(CREATURE_MODELS.skeleton.clips).sort(), ["idle", "lunge", "recover", "walk"]);
-    for (const name of ["zombie", "doll", "abomination", "terror", "horde"]) assert.true(CREATURE_MODELS[name].url.endsWith(`${name}.glb`), name);
+    assert.deepEqual(Object.keys(CREATURE_MODELS.skeleton.clips).sort(), ["idle", "lunge", "recover", "run", "walk"]);
   });
 
   QUnit.test("only the kinds that have an entry are loaded, and one that fails is left out", async (assert) => {
@@ -199,6 +198,107 @@ QUnit.module("models", () => {
     const skeleton = new Creature({ id: 1, kind: "skeleton", position: [0, 0, 5], random: () => 0 });
     assert.true(makeCreatureBody(scene, skeleton, creatureMaterials(scene), null, new Map([["skeleton", loaded]])) instanceof ModelBody);
     assert.true(makeCreatureBody(scene, skeleton, creatureMaterials(scene), null, new Map()) instanceof CreatureBody);
+    scene.dispose();
+    engine.dispose();
+  });
+});
+
+QUnit.module("the mummy's model", () => {
+  QUnit.test("it loads with its three clips and its bones, and every clip the table names is there", async (assert) => {
+    const engine = new BABYLON.NullEngine();
+    const scene = new BABYLON.Scene(engine);
+    const loaded = (await loadCreatureModels(scene, { mummy: CREATURE_MODELS.mummy })).get("mummy");
+    assert.deepEqual(loaded.container.animationGroups.map((g) => g.name).sort(), ["Mummy_Stagger", "Running", "Walking"]);
+    assert.strictEqual(loaded.container.skeletons.length, 1);
+    for (const clip of Object.values(CREATURE_MODELS.mummy.clips)) assert.true(loaded.container.animationGroups.some((g) => g.name === clip), clip);
+    const creature = new Creature({ id: 1, kind: "mummy", position: [0, 0, 6], random: () => 0.5 });
+    const body = makeCreatureBody(scene, creature, null, null, new Map([["mummy", loaded]]));
+    assert.true(body instanceof ModelBody);
+    body.update();
+    assert.strictEqual(body.current.name.split("-")[0], "Mummy_Stagger");
+    const { min, max } = body.root.getHierarchyBoundingVectors(true);
+    assert.true(Math.abs(max.y - min.y - CREATURE_MODELS.mummy.height) < 0.03, "as tall as the table says");
+    creature.state = "charge";
+    body.update();
+    assert.strictEqual(body.current.name.split("-")[0], "Running");
+    body.dispose();
+    scene.dispose();
+    engine.dispose();
+  });
+});
+
+QUnit.module("the ghoul girl's model", () => {
+  QUnit.test("it loads with Arise, Walking, Running and Dead, and every clip the table names is there", async (assert) => {
+    const engine = new BABYLON.NullEngine();
+    const scene = new BABYLON.Scene(engine);
+    const loaded = (await loadCreatureModels(scene, { ghoul_girl: CREATURE_MODELS.ghoul_girl })).get("ghoul_girl");
+    assert.deepEqual(loaded.container.animationGroups.map((g) => g.name).sort(), ["Arise", "Dead", "Running", "Walking"]);
+    for (const clip of Object.values(CREATURE_MODELS.ghoul_girl.clips)) assert.true(loaded.container.animationGroups.some((g) => g.name === clip), clip);
+    scene.dispose();
+    engine.dispose();
+  });
+
+  QUnit.test("she plays Arise once, then Walking, and Dead once, and does not topple, because she has a death of her own", async (assert) => {
+    const engine = new BABYLON.NullEngine();
+    const scene = new BABYLON.Scene(engine);
+    const loaded = (await loadCreatureModels(scene, { ghoul_girl: CREATURE_MODELS.ghoul_girl })).get("ghoul_girl");
+    const creature = new Creature({ id: 1, kind: "ghoul_girl", position: [0, 0, 7], random: () => 0.5 });
+    const body = makeCreatureBody(scene, creature, null, null, new Map([["ghoul_girl", loaded]]));
+    assert.true(body instanceof ModelBody);
+    body.update();
+    assert.strictEqual(body.current.name.split("-")[0], "Arise");
+    assert.false(body.current.loopAnimation, "it plays once");
+    creature.state = "stalk";
+    body.update();
+    assert.strictEqual(body.current.name.split("-")[0], "Walking");
+    assert.true(body.current.loopAnimation);
+    creature.state = "dying";
+    creature.timer = CREATURES.ghoul_girl.deathTime * 0.5;
+    body.update();
+    assert.strictEqual(body.current.name.split("-")[0], "Dead");
+    assert.false(body.current.loopAnimation);
+    assert.strictEqual(body.root.rotation.x, 0, "she does not topple: the animation is her fall");
+    body.dispose();
+    scene.dispose();
+    engine.dispose();
+  });
+
+  QUnit.test("a clip that plays once, and a model with no rising clip, are both fine", (assert) => {
+    assert.strictEqual(ModelBody.roleFor("arise"), "arise");
+    assert.strictEqual(ModelBody.clipFor("arise", { idle: "Idle" }), "Idle");
+    assert.strictEqual(ModelBody.clipFor("arise", { arise: "Rise", idle: "Idle" }), "Rise");
+  });
+});
+
+QUnit.module("the doll's model", () => {
+  QUnit.test("it loads with a shaky walk and a run, and every clip the table names is there", async (assert) => {
+    const engine = new BABYLON.NullEngine();
+    const scene = new BABYLON.Scene(engine);
+    const loaded = (await loadCreatureModels(scene, { doll: CREATURE_MODELS.doll })).get("doll");
+    assert.true(!!loaded, "it loads");
+    for (const clip of Object.values(CREATURE_MODELS.doll.clips)) assert.true(loaded.container.animationGroups.some((g) => g.name === clip), clip);
+    scene.dispose();
+    engine.dispose();
+  });
+
+  QUnit.test("it walks with the shake, runs when it rushes, and is stopped and toppled when it dies", async (assert) => {
+    const engine = new BABYLON.NullEngine();
+    const scene = new BABYLON.Scene(engine);
+    const loaded = (await loadCreatureModels(scene, { doll: CREATURE_MODELS.doll })).get("doll");
+    const creature = new Creature({ id: 1, kind: "doll", position: [0, 0, 7], random: () => 0.5 });
+    const body = makeCreatureBody(scene, creature, null, null, new Map([["doll", loaded]]));
+    assert.true(body instanceof ModelBody);
+    creature.state = "stalk";
+    body.update();
+    assert.strictEqual(body.current.name.split("-")[0], "Elderly_Shaky_Walk_inplace");
+    creature.state = "lunge";
+    body.update();
+    assert.strictEqual(body.current.name.split("-")[0], "Running");
+    creature.state = "dying";
+    creature.timer = CREATURES.doll.deathTime * 0.5;
+    body.update();
+    assert.true(body.root.rotation.x !== 0, "no death clip of its own, so it topples");
+    body.dispose();
     scene.dispose();
     engine.dispose();
   });

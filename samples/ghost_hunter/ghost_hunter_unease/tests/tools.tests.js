@@ -90,7 +90,7 @@ QUnit.module("Tools", () => {
       return tools.update(1, none, world(target("a", kind, 0, 4))).hits[0].damage;
     };
     assert.true(Math.abs(hurt("spider") - 3 * TOOLS.light.damage * lightPower(1)) < 1e-9);
-    assert.true(hurt("spider") > hurt("doll") && hurt("doll") > hurt("skeleton") && hurt("skeleton") > hurt("ghoul"));
+    assert.true(hurt("spider") > hurt("skeleton") && hurt("skeleton") > hurt("ghoul"));
     assert.strictEqual(hurt("ghost"), 0);
   });
 
@@ -167,7 +167,7 @@ QUnit.module("Tools", () => {
       while (tools.update(0.05, { beam: true }, world(target("a", kind, 0, 4))).captured.length === 0 && seconds < 30) seconds += 0.05;
       return seconds;
     };
-    assert.true(timeFor("floater") < timeFor("ghoul") && timeFor("ghoul") < timeFor("horde"));
+    assert.true(timeFor("spider") > timeFor("ghoul"), "a ghoul is held faster than a spider");
   });
 
   QUnit.test("the hold is lost when the beam is taken off, a little at a time", (assert) => {
@@ -192,7 +192,7 @@ QUnit.module("Tools", () => {
 
   QUnit.test("the beam heats up as it is fired, overheats, and will not fire until it has cooled", (assert) => {
     const tools = new Tools();
-    const targets = world(target("g", "horde", 0, 4));
+    const targets = world(target("g", "spider", 0, 4)); // held at 0.6 of the ordinary rate: more than the beam lasts
     let seconds = 0;
     while (!tools.overheated && seconds < 10) { tools.update(0.1, { beam: true }, targets); seconds += 0.1; }
     assert.true(Math.abs(seconds - TOOLS.beam.overheatAt / TOOLS.beam.heat) < 0.2, `${seconds.toFixed(1)} s`);

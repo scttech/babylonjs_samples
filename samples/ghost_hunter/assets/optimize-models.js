@@ -1,7 +1,7 @@
 // Makes the phone-sized models of this series from the big ones in source_assets/ghost_hunter.
 //
 //   npm install --no-save @gltf-transform/cli@4.5.1 sharp meshoptimizer     (in a scratch folder, not in the repo)
-//   node optimize-models.js <path to that folder's node_modules/.bin/gltf-transform>
+//   node optimize-models.js <path to that folder's node_modules/.bin/gltf-transform> [name.glb]
 //
 // Each model is welded (points that are the same point become one), simplified to a budget of triangles (a model with no budget, one with a skeleton, is left as it is) (the big ones were made with
 // a million, and a phone wants ten to thirty thousand), its pictures made 1024 pixels across, and written as webp. It reads
@@ -23,16 +23,13 @@ const OUT = path.join(__dirname, "creatures");
 
 // [the file in source_assets, the name it is given, how many triangles at most (about), how many pixels across its pictures]
 const MODELS = [
-  ["Meshy_AI_Zombie_Nightmare_1030235818_texture.glb", "zombie.glb", 10000, 1024],
-  ["Meshy_AI_fantasy_ghost_enraged_1030125609_texture.glb", "ghost_enraged.glb", 14000, 1024],
-  ["Meshy_AI_fantasy_female_silhou_1030235749_texture.glb", "silhouette.glb", 14000, 1024],
-  ["Meshy_AI_Grinning_Abomination_1030235847_texture.glb", "abomination.glb", 16000, 1024],
-  ["Meshy_AI_Hellbound_Doll_Hall_1030235908_texture.glb", "doll.glb", 16000, 1024],
-  ["Meshy_AI_Horde_of_Screams_1030235803_texture.glb", "horde.glb", 20000, 1024],
-  ["Meshy_AI__Halloween2025_Terr_1030235754_texture.glb", "terror.glb", 16000, 1024],
+  ["Meshy_AI_Rigged_Bloody_Mummy_All_Animations.glb", "mummy.glb", null, 1024],
+  ["Meshy_AI_ghoul_girl_rigged_All_Animations.glb", "ghoul_girl.glb", null, 1024],
   // a model with a skeleton is not simplified (that would have to move the weights of the bones too): it is small enough, and only its pictures shrink
   ["Meshy_AI_Rigged_Creepy_Skeleto_All_Animations.glb", "skeleton.glb", null, 1024],
+  ["Meshy_AI_Creepy_Doll_Model_All_Animations.glb", "doll.glb", null, 1024],
 ];
+const ONLY = process.argv[3]; // optionally, the name of one model to make (and not all of them)
 
 const run = (args) => {
   const result = cp.spawnSync(tool, args, { encoding: "utf8", shell: true });
@@ -51,6 +48,7 @@ const triangles = (file) => {
 fs.mkdirSync(OUT, { recursive: true });
 const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "ghost-models-"));
 for (const [from, to, budget, size] of MODELS) {
+  if (ONLY && to !== ONLY) continue;
   const source = path.join(SOURCE, from);
   if (!fs.existsSync(source)) {
     console.log(`${from} is not in source_assets/ghost_hunter: skipped`);

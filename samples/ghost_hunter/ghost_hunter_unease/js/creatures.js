@@ -11,31 +11,42 @@ const CREATURES = {
     touchRange: 0.9, turnRate: 6, strideLength: 0.5, radius: 0.35, height: 0.35, lurkTime: [0.6, 1.8], deathTime: 1.2,
   },
   ghoul: {
-    models: ["zombie"],
     name: "ghoul", health: 6, speed: 0.85, lungeSpeed: 3.2, lungeRange: 2.4, lungeTime: 0.6, recoverTime: 1.8, notice: 9,
     touchRange: 1.6, turnRate: 2.4, strideLength: 0.65, radius: 0.4, height: 1.7, lurkTime: [1.5, 3.5], deathTime: 2,
   },
+  // The mummy and the skeleton do not creep: they come towards you, slowly, for a few seconds (so that you see it coming and wonder), and then they run. `charge`
+  // is how: the speed of the stagger, how long it staggers for (it picks a time in the range), and the speed of the run.
+  mummy: {
+    models: ["mummy"],
+    name: "mummy", health: 5, speed: 0.8, lungeSpeed: 5, lungeRange: 2.6, lungeTime: 0.5, recoverTime: 1.6, notice: 10,
+    touchRange: 1.6, turnRate: 3.2, strideLength: 0.7, radius: 0.4, height: 1.7, lurkTime: [1.5, 3], deathTime: 1.8,
+    pose: "ghoul", voice: "ghoul",
+    charge: { staggerSpeed: 0.8, staggerTime: [3, 5], runSpeed: 3.6 },
+  },
+  // The ghoul girl rises (her model has an animation for it), walks straight at you, and when she reaches you she falls dead at your feet (it has an
+  // animation for that too). `arise` is how long the rising takes; `walker` is the walk that ends in a death.
+  ghoul_girl: {
+    models: ["ghoul_girl"],
+    name: "ghoul_girl", health: 4, speed: 0.9, lungeSpeed: 3, lungeRange: 2.2, lungeTime: 0.5, recoverTime: 1.5, notice: 10,
+    touchRange: 1.6, fallAt: 2.8, turnRate: 3, strideLength: 0.65, radius: 0.35, height: 1.6, lurkTime: [1, 2], deathTime: 3,
+    pose: "ghoul", voice: "ghoul",
+    arise: 1.9, walker: true,
+  },
+  // The doll is small, and walks with a shake (an old person's, on a child's legs). It creeps like the ghoul and the spider do: it comes, and loiters,
+  // and rushes once (its model has a run for that).
+  doll: {
+    models: ["doll"],
+    name: "doll", health: 3, speed: 0.7, lungeSpeed: 3.8, lungeRange: 2.4, lungeTime: 0.5, recoverTime: 1.5, notice: 9,
+    touchRange: 1.3, turnRate: 3, strideLength: 0.5, radius: 0.3, height: 1.1, lurkTime: [1, 3], deathTime: 1.6,
+    pose: "ghoul", voice: "ghoul",
+  },
+  // `models` is the models a kind of creature may have (a creature has one, by its number); `pose` and `voice` borrow what a kind has no
+  // pose or voice of its own for; `hover` is how high above the floor one floats (and does not fall).
   skeleton: {
     models: ["skeleton"],
     name: "skeleton", health: 4, speed: 1.25, lungeSpeed: 4.2, lungeRange: 2.4, lungeTime: 0.5, recoverTime: 1.5, notice: 8,
     touchRange: 1.6, turnRate: 3.6, strideLength: 0.7, radius: 0.35, height: 1.75, lurkTime: [1, 2.5], deathTime: 1.6,
-  },
-  // The kinds that came with models. They borrow what they have no pose or voice of their own for from a kind that has: `pose` and `voice`.
-  // `models` is the models a creature of the kind may have; `hover` is how high above the floor one floats.
-  doll: {
-    name: "doll", health: 4, speed: 1.9, lungeSpeed: 6.5, lungeRange: 2.2, lungeTime: 0.4, recoverTime: 1.3, notice: 8,
-    touchRange: 1.3, turnRate: 7, strideLength: 0.45, radius: 0.3, height: 1.05, lurkTime: [1, 3], deathTime: 1.4,
-    pose: "ghoul", voice: "spider", models: ["doll"],
-  },
-  floater: {
-    name: "floater", health: 5, speed: 1.1, lungeSpeed: 5.5, lungeRange: 2.4, lungeTime: 0.5, recoverTime: 1.8, notice: 9,
-    touchRange: 1.5, turnRate: 3, strideLength: 1, radius: 0.45, height: 0.9, lurkTime: [1.5, 3.5], deathTime: 1.6,
-    pose: "ghoul", voice: "ghoul", models: ["abomination", "terror"], hover: 1.3,
-  },
-  horde: {
-    name: "horde", health: 10, speed: 0.6, lungeSpeed: 2.8, lungeRange: 2.8, lungeTime: 0.8, recoverTime: 2.4, notice: 10,
-    touchRange: 2.1, turnRate: 1.6, strideLength: 0.8, radius: 0.65, height: 2.1, lurkTime: [2, 4], deathTime: 2.4,
-    pose: "ghoul", voice: "ghoul", models: ["horde"],
+    charge: { staggerSpeed: 0.9, staggerTime: [3, 5], runSpeed: 3.4 }, // like the mummy: it walks at you, and then it runs
   },
 };
 
@@ -52,6 +63,34 @@ const CREEP = {
   retreatSpeed: 0.9, // a multiple of its walking speed
   fadeSeconds: 1.5, // and the last of that time, in which it fades
 };
+
+// How a creature peeks. It is not coming for the player: it leans out from behind something (the edge of the view, or a corner the player has
+// marked) for a second or two, watches, and goes back. `lean` is how far it tilts as it does (radians). A **pop** is a peek that is sudden:
+// there is no leaning out, the creature is just there, at the edge, with a strike, and it is gone again.
+const PEEK = {
+  lean: 0.3,
+  inTime: 0.7, // seconds to lean out
+  hold: [1.2, 2.4], // seconds it stays out
+  outTime: 0.6, // seconds to draw back
+  popHold: [0.9, 1.5],
+  popOut: 0.25,
+};
+
+// How near anything may come to the player, as a part of its touch range (a creature that rushes stops at nine tenths of it: this is below that,
+// so a rush is not interfered with, and a creature that is somehow nearer is moved out).
+const PERSONAL_SPACE = 0.8;
+
+// Where a point on the floor ends up if it must keep at least `minimum` metres from another: where it is, if it is far enough, and moved straight
+// away from the other, to `minimum`, if it is not. (Exactly on top of it, it is moved along z.) Gives [x, z].
+function keepAway(point, from, minimum) {
+  const dx = point[0] - from[0];
+  const dz = point[2] - from[2];
+  const distance = Math.hypot(dx, dz);
+  if (distance >= minimum) return [point[0], point[2]];
+  if (distance < 1e-6) return [point[0], point[2] + minimum];
+  const scale = minimum / distance;
+  return [from[0] + dx * scale, from[2] + dz * scale];
+}
 
 const CREATURE_GRAVITY = 9.8; // metres a second, every second: how a spider that starts in the air comes down
 
@@ -206,7 +245,8 @@ const POSES = { spider: spiderPose, ghoul: ghoulPose, skeleton: skeletonPose };
 
 class Creature {
   // `position` is where it is on the floor, [x, y, z]; `table` is the creature's own numbers (CREATURES.spider).
-  constructor({ id, kind, position, table = CREATURES[kind], random = Math.random }) {
+  // `peek` is { from: [x, z], to: [x, z], pop } for a creature that only peeks: where it is hidden, where it leans out to, and whether it pops.
+  constructor({ id, kind, position, table = CREATURES[kind], random = Math.random, peek = null }) {
     this.id = id;
     this.kind = kind;
     this.table = table;
@@ -215,6 +255,19 @@ class Creature {
     this.health = table.health;
     this.state = "lurk";
     this.timer = table.lurkTime[0] + random() * (table.lurkTime[1] - table.lurkTime[0]); // seconds left in a state that has a time
+    this.lean = 0; // 0 to 1: how far it is leaning out, for the body to tilt by
+    this.peek = null;
+    if (peek) {
+      const hold = peek.pop ? PEEK.popHold : PEEK.hold;
+      const out = peek.pop ? 0 : PEEK.inTime;
+      this.peek = { ...peek, inTime: out, hold: hold[0] + random() * (hold[1] - hold[0]), outTime: peek.pop ? PEEK.popOut : PEEK.outTime, age: 0 };
+      this.state = "peek";
+      this.position[0] = (peek.pop ? peek.to : peek.from)[0];
+      this.position[2] = (peek.pop ? peek.to : peek.from)[1];
+    } else if (table.arise) {
+      this.state = "arise"; // a creature that rises does that first, and cannot do anything else until it has
+      this.timer = table.arise;
+    }
     this.gait = 0; // steps taken
     this.clock = 0;
     this.moving = 0; // 0 to 1, smoothly: how much it is walking
@@ -226,6 +279,8 @@ class Creature {
     this.creepAt = creep.distance[0] + random() * (creep.distance[1] - creep.distance[0]); // how near it comes before it loiters
     this.patience = creep.patience[0] + random() * (creep.patience[1] - creep.patience[0]); // how long it loiters
     this.waited = 0; // seconds it has loitered
+    this.staggerFor = table.charge ? table.charge.staggerTime[0] + random() * (table.charge.staggerTime[1] - table.charge.staggerTime[0]) : 0; // a creature that charges: how long it staggers first
+    this.staggered = 0;
     this.side = random() < 0.5 ? -1 : 1; // which way it circles
     this.turnIn = 2 + random() * 4; // seconds to it changing its mind about which way
     this.leaving = 0; // seconds it has been drawing back
@@ -311,6 +366,27 @@ class Creature {
     return true;
   }
 
+  // Peeking: it leans out from where it is hidden to where it can be seen, stays there, and draws back; then it is gone. It faces the player the
+  // whole time. Gives whether it is moving.
+  _peek(seconds, player) {
+    const peek = this.peek;
+    if (peek.age === 0) this.events.push(peek.pop ? "pop" : "peek");
+    peek.age += seconds;
+    const { inTime, hold, outTime } = peek;
+    const smooth = (t) => t * t * (3 - 2 * t);
+    let out;
+    if (peek.age < inTime) out = smooth(peek.age / inTime);
+    else if (peek.age < inTime + hold) out = 1;
+    else out = 1 - smooth(Math.min(1, (peek.age - inTime - hold) / outTime));
+    const before = [this.position[0], this.position[2]];
+    this.position[0] = peek.from[0] + (peek.to[0] - peek.from[0]) * out;
+    this.position[2] = peek.from[1] + (peek.to[1] - peek.from[1]) * out;
+    this.lean = out;
+    this.yaw = Math.atan2(player.position[0] - this.position[0], player.position[2] - this.position[2]);
+    if (peek.age >= inTime + hold + outTime) this.done = true;
+    return Math.hypot(this.position[0] - before[0], this.position[2] - before[1]) > 1e-5 * seconds;
+  }
+
   // Walks, at `speed`, towards a point (turning first, a little at a time).
   _walk(seconds, target, speed) {
     const wanted = Math.atan2(target[0] - this.position[0], target[2] - this.position[2]);
@@ -323,8 +399,18 @@ class Creature {
     return step > 0;
   }
 
-  // Time going by. `player` is where the player is (`player.position`).
+  // Time going by. `player` is where the player is (`player.position`). Nothing, whatever it is doing, comes inside the player's personal space: a
+  // creature that is too near (the player walked up to it, or it got there itself) is moved straight back out to the edge of it.
   update(seconds, player) {
+    this._step(seconds, player);
+    if (this.done || this.state === "dying" || this.state === "fall") return;
+    const minimum = this.table.personalSpace || this.table.touchRange * PERSONAL_SPACE;
+    const [x, z] = keepAway(this.position, player.position, minimum);
+    this.position[0] = x;
+    this.position[2] = z;
+  }
+
+  _step(seconds, player) {
     if (this.done) return;
     this.clock += seconds;
     if (this.stunned > 0 && this.state !== "dying" && this.state !== "fall") {
@@ -347,17 +433,37 @@ class Creature {
         this.timer = Math.min(this.timer, 0.4); // it hardly waits: it has landed
         this.events.push("landed");
       }
+    } else if (this.state === "peek") {
+      walking = this._peek(seconds, player);
+    } else if (this.state === "arise") {
+      this.timer -= seconds;
+      if (this.timer <= 0) this.state = "stalk";
     } else if (this.state === "lurk") {
       this.timer -= seconds;
       if (this.timer <= 0 || distance < table.notice * 0.5) this.state = "stalk";
     } else if (this.state === "stalk") {
-      if (distance <= table.lungeRange) {
+      if (table.walker) {
+        walking = this._walk(seconds, player.position, table.speed); // she walks, and does not hurry
+        if (distance <= table.fallAt) {
+          this.touches += 1;
+          this.events.push("touch"); // she has got to you: that is the scare
+          this.state = "dying"; // and she falls
+          this.timer = table.deathTime;
+        }
+      } else if (distance <= table.lungeRange) {
         this._rush(player, 0);
+      } else if (table.charge) {
+        this.staggered += seconds; // it staggers towards the player, and then it runs
+        if (this.staggered >= this.staggerFor) this.state = "charge";
+        else walking = this._walk(seconds, player.position, table.charge.staggerSpeed);
       } else if (distance <= this.creepAt) {
         this.state = "creep";
       } else {
         walking = this._walk(seconds, player.position, table.speed);
       }
+    } else if (this.state === "charge") {
+      walking = this._walk(seconds, player.position, table.charge.runSpeed);
+      if (distance <= table.lungeRange) this._rush(player, 0);
     } else if (this.state === "creep") {
       walking = this._loiter(seconds, player, distance);
       this.waited += seconds;
@@ -404,8 +510,8 @@ class Creature {
 
   // The bones and blobs of it now, in its own space. The game puts them at `position` and turns them by `yaw`.
   pose() {
-    const crouch = this.state === "fall" ? -0.5 : this.state === "lunge" ? 0 : (this.state === "stalk" && this.lastDistance < 3) || this.state === "creep" ? 0.5 : 0;
-    const reach = this.state === "lunge" ? 1 : this.state === "recover" ? 0.4 : 0;
+    const crouch = this.state === "fall" ? -0.5 : this.state === "lunge" || this.state === "charge" ? 0 : (this.state === "stalk" && this.lastDistance < 3) || this.state === "creep" ? 0.5 : 0;
+    const reach = this.state === "lunge" ? 1 : this.state === "charge" ? 0.3 : this.state === "recover" ? 0.4 : 0;
     const flat = this.state === "dying" ? Math.min(1, 1 - this.timer / this.table.deathTime) : 0;
     const made = POSES[this.table.pose || this.kind]({ gait: this.gait, time: this.clock, moving: this.moving, reach, crouch });
     return flat > 0 ? collapsePose(made, flat) : made;
@@ -438,9 +544,9 @@ class Menagerie {
   }
 
   // A creature of a kind at a place. Nothing if there are too many already.
-  spawn(kind, position) {
+  spawn(kind, position, peek = null) {
     if (!CREATURES[kind] || this.items.length >= this.max) return null;
-    const creature = new Creature({ id: this.nextId++, kind, position, random: this.random });
+    const creature = new Creature({ id: this.nextId++, kind, position, random: this.random, peek });
     this.items.push(creature);
     this._tell("added", creature);
     return creature;
@@ -479,7 +585,7 @@ class Menagerie {
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { CREATURES, CREATURE_MAX, CREEP, CREATURE_GRAVITY, solveLeg, footOffset, spiderPose, ghoulPose, skeletonPose, POSES, Creature, Menagerie };
+  module.exports = { CREATURES, CREATURE_MAX, CREEP, PEEK, PERSONAL_SPACE, keepAway, CREATURE_GRAVITY, solveLeg, footOffset, spiderPose, ghoulPose, skeletonPose, POSES, Creature, Menagerie };
 } else {
-  Object.assign(window, { CREATURES, CREATURE_MAX, CREEP, CREATURE_GRAVITY, solveLeg, footOffset, spiderPose, ghoulPose, skeletonPose, POSES, Creature, Menagerie });
+  Object.assign(window, { CREATURES, CREATURE_MAX, CREEP, PEEK, PERSONAL_SPACE, keepAway, CREATURE_GRAVITY, solveLeg, footOffset, spiderPose, ghoulPose, skeletonPose, POSES, Creature, Menagerie });
 }

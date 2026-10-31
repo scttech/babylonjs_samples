@@ -19,20 +19,47 @@ const CREATURE_LOOK = {
 // Where a model would go for each kind of creature. A kind with `null` is drawn as shapes. An entry is
 //   { url: "assets/creatures/spider.glb", scale: 1, yaw: 0, clips: { idle: "Idle", walk: "Walk", lunge: "Attack", die: "Death" } }
 // where `scale` and `yaw` put the model right (it may be made big, or face the wrong way), and `clips` names its animations.
-// The models there are: the skeleton has a skeleton and clips of its own; the rest are in staticbody.js (they do not move by themselves).
-// The spider has no model yet, and is shapes.
+// The models there are. Only a model with a skeleton and clips of its own is used: the skeleton. The spider and the ghoul have none, and are
+// shapes.
 const CREATURE_MODELS = {
   spider: null,
+  ghoul: null,
+  doll: {
+    url: "../assets/creatures/doll.glb",
+    height: 1.1,
+    yaw: 0,
+    // Three clips: Elderly_Shaky_Walk_inplace (a walk that shakes, 2.8 seconds a step cycle: it is the doll's walk, and its idle, slowly), Walking (not used: it
+    // is too normal) and Running (its rush). It has no death: a dying doll is stopped and toppled.
+    clips: { idle: "Elderly_Shaky_Walk_inplace", walk: "Elderly_Shaky_Walk_inplace", run: "Running", lunge: "Running", recover: "Elderly_Shaky_Walk_inplace" },
+    speeds: { idle: 0.3, walk: 1, run: 1, lunge: 1.2, recover: 0.5 },
+  },
+  ghoul_girl: {
+    url: "../assets/creatures/ghoul_girl.glb",
+    height: 1.6,
+    yaw: 0,
+    // Four clips: Arise (she rises from the floor: it plays once), Walking (a walk that she keeps up all the way to you), Running (not used), and
+    // Dead (she falls: it plays once, and is her death).
+    clips: { arise: "Arise", idle: "Walking", walk: "Walking", lunge: "Running", recover: "Walking", die: "Dead" },
+    speeds: { arise: 1, idle: 0.2, walk: 1, lunge: 1, recover: 0.5, die: 1 },
+  },
+  mummy: {
+    url: "../assets/creatures/mummy.glb",
+    height: 1.7,
+    yaw: 0,
+    // Three clips: Walking, Running and Mummy_Stagger. It staggers towards you (the stagger plays while it comes, and slowly while it waits) and
+    // then runs (the run plays while it charges and while it rushes).
+    clips: { idle: "Mummy_Stagger", walk: "Mummy_Stagger", run: "Running", lunge: "Running", recover: "Mummy_Stagger" },
+    speeds: { idle: 0.3, walk: 1, run: 1.1, lunge: 1.2, recover: 0.5 },
+  },
   skeleton: {
     url: "../assets/creatures/skeleton.glb",
     height: 1.75,
     yaw: 0,
     // The model has three clips: a walk, a run, and a scream (2.8 seconds). It has no idle: a creature that lurks walks very slowly, and
     // one that is getting its breath back after a strike screams. It has no death: a dying skeleton is stopped and toppled.
-    clips: { idle: "Walking", walk: "Walking", lunge: "Running", recover: "Zombie_Scream" },
-    speeds: { idle: 0.2, walk: 1, lunge: 1.1, recover: 1 },
+    clips: { idle: "Walking", walk: "Walking", run: "Running", lunge: "Running", recover: "Zombie_Scream" },
+    speeds: { idle: 0.2, walk: 1, run: 1.1, lunge: 1.1, recover: 1 },
   },
-  ...STATIC_MODELS,
 };
 
 // Loads the models in a table that have an entry. Gives a map from kind to what was loaded; a model that will not load is left out (and
@@ -66,6 +93,12 @@ function creatureMaterials(scene, look = CREATURE_LOOK) {
 }
 
 const FROM_UP = new BABYLON.Quaternion();
+
+// How far a creature that is peeking tilts, in radians, about the way it faces: towards the middle of the view, from the side it is hidden on
+// (`side` is 1 on the right, -1 on the left; it faces the player, so its own right is the player's left). Nothing for one that is not peeking.
+function peekTilt(creature) {
+  return creature.peek ? -creature.peek.side * creature.lean * PEEK.lean : 0;
+}
 
 // A creature drawn as shapes: a root that is moved and turned, with a pool of sticks and balls that is set from the pose every frame.
 class CreatureBody {
@@ -106,6 +139,7 @@ class CreatureBody {
     const creature = this.creature;
     this.root.position.set(creature.position[0], creature.position[1], creature.position[2]);
     this.root.rotation.y = creature.yaw;
+    this.root.rotation.z = peekTilt(creature);
     const pose = creature.pose();
     pose.bones.forEach((bone, i) => {
       const stick = this._stick(i);
@@ -153,13 +187,13 @@ class ModelBody {
 
   // What a creature is doing, as the part a clip plays: "idle", "walk", "lunge", "recover" or "die".
   static roleFor(state) {
-    return { lurk: "idle", stalk: "walk", creep: "idle", lunge: "lunge", recover: "recover", retreat: "walk", dying: "die" }[state] || "idle";
+    return { peek: "idle", arise: "arise", lurk: "idle", stalk: "walk", creep: "idle", charge: "run", lunge: "lunge", recover: "recover", retreat: "walk", dying: "die" }[state] || "idle";
   }
 
   // The name of the clip for what a creature is doing: its own, or the idle one if it has none (and none at all for a death).
   static clipFor(state, clips) {
     const role = ModelBody.roleFor(state);
-    return clips[role] || (role === "die" ? null : clips.idle) || null;
+    return clips[role] || (role === "run" ? clips.lunge : null) || (role === "die" ? null : clips.idle) || null;
   }
 
   update() {
@@ -168,7 +202,8 @@ class ModelBody {
     const dying = creature.state === "dying" ? Math.max(0, Math.min(1, 1 - creature.timer / creature.table.deathTime)) : 0;
     const fall = staticMotion({ state: creature.state, gait: 0, time: 0, moving: 0, reach: 0, dying }, { sway: 0, lean: 0, bob: 0, squash: 0 });
     pivot.position.set(creature.position[0], creature.position[1], creature.position[2]);
-    pivot.rotation.set(fall.pitch, creature.yaw + (this.entry.yaw || 0), 0);
+    // a model with a death of its own falls as it was made to; one without is stopped and toppled
+    pivot.rotation.set((this.entry.clips || {}).die ? 0 : fall.pitch, creature.yaw + (this.entry.yaw || 0), peekTilt(creature));
     this.fitted.setVisibility(fall.opacity * creature.fade);
 
     const role = ModelBody.roleFor(creature.state);
@@ -182,7 +217,7 @@ class ModelBody {
     } else {
       if (this.current) (next || role !== "die" ? this.current.stop() : this.current.pause());
       this.current = next || this.current;
-      if (next) next.start(role !== "die", speed);
+      if (next) next.start(role !== "die" && role !== "arise", speed); // rising and dying play once
     }
   }
 
@@ -203,14 +238,14 @@ function modelNameFor(creature) {
 function makeCreatureBody(scene, creature, materials, placeholders, models = new Map()) {
   const loaded = models.get(modelNameFor(creature));
   if (!loaded) return new CreatureBody(scene, creature, materials, placeholders);
-  return loaded.entry.clips ? new ModelBody(scene, creature, loaded) : new StaticBody(scene, creature, loaded);
+  return new ModelBody(scene, creature, loaded);
 }
 
 // Plain <script> include (no bundler in this project), so export via both
 // CommonJS (for the QUnit/Node test runner) and the global scope (for
 // index.html) depending on which environment loads this file.
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { CREATURE_LOOK, CREATURE_MODELS, loadCreatureModels, creatureMaterials, CreatureBody, ModelBody, modelNameFor, makeCreatureBody };
+  module.exports = { CREATURE_LOOK, CREATURE_MODELS, loadCreatureModels, creatureMaterials, peekTilt, CreatureBody, ModelBody, modelNameFor, makeCreatureBody };
 } else {
-  Object.assign(window, { CREATURE_LOOK, CREATURE_MODELS, loadCreatureModels, creatureMaterials, CreatureBody, ModelBody, modelNameFor, makeCreatureBody });
+  Object.assign(window, { CREATURE_LOOK, CREATURE_MODELS, loadCreatureModels, creatureMaterials, peekTilt, CreatureBody, ModelBody, modelNameFor, makeCreatureBody });
 }

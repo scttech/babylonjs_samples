@@ -33,10 +33,10 @@ const TOOLS = {
 const WEAKNESS = {
   spider: { light: 3, stun: 1.5, beam: 0.6 },
   ghoul: { light: 0.4, stun: 0, beam: 1.4 },
+  mummy: { light: 0.5, stun: 0.4, beam: 1 },
+  ghoul_girl: { light: 0.6, stun: 0.5, beam: 1.2 },
+  doll: { light: 1.2, stun: 0.8, beam: 1 },
   skeleton: { light: 1, stun: 0.6, beam: 1 },
-  doll: { light: 2, stun: 1, beam: 0.8 },
-  floater: { light: 0.8, stun: 0, beam: 2 },
-  horde: { light: 0.3, stun: 0, beam: 0.5 },
   ghost: { light: 0, stun: 0, beam: 1.2 },
 };
 
