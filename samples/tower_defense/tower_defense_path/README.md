@@ -47,4 +47,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The benders. The next sample is **benders**: a podium on the board, a bender standing on it, its idle, and its attacks played in place.
+The benders. The next sample is [**benders**](../tower_defense_benders/README.md): a podium on the board, a bender standing on it, its idle, and its attacks played in place.
