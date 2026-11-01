@@ -51,4 +51,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-Building. The next sample is **build**: dragging a podium from a tray onto the board, with an outline that is red where you can't build and green where you can, and gold to pay for it.
+Building. The next sample is [**build**](../tower_defense_build/README.md): dragging a podium from a tray onto the board, with an outline that is red where you can't build and green where you can, and gold to pay for it.
