@@ -56,4 +56,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-Waves. The next sample is **waves**: a table of waves, a spawner, lives that go when an enemy gets to the end, and the death animations, so that what the towers shoot at can be hurt, and gold is paid for it.
+Waves. The next sample is [**waves**](../tower_defense_waves/README.md): a table of waves, a spawner, lives that go when an enemy gets to the end, and the death animations, so that what the towers shoot at can be hurt, and gold is paid for it.

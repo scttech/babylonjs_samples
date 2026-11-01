@@ -1,0 +1,151 @@
+/* The tray at the bottom, where podiums are picked up, and the gold and the message that go with it. The tray is
+   under the board, not over it: the canvas is made shorter by the height of the tray, and the camera fits the
+   board into what is left, so that nothing is ever hidden by a button. */
+:root {
+  --tray-height: 100px;
+}
+#renderCanvas {
+  height: calc(100% - var(--tray-height));
+}
+
+#tray {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 12;
+  height: var(--tray-height);
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(to bottom, var(--parchment), var(--parchment-dark));
+  border-top: 4px solid var(--ink);
+  box-shadow: 0 -6px 18px rgba(20, 40, 70, 0.3);
+}
+
+/* One podium to pick up: the color of its nation, its name, and what it costs. */
+#tray .podium {
+  flex: 0 1 150px;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 8px 1fr auto;
+  justify-items: center;
+  align-items: center;
+  padding: 0 8px 6px;
+  overflow: hidden;
+  background: #fff7e0;
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  cursor: grab;
+  touch-action: none; /* a finger that starts on a button is for dragging it, not for scrolling the page */
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+#tray .podium:hover {
+  transform: translateY(-3px);
+}
+#tray .podium .swatch {
+  align-self: stretch;
+  margin: 0 -8px;
+  background: var(--nation);
+}
+#tray .podium .name {
+  font: 700 clamp(12px, 2.6vw, 17px) / 1.1 var(--title-font);
+  text-align: center;
+}
+#tray .podium .cost {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font: 700 clamp(13px, 2.8vw, 18px) / 1 var(--small-font);
+}
+#tray .podium .cost::before,
+#gold .coin {
+  content: "";
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff2b0, var(--gold) 60%, #a8740c);
+  border: 2px solid var(--ink);
+  box-sizing: border-box;
+}
+
+/* Too little gold: the button is faded and its price is red. It can still be pressed, and says why not. */
+#tray .podium.poor {
+  opacity: 0.55;
+}
+#tray .podium.poor .cost {
+  color: var(--banner);
+}
+
+/* The podium that is in the hand (armed, or being dragged). */
+#tray .podium.held {
+  transform: translateY(-5px);
+  box-shadow: 0 0 0 4px var(--nation), 0 6px 14px rgba(20, 40, 70, 0.4);
+}
+
+/* Gold, at the top, in the middle. */
+#gold {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: var(--parchment);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  font: 700 22px / 1 var(--title-font);
+  pointer-events: none;
+}
+
+/* Why a tower can't go there: a line above the tray, only while there is something to say. */
+#message {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--tray-height) + 10px);
+  transform: translateX(-50%);
+  z-index: 12;
+  max-width: calc(100vw - 24px);
+  padding: 6px 14px;
+  background: var(--banner);
+  color: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  font: 700 16px / 1.2 var(--small-font);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+#message.shown {
+  opacity: 1;
+}
+
+/* A small screen: a phone, or a window made small. */
+@media (max-width: 640px), (max-height: 520px) {
+  :root {
+    --tray-height: 78px;
+  }
+  #tray {
+    gap: 6px;
+    padding: 6px 8px;
+  }
+  #tray .podium {
+    padding: 0 4px 4px;
+    border-width: 2px;
+  }
+  #gold {
+    top: 8px;
+    padding: 4px 12px;
+    font-size: 18px;
+  }
+}

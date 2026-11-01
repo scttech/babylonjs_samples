@@ -21,12 +21,13 @@ Like the other series in this repo, each sample is also a step-by-step tutorial:
 | 2 | [Tower Defense Path](tower_defense_path/README.md) ([tutorial](tower_defense_path/TUTORIAL.md)) | A map as text that can be checked, autotiling (the piece in a cell from four bits, turned by shifting them), a route with rounded corners, a walker that knows only distance and time, and five enemies with skeletons that walk it at a speed that keeps their feet on the ground |
 | 3 | [Tower Defense Benders](tower_defense_benders/README.md) ([tutorial](tower_defense_benders/TUTORIAL.md)) | A podium with a bender on it for each nation, animations with their root motion taken out so an attack stays on the podium, a table of numbers measured on the real clips, targeting as scores, a state machine that speaks in events, angles that wrap, and bolts that follow the enemy |
 | 4 | [Tower Defense Build](tower_defense_build/README.md) ([tutorial](tower_defense_build/TUTORIAL.md)) | Dragging a podium onto the board: turning a place on the screen into a cell (two equations, two unknowns), a finger held above where it is, a drag told from a tap by a small state machine, one rule that says why not, an outline that fades from red to green at the same pace on any computer, a tray, gold, and a hand that is tested with no screen |
-| 5 | Waves | A table of waves, a spawner, lives, and the falling animations |
-| 6 | Variety | Five kinds of enemy and upgrades for the benders |
-| 7 | Elements | An effect for each nation, and slowing, burning, stunning and pushing back |
-| 8 | Screens | A title, pause, the end, scores and sound |
-| 9 | Polish | A limit on how many enemies there are, the developer panel, a speed button |
-| 10 | Editor | Building a map of your own by dropping pieces on the board, and checking that it can be played |
+| 5 | [Tower Defense Waves](tower_defense_waves/README.md) ([tutorial](tower_defense_waves/TUTORIAL.md)) | Enemies with health that fall with their death animations, waves from a table turned into a timeline, a director whose state machine speaks in events, damage when a bolt arrives, a whole frame of the game as a function of a world (so a test plays a game with no screen), the readouts, and balance set by a simulation |
+| 6 | Scenery | Props on the maps (a cabbage cart, a spirit shrine, a koi pond, a lemur perch), placed from the map's text, that take up a cell and that a tower can't be built on |
+| 7 | Variety | Upgrades for the benders, and the fire bender's combo as rapid fire (one bolt for every punch) |
+| 8 | Elements | An effect for each nation, and slowing, burning, stunning and pushing back |
+| 9 | Screens | A title, pause, the end, scores and sound |
+| 10 | Polish | A limit on how many enemies there are, the developer panel, a speed button |
+| 11 | Editor | Building a map of your own by dropping pieces (and props) on the board, and checking that it can be played |
 
 The plan may shift as each step teaches something unexpected.
 

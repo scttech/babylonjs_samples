@@ -7,7 +7,7 @@
 // A model like that is welded (points that are the same point become one), simplified to a budget of triangles, its pictures
 // made 1024 pixels across, and written as webp. A model with a skeleton (the benders and the enemies, about ten thousand
 // triangles already) is not simplified, because that would have to move the weights of the bones too: only its pictures shrink.
-// It reads ../../../source_assets/tower_defense and writes tiles/, podiums/, benders/ and enemies/. Models are listed by
+// It reads ../../../source_assets/tower_defense and writes tiles/, podiums/, benders/, enemies/ and flair/. Models are listed by
 // name below: to add one, add a line.
 
 const cp = require("child_process");
@@ -43,6 +43,10 @@ const MODELS = [
   ["Meshy_AI_fn_heavy_trooper", "enemies/heavy.glb", null, 1024],
   ["Meshy_AI_dai_li_agent", "enemies/dai_li.glb", null, 1024],
   ["Meshy_AI_corrupted_spirit", "enemies/spirit.glb", null, 1024],
+  ["flair/Meshy_AI_cabbage_cart", "flair/cabbage_cart.glb", 6000, 1024],
+  ["flair/Meshy_AI_spirit_koi_pond", "flair/koi_pond.glb", 6000, 1024],
+  ["flair/Meshy_AI_spirit_shrine", "flair/shrine.glb", 6000, 1024],
+  ["flair/Meshy_AI_winged_lemur_perch", "flair/lemur_perch.glb", 6000, 1024],
 ];
 const ONLY = process.argv[3]; // optionally, the name of one model to make (and not all of them)
 
