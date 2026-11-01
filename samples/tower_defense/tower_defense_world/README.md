@@ -53,4 +53,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The road. The next sample is **path**: a map as text, the right road piece laid in every cell, and an enemy that walks it.
+The road. The next sample is [**path**](../tower_defense_path/README.md): a map as text, the right road piece laid in every cell, and an enemy that walks it.
