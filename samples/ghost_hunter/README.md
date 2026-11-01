@@ -29,9 +29,10 @@ Like the other series in this repo, each sample is also a step-by-step tutorial:
 | 9 | [Ghost Hunter Tools](ghost_hunter_tools/README.md) ([tutorial](ghost_hunter_tools/TUTORIAL.md)) | A flashlight and a capture beam as rays and cones, a battery and a heat that make the player choose, a weakness table for every kind, creatures that can be stunned and captured, ghosts that are faint until lit, and held buttons for a phone |
 | 10 | [Ghost Hunter Creeping](ghost_hunter_creeping/README.md) ([tutorial](ghost_hunter_creeping/TUTORIAL.md)) | Fixing a feel from playtest feedback: creatures that creep, loiter and circle with a patience of their own, rush once and withdraw, a director that comes a third as often, and tests that said the old rules changed to say the new |
 | 11 | [Ghost Hunter Unease](ghost_hunter_unease/README.md) ([tutorial](ghost_hunter_unease/TUTORIAL.md)) | From startling to frightening: the lights stutter out instead of a flash, a breath instead of a blare, creatures that keep their distance, and a tall hollow-eyed ghost that only moves when you are not looking |
-| 12 | Detectors | An EMF meter, a radar, a spirit box you tune, and thermal vision, all made from the same numbers about where things are |
-| 13 | Rounds | Rounds and difficulty, health and a sanity meter that makes the screen go wrong, a ghost journal of everything caught, and scores kept in the browser |
-| 14 | Polish | Calm mode, install as an app, a photo of the scare, and testing on real phones |
+| 12 | [Ghost Hunter Company](ghost_hunter_company/README.md) ([tutorial](ghost_hunter_company/TUTORIAL.md)) | What the game became after playtests: creatures with skeletons (a mummy and a skeleton that stagger and then run, a ghoul girl, a doll), personal space, peeks and pops at the edge of the screen, and a door scan with a small segmentation model |
+| 13 | [Ghost Hunter Detectors](ghost_hunter_detectors/README.md) ([tutorial](ghost_hunter_detectors/TUTORIAL.md)) | An EMF meter, a radar with a sweep that wraps, a spirit box tuned to a ghost's own frequency, and thermal vision, all made from one list of where things are |
+| 14 | [Ghost Hunter Rounds](ghost_hunter_rounds/README.md) ([tutorial](ghost_hunter_rounds/TUTORIAL.md)) | A room to clear: hidden ghosts, health and a sanity meter that pull against each other, a round that is won or lost once, a ghost journal and the best scores kept in the browser |
+| 15 | [Ghost Hunter Polish](ghost_hunter_polish/README.md) ([tutorial](ghost_hunter_polish/TUTORIAL.md)) | Calm mode and comfort settings, install as an app with a service worker, a photograph of the fright, and a checklist for real phones |
 
 The plan may shift as each step teaches something unexpected.
 

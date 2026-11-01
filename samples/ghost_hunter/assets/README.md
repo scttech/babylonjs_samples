@@ -4,7 +4,7 @@
 |--------|------|------------------|---------|
 | `images/` | The Ghost Hunter logo, in two sizes (the full size is in `source_assets/`) | Made for this project | The same as the rest of the repo |
 | `fonts/` | **Rubik Wet Paint** (the dripping title and headings) and **Share Tech Mono** (the read-outs) | [Google Fonts](https://fonts.google.com/specimen/Rubik+Wet+Paint) | SIL Open Font Licence 1.1 (the licence of each is beside it) |
-| `creatures/` | A rigged skeleton with animations (Walking, Running, Zombie_Scream) | Made with [Meshy](https://www.meshy.ai) and given to this project by its owner | Creative Commons: use, sharing and modification allowed (credit to Meshy, below) |
+| `creatures/` | Rigged creatures with animations: a skeleton, a mummy, a ghoul girl and a doll | Made with [Meshy](https://www.meshy.ai) and given to this project by its owner | Creative Commons: use, sharing and modification allowed (credit to Meshy, below) |
 | `music/` | Two tracks of ambient horror music: `horror-ambience.mp3` (92 seconds, by AtlasAudio) and `scary-ambience.mp3` (125 seconds, by Tunetank) | [Pixabay](https://pixabay.com/music/) | The [Pixabay Content Licence](https://pixabay.com/service/license-summary/) (free to use, credit is appreciated and is given below; the tracks may not be sold or passed on on their own) |
 
 ## The music
@@ -19,8 +19,13 @@ Only **rigged** models (a skeleton of bones and animations of their own) are use
 | File | Used for | Triangles |
 |------|----------|-----------|
 | `skeleton.glb` | the skeleton (24 bones, and the clips Walking, Running and Zombie_Scream) | about 10,000 |
+| `mummy.glb` | the mummy (Mummy_Stagger, Running, Walking) | about 10,000 |
+| `ghoul_girl.glb` | the ghoul girl (Arise, Walking, Running, Dead) | about 10,000 |
+| `doll.glb` | the doll (Elderly_Shaky_Walk_inplace, Walking, Running; 66 bones) | about 10,000 |
 
 The spider and the ghoul have no model and are drawn as shapes (placeholders that can be hidden). The ghosts are made in code.
+
+**A note on the older steps.** Steps 7 to 11 were made when the series also had models with no skeleton (a zombie, a doll, ghosts and others, moved from outside by rocking and toppling). Those were taken out of the series, so the tests of those steps that loaded them skip themselves when the files are not there, and their games draw shapes in their place. The Company step is where that is written down.
 
 **Licence.** The 3D models (the creatures and the ghosts) were made with [Meshy](https://www.meshy.ai), and are shared under a Creative Commons licence that allows them to be used, shared and modified. Credit to Meshy. (If the exact licence asks for more than this, such as a link to it, this is the place for it.)
 

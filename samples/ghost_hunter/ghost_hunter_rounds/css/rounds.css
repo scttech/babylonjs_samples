@@ -1,0 +1,123 @@
+/* The rounds (see roundsui.js): the bars of health and sanity at the top left, the screen at the end of a round, and the picture going wrong as sanity goes. */
+.round-hud {
+  position: fixed;
+  top: 52px;
+  left: 10px;
+  z-index: 8;
+  width: 170px;
+  pointer-events: none;
+  color: var(--bone);
+  font-family: var(--small-font);
+}
+body:has(#start:not(.hidden)) .round-hud {
+  visibility: hidden;
+}
+.round-label {
+  margin-bottom: 4px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+}
+.round-bar {
+  height: 9px;
+  margin-bottom: 4px;
+  border: 1px solid rgba(242, 243, 238, 0.5);
+  background: rgba(5, 8, 13, 0.6);
+}
+.round-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+.round-bar.health .round-fill {
+  background: var(--blood);
+}
+.round-bar.sanity .round-fill {
+  background: var(--ecto);
+}
+.round-bar.low {
+  animation: round-pulse 0.9s ease-in-out infinite;
+}
+@keyframes round-pulse {
+  50% {
+    border-color: var(--blood);
+    box-shadow: 0 0 8px var(--blood);
+  }
+}
+.round-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: rgba(5, 8, 13, 0.9);
+  color: var(--bone);
+  font-family: var(--small-font);
+  text-align: center;
+}
+.round-screen.hidden,
+.round-button.hidden {
+  display: none;
+}
+.round-title {
+  margin: 0;
+  font: 44px / 1.1 var(--title-font);
+  color: var(--blood);
+}
+.round-screen.won .round-title {
+  color: var(--ghost);
+}
+.round-line {
+  margin: 2px 0;
+  font-size: 17px;
+}
+.round-heading {
+  margin: 10px 0 2px;
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  color: var(--ecto);
+}
+.round-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 12px;
+}
+.round-button {
+  padding: 10px 20px;
+  border: 2px solid var(--bone);
+  background: rgba(5, 8, 13, 0.7);
+  color: var(--bone);
+  font: 17px var(--small-font);
+  letter-spacing: 0.08em;
+}
+.round-button.primary {
+  border-color: var(--ghost);
+  color: var(--ghost);
+}
+/* What losing sanity does: a dark red edge, the picture a little off its colours and its level, and a slow sway of it. */
+.insane {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 35%, rgba(60, 0, 8, 0.85));
+}
+body.unwell #stage,
+body.unwell #renderCanvas {
+  filter: hue-rotate(var(--insane-hue, 0deg));
+  transform: rotate(var(--insane-tilt, 0deg));
+}
+@media (max-width: 640px) {
+  .round-hud {
+    top: 150px;
+  }
+}

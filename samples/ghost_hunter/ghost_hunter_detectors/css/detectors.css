@@ -1,0 +1,130 @@
+/* The gadgets (see detectorsui.js): four buttons at the top right, one in the hand, and its small screen under them. The cold tint over the whole picture is for thermal vision. */
+#gadgets {
+  position: fixed;
+  top: 52px;
+  right: 10px;
+  z-index: 8;
+  width: 190px;
+  pointer-events: none; /* only the buttons and the dial take a touch */
+}
+body:has(#start:not(.hidden)) #gadgets,
+body:has(#start:not(.hidden)) #chill {
+  visibility: hidden;
+}
+.gadget-row {
+  display: flex;
+  gap: 4px;
+}
+.gadget-button {
+  flex: 1;
+  padding: 7px 0;
+  border: 2px solid var(--bone);
+  background: rgba(5, 8, 13, 0.6);
+  color: var(--bone);
+  font: 13px var(--small-font);
+  letter-spacing: 0.06em;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.gadget-button.on {
+  border-color: var(--ecto);
+  color: var(--ecto);
+  background: rgba(60, 230, 255, 0.16);
+  box-shadow: 0 0 10px rgba(60, 230, 255, 0.45);
+}
+.gadget-screen {
+  margin-top: 6px;
+  padding: 8px;
+  border: 2px solid var(--ghost);
+  background: rgba(5, 8, 13, 0.72);
+  color: var(--ghost);
+  font-family: var(--small-font);
+}
+.gadget-screen.hidden,
+.gadget-emf.hidden,
+.gadget-radar.hidden,
+.gadget-box.hidden,
+.gadget-thermal.hidden {
+  display: none;
+}
+.gadget-emf {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.gadget-light {
+  width: 26px;
+  height: 26px;
+  border: 2px solid rgba(242, 243, 238, 0.35);
+  border-radius: 50%;
+  background: rgba(242, 243, 238, 0.06);
+}
+.gadget-light.on {
+  background: var(--ghost);
+  border-color: var(--ghost);
+  box-shadow: 0 0 10px var(--ghost);
+}
+.gadget-light.on:nth-child(4),
+.gadget-light.on:nth-child(5) {
+  background: var(--blood);
+  border-color: var(--blood);
+  box-shadow: 0 0 10px var(--blood);
+}
+.gadget-radar {
+  display: flex;
+  justify-content: center;
+}
+.gadget-canvas {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(0, 20, 0, 0.55);
+}
+.gadget-hiss {
+  height: 8px;
+  background: rgba(242, 243, 238, 0.15);
+}
+.gadget-hiss-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--ecto);
+}
+.gadget-word {
+  min-height: 24px;
+  margin: 6px 0;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  color: var(--bone);
+}
+.gadget-dial {
+  width: 100%;
+  accent-color: var(--ecto);
+  pointer-events: auto;
+  touch-action: pan-y;
+}
+.gadget-temperature {
+  font-size: 34px;
+  text-align: center;
+  color: var(--ecto);
+}
+.chill {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(20, 60, 160, 0.15), rgba(10, 40, 200, 0.7));
+  mix-blend-mode: screen;
+}
+body.thermal #stage,
+body.thermal #renderCanvas {
+  filter: saturate(0.6) hue-rotate(185deg) contrast(1.15);
+}
+/* On a narrow screen the hint above takes several lines, and the gadgets come down under it. */
+@media (max-width: 640px) {
+  #gadgets {
+    top: 150px;
+  }
+}

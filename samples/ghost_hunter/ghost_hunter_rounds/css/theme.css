@@ -1,0 +1,24 @@
+/* The look of Ghost Hunter, taken from its logo: a night that is nearly black, a toxic ghost green, the cold cyan glow of the ghost, and bone white
+   for the lettering. The colours and the fonts are named once here, and everything else uses the names. */
+@font-face {
+  font-family: "Rubik Wet Paint";
+  src: url("../../assets/fonts/RubikWetPaint-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Share Tech Mono";
+  src: url("../../assets/fonts/ShareTechMono-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+:root {
+  --title-font: "Rubik Wet Paint", "Impact", system-ui, sans-serif; /* dripping paint, for the title and the headings */
+  --small-font: "Share Tech Mono", ui-monospace, "Courier New", monospace; /* a detector's read-out, for the small words that must be read */
+
+  --night: #05080d; /* behind everything */
+  --night-lift: #0c1824;
+  --bone: #f2f3ee; /* the lettering */
+  --ghost: #39ff14; /* the accent: the reticle, the buttons, the thing to look at */
+  --ecto: #3ce6ff; /* the glow of a ghost */
+  --blood: #c4161f; /* danger, and only danger */
+  --good: #39ff14;
+}

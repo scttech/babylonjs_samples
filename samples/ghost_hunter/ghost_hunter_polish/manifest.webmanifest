@@ -1,0 +1,14 @@
+{
+  "name": "Ghost Hunter",
+  "short_name": "Ghost Hunter",
+  "description": "An augmented reality ghost hunt for your phone.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#05080d",
+  "theme_color": "#05080d",
+  "icons": [
+    { "src": "../assets/images/ghost_hunter_logo_small.webp", "sizes": "any", "type": "image/webp", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,77 @@
+/* The polish (see comfort.js, install.js and photo.js): the comfort switches and the install button on the start screen, the photograph on the screen at the end of a round,
+   and what motion that is reduced takes out. */
+.comfort {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+  font-family: var(--small-font);
+  font-size: 14px;
+  color: var(--bone);
+}
+.comfort label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+.comfort input {
+  accent-color: var(--ghost);
+  width: 18px;
+  height: 18px;
+}
+.install-line {
+  min-height: 20px;
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--ecto);
+}
+.install-button {
+  margin-top: 6px;
+  padding: 8px 18px;
+  border: 2px solid var(--ecto);
+  background: rgba(5, 8, 13, 0.7);
+  color: var(--ecto);
+  font: 15px var(--small-font);
+  letter-spacing: 0.08em;
+}
+.install-button.hidden,
+.photo-area.hidden {
+  display: none;
+}
+.photo-area {
+  margin-top: 10px;
+  text-align: center;
+}
+.photo-picture {
+  display: block;
+  max-width: min(260px, 70vw);
+  max-height: 34vh;
+  margin: 0 auto 6px;
+  border: 2px solid var(--bone);
+}
+.photo-caption {
+  margin: 0 0 6px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--ecto);
+}
+.photo-button {
+  padding: 7px 16px;
+  border: 2px solid var(--bone);
+  background: rgba(5, 8, 13, 0.7);
+  color: var(--bone);
+  font: 15px var(--small-font);
+}
+/* With motion reduced, the picture does not sway or change colour as sanity falls, and nothing pulses. */
+body.calm-motion.unwell #stage,
+body.calm-motion.unwell #renderCanvas {
+  filter: none !important;
+  transform: none !important;
+}
+body.calm-motion .round-bar.low {
+  animation: none;
+}
+body.calm-motion .insane {
+  transition: none;
+}

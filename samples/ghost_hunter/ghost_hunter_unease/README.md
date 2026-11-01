@@ -56,4 +56,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The twelfth sample is **Detectors**: an EMF meter, a radar, a spirit box you tune, and thermal vision, to find what you cannot see.
+The twelfth sample, [Ghost Hunter Company](../ghost_hunter_company/README.md), is what the game became after more playing: a bigger cast with models that have skeletons, creatures that peek from the edge of the screen, and a door scan.
