@@ -47,4 +47,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-Variety. The next sample gives the benders **upgrades** (a podium that can be made better for gold), and makes the fire nation's combo do what it looks like: every punch throws its own bolt.
+Variety. The next sample, [**variety**](../tower_defense_variety/README.md), gives the benders **upgrades** (tap a tower to make it better for gold, or to sell it), and makes the fire nation's combo do what it looks like: every punch throws its own bolt.

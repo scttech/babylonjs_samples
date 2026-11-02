@@ -725,4 +725,4 @@ Things to look for, and things to change. Change one, save, and refresh.
 
 A board with things on it: five props written in the map's text, loaded once and drawn as instances, each standing in its cell, in the way of a tower, with a sentence that says what it is, behind a test suite of 591 tests.
 
-**Next up:** variety. The next tutorial gives the benders **upgrades** (a podium that can be made better for gold), and makes the fire nation's **combo** do what it looks like: every punch of it throws its own bolt.
+**Next up:** variety. The [next tutorial](../tower_defense_variety/TUTORIAL.md) gives the benders **upgrades** (a podium that can be made better for gold), and makes the fire nation's **combo** do what it looks like: every punch of it throws its own bolt.
