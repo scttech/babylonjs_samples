@@ -8,7 +8,7 @@
 | `podiums/` | A podium for each nation: air, water, earth and fire | The same | The same |
 | `benders/` | The four benders (rigged, with walking, running, attacks and idles) | The same | The same |
 | `enemies/` | Five enemies (rigged, with walking, running and falling) | The same | The same |
-| `flair/` | Four props for the maps: a cabbage cart, a spirit shrine, a spirit koi pond and a winged lemur perch | The same | The same |
+| `scenery/` | Five props for the maps: a cabbage cart, a spirit shrine, a spirit koi pond, a winged lemur perch and a sky bison camp | The same | The same |
 
 ## The models
 
@@ -27,10 +27,11 @@ The models in this folder are **web-sized copies** of the originals in `source_a
 | `podiums/*.glb` | about 6,000 each | about 0.5 MB each |
 | `benders/*.glb` | about 10,000 each | 2.5 to 3.7 MB each |
 | `enemies/*.glb` | about 10,000 each | 2 to 2.6 MB each |
-| `flair/cabbage_cart.glb` | 8,332 | 0.7 MB |
-| `flair/koi_pond.glb` | 15,362 | 1.2 MB |
-| `flair/shrine.glb` | 5,996 | 0.6 MB |
-| `flair/lemur_perch.glb` | 6,000 | 0.4 MB |
+| `scenery/cabbage_cart.glb` | 8,332 | 0.7 MB |
+| `scenery/koi_pond.glb` | 15,362 | 1.2 MB |
+| `scenery/shrine.glb` | 5,996 | 0.6 MB |
+| `scenery/lemur_perch.glb` | 6,000 | 0.4 MB |
+| `scenery/bison_camp.glb` | 8,000 | 0.5 MB |
 
 **The pieces of road.** Each is drawn as the road runs when the piece is *not* turned: the straight piece runs from the front to the back, the corner joins the back to the right, the junction is a road across with a branch to the back, and the crossroads joins all four. There is no dead-end piece: the start and the end of a road are made in code.
 

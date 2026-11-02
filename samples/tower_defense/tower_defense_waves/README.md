@@ -49,4 +49,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-Scenery. The next sample puts **props** on the maps (a cabbage cart, a spirit shrine, a koi pond, a winged-lemur perch), written in the map's text, that make the board a place and that a tower can't be built on.
+Scenery. The next sample, [**scenery**](../tower_defense_scenery/README.md), puts **props** on the maps (a cabbage cart, a spirit shrine, a koi pond, a winged-lemur perch), written in the map's text, that make the board a place and that a tower can't be built on.

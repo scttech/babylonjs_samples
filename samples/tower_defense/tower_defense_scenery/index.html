@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Tower Defense World - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/page.css">
+  <link rel="stylesheet" href="css/splash.css">
+  <link rel="stylesheet" href="css/tray.css">
+  <link rel="stylesheet" href="css/hud.css">
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+</head>
+
+<body>
+  <a class="back-button" href="../../../index.html#tower_defense">&larr; Samples</a>
+  <div class="hint">Space for a screenshot &middot; <a href="tests.html">Run tests</a></div>
+  <div id="splash">
+    <img src="../assets/images/tower_defense_logo_small.webp" alt="Avatar: The Last Airbender Tower Defense">
+    <p id="splash-status">Loading&hellip;</p>
+  </div>
+  <canvas id="renderCanvas"></canvas>
+  <div id="gold" aria-live="polite"><span class="coin"></span><span id="gold-amount">0</span></div>
+  <div id="message" aria-live="polite"></div>
+  <div id="tray"></div>
+  <div id="status"><span class="heart"></span><span id="lives">0</span><span id="wave"></span></div>
+  <button id="next-wave" type="button" hidden>Start wave</button>
+  <div id="banner" hidden>
+    <h2 id="banner-title"></h2>
+    <p id="banner-text"></p>
+    <button id="again" type="button">Play again</button>
+  </div>
+  <script src="../../../js/screenshot.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/view.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/tiles.js"></script>
+  <script src="js/random.js"></script>
+  <script src="js/island.js"></script>
+  <script src="js/sky.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/roads.js"></script>
+  <script src="js/path.js"></script>
+  <script src="js/walker.js"></script>
+  <script src="js/enemies.js"></script>
+  <script src="js/markers.js"></script>
+  <script src="js/scenery.js"></script>
+  <script src="js/targeting.js"></script>
+  <script src="js/brain.js"></script>
+  <script src="js/placement.js"></script>
+  <script src="js/benders.js"></script>
+  <script src="js/tower.js"></script>
+  <script src="js/bolts.js"></script>
+  <script src="js/pointing.js"></script>
+  <script src="js/economy.js"></script>
+  <script src="js/build.js"></script>
+  <script src="js/outline.js"></script>
+  <script src="js/tray.js"></script>
+  <script src="js/hand.js"></script>
+  <script src="js/waves.js"></script>
+  <script src="js/director.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/battle.js"></script>
+  <script src="js/splash.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
