@@ -50,4 +50,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-Elements. The next sample gives each nation an **effect** of its own (water slows, fire burns, earth stuns, air pushes back), carried by the bolts.
+Elements. The next sample, [**elements**](../tower_defense_elements/README.md), gives each nation an **effect** of its own (water slows, fire burns, earth stuns, air pushes back), carried by the bolts.

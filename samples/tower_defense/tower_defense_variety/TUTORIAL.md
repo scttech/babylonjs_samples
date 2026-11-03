@@ -2294,4 +2294,4 @@ Things to look for, and things to change. Change one, save, and refresh.
 
 Towers that are not the same, and that get better: attacks that are lists of hits (a combo of six, a bolt for each), levels that are rows of a table and come out as the same kind of row a brain already reads, rings on the ground that show them, paying and selling as small rules, and a panel that comes up when a tower is tapped, behind a test suite of 665 tests and a simulation that plays the game with and without upgrades.
 
-**Next up:** elements. The next tutorial gives each nation **an effect** of its own: water slows what it hits, fire burns it, earth stuns it, and air pushes it back along the road.
+**Next up:** elements. The [next tutorial](../tower_defense_elements/TUTORIAL.md) gives each nation **an effect** of its own: water slows what it hits, fire burns it, earth stuns it, and air pushes it back along the road.
