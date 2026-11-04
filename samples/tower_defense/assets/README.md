@@ -9,6 +9,7 @@
 | `benders/` | The four benders (rigged, with walking, running, attacks and idles) | The same | The same |
 | `enemies/` | Five enemies (rigged, with walking, running and falling) | The same | The same |
 | `scenery/` | Five props for the maps: a cabbage cart, a spirit shrine, a spirit koi pond, a winged lemur perch and a sky bison camp | The same | The same |
+| `music/` | Three tracks of music: `china.mp3` (the title and the end), `japan-calm.mp3` (the time between waves) and `japan.mp3` (a wave); two to two and a half minutes each, about 1.5 to 1.8 MB (re-encoded from the originals at 96 kbps) | [Pixabay](https://pixabay.com/music/) | The Pixabay Content Licence (free to use, with credit given as below) |
 
 ## The models
 
@@ -47,6 +48,14 @@ The models in this folder are **web-sized copies** of the originals in `source_a
 **Many attacks move the character a long way** (the hips travel up to two metres: the spin jump and the flying kick most), so the game holds the hips of every attack where they begin, to keep each bender on its podium.
 
 **Licence.** The 3D models were made with [Meshy](https://www.meshy.ai), and are shared under a Creative Commons licence that allows them to be used, shared and modified. Credit to Meshy. (If the exact licence asks for more than this, such as a link to it, this is the place for it.)
+
+**Music.** The three tracks in `music/` are from Pixabay, under the Pixabay Content Licence, and are credited as it asks:
+
+- `music/china.mp3`: Music by [Mykola Odnoroh](https://pixabay.com/users/ikoliks_aj-48415707/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=346568) from [Pixabay](https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=346568)
+- `music/japan.mp3`: Music by [Tunetank](https://pixabay.com/users/tunetank-50201703/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=349180) from [Pixabay](https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=349180)
+- `music/japan-calm.mp3`: Music by [Tunetank](https://pixabay.com/users/tunetank-50201703/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=349493) from [Pixabay](https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=349493)
+
+The sound effects are made in code (`js/audio.js` of the Polish sample), and are from no file.
 
 **A fan project.** *Avatar: The Last Airbender* and everything in it belongs to its owners. This is a non-commercial fan project, made to teach, and it is not endorsed by them. The characters are in the style of the show; nothing of the show's own artwork, music or voices is used.
 

@@ -1,0 +1,37 @@
+/* The look of Avatar: The Last Airbender Tower Defense, taken from its logo: a clear blue sky and
+   white cloud, parchment and black brush lettering, and the red and gold of its banner, and one
+   color for each of the four nations. The colors and the fonts are named once here, and
+   everything else uses the names. */
+@font-face {
+  font-family: "Cinzel";
+  src: url("../../assets/fonts/Cinzel.ttf") format("truetype");
+  font-weight: 400 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lato";
+  src: url("../../assets/fonts/Lato-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+:root {
+  /* The two fonts. Cinzel is the logo's serif capitals, for titles and big words. Lato Bold is
+     the legible one, for everything small, and the one to fall back on. */
+  --title-font: "Cinzel", "Times New Roman", serif;
+  --small-font: "Lato", system-ui, sans-serif;
+
+  --ink: #1d110b; /* the brush black of the lettering */
+  --parchment: #f3deaa; /* the scroll behind the title */
+  --parchment-dark: #d3ab68;
+  --banner: #8d1f14; /* the red banner under it */
+  --banner-dark: #5b120b;
+  --gold: #e3a924; /* the trim, and the spiral */
+  --sky: #5fb0ee; /* the top of the sky */
+  --sky-low: #b9def7; /* and the haze at the bottom of it */
+  --cloud: #ffffff;
+
+  --air: #f0f4fa; /* a color for each nation */
+  --water: #38b6ff;
+  --earth: #8a6a3a;
+  --fire: #f0701a;
+}

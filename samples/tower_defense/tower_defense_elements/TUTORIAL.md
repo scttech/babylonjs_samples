@@ -2084,4 +2084,4 @@ Things to look for, and things to change. Change one, save, and refresh.
 
 Towers that do something: four effects in a table, a status that is put on an enemy and runs out, enemies that feel it in their feet, bolts that carry it, marks that show it, and a panel that says it, behind a test suite of 744 tests and a simulation that says that every nation's effect is worth having.
 
-**Next up:** screens. The next tutorial gives the game a **start screen** with a choice of map, a **pause**, and a **win and lose screen** that says how you did.
+**Next up:** screens. The [next tutorial](../tower_defense_screens/TUTORIAL.md) gives the game a **start screen** with a choice of map, a **pause**, and a **win and lose screen** that says how you did.

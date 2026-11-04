@@ -1,0 +1,68 @@
+/* The readouts of a game of waves: lives and the wave, at the top on the left, and a button to start the next wave early.
+   Nothing here is over the middle of the board. */
+[hidden] {
+  display: none !important;
+}
+
+#status {
+  position: fixed;
+  top: 52px;
+  left: 12px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: var(--parchment);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  font: 700 16px / 1 var(--small-font);
+  pointer-events: none;
+}
+#status .heart {
+  width: 1em;
+  height: 1em;
+  background: var(--banner);
+  border: 2px solid var(--ink);
+  box-sizing: border-box;
+  transform: rotate(45deg) scale(0.8);
+  border-radius: 2px 50% 2px 2px;
+}
+#status #lives {
+  font: 700 20px / 1 var(--title-font);
+}
+
+#next-wave {
+  padding: 10px 18px;
+  background: var(--banner);
+  color: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  font: 700 18px / 1 var(--title-font);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+#next-wave:hover {
+  background: var(--banner-dark);
+}
+#next-wave {
+  position: fixed;
+  right: 12px;
+  bottom: calc(var(--tray-height) + 12px);
+  z-index: 12;
+}
+
+@media (max-width: 640px), (max-height: 520px) {
+  #status {
+    top: 48px;
+    padding: 4px 10px;
+    font-size: 14px;
+  }
+  #next-wave {
+    bottom: calc(var(--tray-height) + 8px);
+    padding: 8px 12px;
+    font-size: 15px;
+  }
+}

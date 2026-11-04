@@ -1,0 +1,208 @@
+/* The screens over the game: the title with a card for each map, the pause, and the result. Each is a card in the middle of a
+   dim layer that covers the board, so that nothing behind it can be pressed. They are above the readouts and the tray, and under
+   the splash and the back button. */
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 24;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: rgba(20, 40, 70, 0.55);
+  color: var(--ink);
+  text-align: center;
+}
+#title-screen {
+  background: linear-gradient(to bottom, rgba(95, 176, 238, 0.92), rgba(185, 222, 247, 0.92));
+}
+.screen[hidden] {
+  display: none;
+}
+.screen h2 {
+  margin: 0;
+  font: 700 clamp(22px, 5vw, 34px) / 1.1 var(--title-font);
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+#pause-screen,
+#result-screen {
+  gap: 14px;
+}
+#pause-screen > *,
+#result-screen > * {
+  max-width: 360px;
+}
+
+/* The title: the logo, the cards, and a line of help. */
+#title-screen .logo {
+  max-width: min(78vw, 420px);
+  max-height: 24vh;
+  object-fit: contain;
+  border: 4px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(20, 40, 70, 0.45);
+}
+.map-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.map-card {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 10px;
+  background: #fff7e0;
+  color: var(--ink);
+  border: 4px solid var(--ink);
+  border-radius: 12px;
+  cursor: pointer;
+  font: 700 16px / 1.1 var(--title-font);
+  touch-action: manipulation;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.map-card:hover {
+  transform: translateY(-3px);
+}
+.map-card.selected {
+  box-shadow: 0 0 0 5px var(--gold), 0 8px 18px rgba(20, 40, 70, 0.4);
+}
+.map-card .minimap {
+  width: 140px;
+  height: 90px;
+  background: var(--parchment);
+  border-radius: 4px;
+}
+.map-card .stars,
+.result-stars {
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 0 var(--ink);
+}
+.result-stars {
+  font-size: 44px;
+  line-height: 1;
+}
+.help {
+  margin: 0;
+  max-width: 420px;
+  font: 700 15px / 1.3 var(--small-font);
+}
+
+/* The buttons of the screens: a red one for what to do, and a plain one for the rest. */
+.screen button.play,
+.screen button.plain {
+  padding: 12px 28px;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  font: 700 20px / 1 var(--title-font);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.screen button.play {
+  background: var(--banner);
+  color: #fff;
+}
+.screen button.play:hover {
+  background: var(--banner-dark);
+}
+.screen button.plain {
+  background: var(--parchment);
+  color: var(--ink);
+}
+.screen button.plain:hover {
+  background: var(--parchment-dark);
+}
+
+/* The pause and the result are cards. */
+#pause-screen,
+#result-screen {
+  padding: 24px;
+}
+#pause-screen h2,
+#result-screen h2 {
+  color: #fff;
+  text-shadow: 0 3px 0 var(--ink), 0 0 12px rgba(0, 0, 0, 0.5);
+}
+#result-screen[data-result="won"] h2 {
+  color: #ffd35a;
+}
+#result-screen[data-result="lost"] h2 {
+  color: #ff9a8a;
+}
+.result-text {
+  color: #fff;
+  text-shadow: 0 1px 0 var(--ink);
+}
+.result-text,
+.record {
+  margin: 0;
+  font: 700 16px / 1.3 var(--small-font);
+}
+.record {
+  color: #ffd35a;
+  text-shadow: 0 1px 0 var(--ink);
+}
+.result-rows {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 4px 24px;
+  margin: 0;
+  padding: 12px 20px;
+  background: var(--parchment);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  font: 700 16px / 1.2 var(--small-font);
+  text-align: left;
+}
+.result-rows dd {
+  margin: 0;
+  text-align: right;
+}
+
+/* The button that pauses, under the hint at the top on the right. */
+#pause-button {
+  position: fixed;
+  top: 52px;
+  right: 12px;
+  z-index: 12;
+  padding: 8px 14px;
+  background: var(--parchment);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  font: 700 15px / 1 var(--small-font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+#pause-button[hidden] {
+  display: none;
+}
+
+@media (max-width: 640px), (max-height: 520px) {
+  #title-screen .logo {
+    max-height: 18vh;
+  }
+  .map-card .minimap {
+    width: 110px;
+    height: 70px;
+  }
+  .screen button.play,
+  .screen button.plain {
+    padding: 10px 22px;
+    font-size: 17px;
+  }
+  #pause-button {
+    top: 8px;
+    right: 8px;
+  }
+  .result-stars {
+    font-size: 34px;
+  }
+}

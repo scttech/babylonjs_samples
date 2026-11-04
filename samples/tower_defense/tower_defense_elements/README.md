@@ -50,4 +50,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-Screens. The next sample gives the game a **start screen** with a choice of map, a **pause**, and a **win and lose screen** that says how you did.
+Screens. The next sample, [**screens**](../tower_defense_screens/README.md), gives the game a **start screen** with a choice of map, a **pause**, and a **win and lose screen** that says how you did.
