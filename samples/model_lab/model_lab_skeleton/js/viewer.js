@@ -29,6 +29,7 @@ const VIEW_OPTIONS = [
   { id: "wireframe", label: "Wireframe (show the triangles)", on: false },
   { id: "bounds", label: "Box around the model", on: false },
   { id: "spin", label: "Turntable (spin slowly)", on: false },
+  { id: "bones", label: "Skeleton (show the bones)", on: true },
 ];
 
 // The viewer. It makes the camera, the lights and the floor, and gives back what the page needs to steer them.
@@ -88,7 +89,7 @@ function createViewer(scene, canvas) {
       box.isPickable = false;
     }
     for (const mesh of scene.meshes) {
-      if (mesh === grid || mesh === box || (axes && mesh.name.startsWith("axis"))) continue;
+      if (mesh === grid || mesh === box || (axes && mesh.name.startsWith("axis")) || mesh.name.startsWith("bone")) continue;
       if (mesh.material && mesh.name !== "bounds") mesh.material.wireframe = state.wireframe;
     }
     camera.useAutoRotationBehavior = state.spin;

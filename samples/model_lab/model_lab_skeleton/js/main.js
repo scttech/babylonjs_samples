@@ -1,5 +1,5 @@
-// The Model Lab page: a stage with a model on it, and a panel that says what is in the model. A model comes from the list of samples, from a
-// file that the person picks, or from a file that they drop on the page.
+// The Model Lab page: a stage with a model on it, a panel that says what is in the model, and (new in this tutorial) its skeleton drawn over it, with a
+// list of its bones. A model comes from the list of samples, from a file that the person picks, or from a file that they drop on the page.
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true });
 
@@ -10,13 +10,26 @@ const SAMPLES = [
   { label: "Heavy enemy", file: "../assets/characters/heavy.glb" },
 ];
 
+// How far (in pixels) a click can be from a joint and still choose it, and how far the pointer can move between pressing and letting go
+// for it still to be a click and not a drag that turns the camera.
+const PICK_DISTANCE = 24;
+const CLICK_SLOP = 5;
+
 const scene = new BABYLON.Scene(engine);
 const viewer = createViewer(scene, canvas);
 const inspector = new Inspector(document.getElementById("inspector"));
+const skeletonView = new SkeletonView(scene);
+const bonePanel = new BoneTree(document.getElementById("bones"), (index) => chooseBone(index));
 const picker = document.getElementById("sample");
 const options = document.getElementById("options");
 
 let current = null;
+
+// Chooses a bone: it lights up on the model and in the list, and the panel says what it is.
+function chooseBone(index) {
+  skeletonView.select(index);
+  bonePanel.select(index, skeletonView.positions());
+}
 
 // Replaces the model on the stage with a new one, and says what is in it.
 async function openModel(source) {
@@ -29,6 +42,14 @@ async function openModel(source) {
     viewer.frame(model.bounds);
     viewer.refresh();
     inspector.show(model);
+    if (container.skeletons.length > 0) {
+      const tree = boneTree(container.skeletons[0]);
+      skeletonView.show(container.skeletons[0], tree, Math.max(model.size.x, model.size.y, model.size.z));
+      bonePanel.show(tree);
+    } else {
+      skeletonView.clear();
+      bonePanel.clear("This model has no skeleton: nothing in it can bend.");
+    }
   } catch (error) {
     console.error(error);
     inspector.message(error.message, true);
@@ -52,6 +73,26 @@ window.addEventListener("drop", (event) => {
   if (file) openModel(file);
 });
 
+// A click on the stage (a press and a letting go that are in nearly the same place) chooses the joint nearest to it, if any is close.
+let pressed = null;
+canvas.addEventListener("pointerdown", (event) => {
+  pressed = { x: event.clientX, y: event.clientY };
+});
+canvas.addEventListener("pointerup", (event) => {
+  if (!pressed || !skeletonView.skeleton || !viewer.state.bones) return;
+  const moved = Math.hypot(event.clientX - pressed.x, event.clientY - pressed.y);
+  pressed = null;
+  if (moved > CLICK_SLOP) return;
+  // The picture may be drawn at a different size from how it is shown (the screen's pixel density), so the click is scaled to the picture.
+  const rect = canvas.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) * engine.getRenderWidth()) / rect.width;
+  const y = ((event.clientY - rect.top) * engine.getRenderHeight()) / rect.height;
+  const points = screenPoints(skeletonView.positions(), scene, viewer.camera);
+  const scale = engine.getRenderWidth() / rect.width;
+  const index = nearestJoint(points, x, y, PICK_DISTANCE * scale);
+  if (index >= 0) chooseBone(index);
+});
+
 // A switch for each view option.
 for (const option of VIEW_OPTIONS) {
   const label = el("label", null, "option");
@@ -62,6 +103,9 @@ for (const option of VIEW_OPTIONS) {
   label.append(box, el("span", option.label));
   options.append(label);
 }
+
+// Each frame, the skeleton's picture follows the bones.
+scene.onBeforeRenderObservable.add(() => skeletonView.update(viewer.state.bones));
 
 engine.runRenderLoop(() => scene.render());
 window.addEventListener("resize", () => engine.resize());
