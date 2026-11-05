@@ -1,0 +1,62 @@
+/* The developer panel, only there for ?dev: a narrow column of sliders at the top on the left, under the readouts, that can be folded
+   away and hidden with the ` key. It is kept small so that it hides as little of the board as it can. */
+#dev-panel {
+  position: fixed;
+  top: 92px;
+  left: 12px;
+  z-index: 27;
+  width: 250px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  background: rgba(29, 17, 11, 0.88);
+  color: #fff;
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  font: 700 12px / 1.2 var(--small-font);
+}
+#dev-panel[hidden],
+#dev-panel .dev-body[hidden] {
+  display: none;
+}
+#dev-panel h4 {
+  margin: 10px 0 4px;
+  color: var(--gold);
+  font: 700 12px / 1 var(--title-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+#dev-panel .dev-fold,
+#dev-panel .dev-button {
+  padding: 4px 8px;
+  background: var(--parchment);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  font: 700 12px / 1 var(--small-font);
+  cursor: pointer;
+}
+#dev-panel .dev-button {
+  margin: 10px 6px 0 0;
+}
+#dev-panel .dev-row {
+  display: grid;
+  grid-template-columns: 1fr 44px;
+  grid-template-areas: "label value" "slider slider";
+  gap: 0 6px;
+  margin: 4px 0;
+}
+#dev-panel .dev-label {
+  grid-area: label;
+}
+#dev-panel .dev-value {
+  grid-area: value;
+  text-align: right;
+  color: var(--gold);
+}
+#dev-panel input[type="range"] {
+  grid-area: slider;
+  width: 100%;
+  margin: 2px 0 0;
+}

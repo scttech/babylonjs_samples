@@ -2599,4 +2599,4 @@ A game that is good to play for someone else: it can be made faster, it can't be
 
 **Credits:** the music is by Mykola Odnoroh and Tunetank, from Pixabay (see the [assets README](../assets/README.md)).
 
-**Next up:** the editor. The last tutorial lets the player build a map: drop pieces of road and scenery on the board, have the route checked, and save it and share it.
+**Next up:** the editor. The [last tutorial](../tower_defense_editor/TUTORIAL.md) lets the player build a map: drop pieces of road and scenery on the board, have the route checked, and save it and share it.

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Tower Defense Editor - Babylon.js</title>
+  <link rel="stylesheet" href="../../../css/sample.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/page.css">
+  <link rel="stylesheet" href="css/splash.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+</head>
+
+<body>
+  <a class="back-button" href="index.html">&larr; Game</a>
+  <div id="splash">
+    <img src="../assets/images/tower_defense_logo_small.webp" alt="Avatar: The Last Airbender Tower Defense">
+    <p id="splash-status">Loading&hellip;</p>
+  </div>
+  <canvas id="renderCanvas"></canvas>
+  <input id="map-name" type="text" maxlength="28" value="My map" aria-label="The name of the map" autocomplete="off">
+  <ul id="problems" aria-live="polite"></ul>
+  <div id="toolbar">
+    <div id="palette"></div>
+    <div id="actions"></div>
+    <div id="editor-status" aria-live="polite"></div>
+  </div>
+  <script src="js/board.js"></script>
+  <script src="js/view.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/tiles.js"></script>
+  <script src="js/random.js"></script>
+  <script src="js/island.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/roads.js"></script>
+  <script src="js/path.js"></script>
+  <script src="js/markers.js"></script>
+  <script src="js/scenery.js"></script>
+  <script src="js/placement.js"></script>
+  <script src="js/pointing.js"></script>
+  <script src="js/outline.js"></script>
+  <script src="js/tray.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/boardview.js"></script>
+  <script src="js/toolbar.js"></script>
+  <script src="js/editormain.js"></script>
+</body>
+
+</html>

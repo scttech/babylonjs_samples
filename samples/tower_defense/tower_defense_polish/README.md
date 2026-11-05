@@ -51,4 +51,4 @@ See the [series README](../README.md#credits) and the [assets README](../assets/
 
 ## Next up
 
-The editor. The last sample lets the player build a map: drop pieces of road and scenery on the board, have the route checked, and save and share it.
+The editor. The [last sample](../tower_defense_editor/README.md) lets the player build a map: drop pieces of road and scenery on the board, have the route checked, and save and share it.

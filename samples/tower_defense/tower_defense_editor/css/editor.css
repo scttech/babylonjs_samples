@@ -1,0 +1,150 @@
+/* The editor page: the board fills the screen above a toolbar, which has a palette of brushes and a row of actions; the name of the map is
+   at the top in the middle, and what is wrong with the map (or that it is ready) is at the top on the left, small, over the corner of the sky. */
+:root {
+  --toolbar-height: 150px;
+}
+#renderCanvas {
+  height: calc(100% - var(--toolbar-height));
+  touch-action: none; /* a finger that paints must not scroll the page */
+}
+
+#map-name {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  width: min(300px, 46vw);
+  padding: 6px 14px;
+  box-sizing: border-box;
+  background: var(--parchment);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  font: 700 20px / 1 var(--title-font);
+  text-align: center;
+}
+
+#problems {
+  position: fixed;
+  top: 52px;
+  left: 12px;
+  z-index: 12;
+  width: min(300px, 70vw);
+  margin: 0;
+  padding: 8px 12px 8px 28px;
+  box-sizing: border-box;
+  background: rgba(141, 31, 20, 0.92);
+  color: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  font: 700 13px / 1.25 var(--small-font);
+  pointer-events: none;
+}
+#problems.ready {
+  background: rgba(30, 110, 48, 0.92);
+  list-style: none;
+  padding-left: 12px;
+}
+#problems li + li {
+  margin-top: 3px;
+}
+
+#toolbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 12;
+  height: var(--toolbar-height);
+  box-sizing: border-box;
+  padding: 8px 12px;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: 8px;
+  background: linear-gradient(to bottom, var(--parchment), var(--parchment-dark));
+  border-top: 4px solid var(--ink);
+  box-shadow: 0 -6px 18px rgba(20, 40, 70, 0.3);
+}
+#palette,
+#actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  overflow-x: auto;
+}
+#palette .brush {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-rows: auto auto;
+  justify-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  min-width: 74px;
+  background: #fff7e0;
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  font: 700 12px / 1.1 var(--small-font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+#palette .brush .swatch {
+  width: 34px;
+  height: 22px;
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+}
+#palette .brush.selected {
+  box-shadow: 0 0 0 4px var(--gold);
+  transform: translateY(-3px);
+}
+#actions .action {
+  padding: 8px 16px;
+  background: var(--banner);
+  color: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  font: 700 16px / 1 var(--title-font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+#actions .action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+#actions .action[data-action="undo"],
+#actions .action[data-action="redo"],
+#actions .action[data-action="clear"] {
+  background: var(--parchment);
+  color: var(--ink);
+}
+#editor-status {
+  min-height: 1.1em;
+  text-align: center;
+  font: 700 13px / 1.1 var(--small-font);
+  color: var(--ink);
+}
+
+@media (max-width: 640px), (max-height: 520px) {
+  :root {
+    --toolbar-height: 128px;
+  }
+  #problems {
+    top: 48px;
+    font-size: 12px;
+  }
+  #palette .brush {
+    min-width: 58px;
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+  #palette .brush .swatch {
+    width: 26px;
+    height: 16px;
+  }
+  #actions .action {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+}
