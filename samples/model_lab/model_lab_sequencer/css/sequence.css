@@ -1,0 +1,120 @@
+/* The sequencer: the list of steps, and the timeline that draws them as bars. */
+#sequence {
+  display: grid;
+  gap: 8px;
+}
+.steps {
+  display: grid;
+  gap: 6px;
+}
+.step {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg);
+  border: 1px solid var(--panel-edge);
+  border-radius: 6px;
+}
+.step .number {
+  width: 18px;
+  color: var(--accent);
+  font: 700 13px var(--mono);
+  text-align: center;
+}
+.step select {
+  min-width: 0;
+}
+.step .rest {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.step .unit {
+  color: var(--ink-dim);
+  font-size: 11px;
+}
+.step input[type="number"] {
+  width: 46px;
+}
+.step select,
+.step input[type="number"],
+.adding select {
+  padding: 3px 4px;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+  font: 12px var(--font);
+}
+button.small {
+  width: 24px;
+  padding: 3px 0;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+  font: 12px var(--mono);
+  cursor: pointer;
+}
+button.small:hover {
+  border-color: var(--accent);
+}
+.adding {
+  display: flex;
+  gap: 4px;
+}
+.adding select {
+  flex: 1;
+  min-width: 0;
+}
+.adding button.transport {
+  padding: 5px 8px;
+}
+.transport-row.two {
+  grid-template-columns: 2fr 1fr;
+}
+.timeline {
+  position: relative;
+  height: 52px;
+  background: var(--bg);
+  border: 1px solid var(--panel-edge);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.timeline .bar {
+  position: absolute;
+  height: 22px;
+  box-sizing: border-box;
+  padding: 0 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: #2b4a73;
+  border: 1px solid #5ab0ff;
+  border-radius: 4px;
+  font: 11px / 20px var(--font);
+}
+.timeline .bar.row-0 {
+  top: 3px;
+}
+.timeline .bar.row-1 {
+  top: 27px;
+}
+.timeline .bar.playing {
+  background: #7a5a12;
+  border-color: #ffd35a;
+}
+.timeline .playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ff8a7a;
+  pointer-events: none;
+}
+.message.error:empty {
+  display: none;
+}
