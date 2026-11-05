@@ -1,0 +1,13 @@
+/* The look of the Model Lab: a dark workshop, so that a model's colours are what you notice. The colours and the fonts are named once here,
+   and everything else uses the names. */
+:root {
+  --bg: #171a21; /* the page and the stage */
+  --panel: #1f232d; /* the panel beside the stage */
+  --panel-edge: #343a48;
+  --ink: #e8ebf2; /* text */
+  --ink-dim: #9aa3b5; /* labels */
+  --accent: #5ab0ff; /* what can be pressed */
+  --warn: #ff8a7a; /* what went wrong */
+  --font: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}

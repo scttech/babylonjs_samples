@@ -1,0 +1,116 @@
+/* The stage fills the page, and the panel floats at the right of it. On a narrow screen the panel is a sheet at the bottom instead. */
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px / 1.4 var(--font);
+}
+#panel {
+  position: fixed;
+  top: 56px;
+  right: 12px;
+  bottom: 12px;
+  width: 330px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 10px;
+}
+#panel h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.controls {
+  display: grid;
+  gap: 8px;
+}
+.controls select,
+.controls .file-button {
+  padding: 8px 10px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--panel-edge);
+  border-radius: 6px;
+  font: inherit;
+  cursor: pointer;
+}
+.controls .file-button:hover,
+.controls select:hover {
+  border-color: var(--accent);
+}
+.controls input[type="file"] {
+  display: none;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-dim);
+  cursor: pointer;
+}
+#inspector {
+  display: grid;
+  gap: 8px;
+}
+details {
+  border: 1px solid var(--panel-edge);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 0;
+}
+.fact .label {
+  color: var(--ink-dim);
+}
+.fact .value {
+  font-family: var(--mono);
+  text-align: right;
+}
+table.grid {
+  width: 100%;
+  margin-top: 6px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+table.grid th {
+  text-align: left;
+  color: var(--ink-dim);
+  font-weight: 600;
+}
+table.grid th,
+table.grid td {
+  padding: 3px 6px 3px 0;
+  vertical-align: top;
+  word-break: break-word;
+}
+.message {
+  margin: 0;
+  color: var(--ink-dim);
+}
+.message.error {
+  color: var(--warn);
+}
+
+@media (max-width: 700px), (max-height: 520px) {
+  #panel {
+    top: auto;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-height: 42vh;
+  }
+}

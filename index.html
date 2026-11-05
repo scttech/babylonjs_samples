@@ -413,6 +413,17 @@
           { slug: "tower_defense_editor", tutorial: true, title: "Tower Defense Editor", description: "Draw a map of your own with brushes (checked by the game's own rules as you go), undo, save it to the title screen, and share it as a link that anyone can play." },
         ],
       },
+      {
+        id: "model_lab",
+        logo: "samples/model_lab/assets/images/model_lab_logo_small.webp",
+        title: "Model Lab",
+        description: "A tool, built one step at a time, for understanding 3D models and how modular characters work: open a model, read its skeleton and animations, attach and swap weapons, fit armour, change materials, and borrow another character's animations.",
+        teaches: "What a model file is made of, skeletons and bones, animation clips, attaching props to bones, skinned armour that shares a skeleton, equipment slots, materials, and checking that animations fit a skeleton.",
+        steps: [
+          { slug: "model_lab_look", tutorial: true, title: "Model Lab Look", description: "Open a .glb (pick one, drop one, or use the three that come with the lab) and see what is inside it: its size and units, meshes, materials, pictures, skeleton and animations." },
+          { slug: "model_lab_skeleton", tutorial: true, title: "Model Lab Skeleton", description: "The bones made visible: a stick figure drawn through the body, a tree of bones with each under its parent, and a click on a joint that says what it is. All three characters turn out to have the same bones." },
+        ],
+      },
     ];
 
     const main = document.getElementById("main");
